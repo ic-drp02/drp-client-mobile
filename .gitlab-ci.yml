@@ -1,12 +1,17 @@
 image: hasali19/drp-client-mobile-ci-env:latest
 
 stages:
-  - build
+  - test
+  - deploy
 
-build:
-  stage: build
+test:
+  stage: test
   script:
     - npm ci
-    - npx jest --ci
+    # - npx jest --ci
+
+deploy:
+  stage: deploy
+  script:
     - npx expo login -u $NPX_USERNAME -p $NPX_PASSWORD
     - npx expo publish --non-interactive
