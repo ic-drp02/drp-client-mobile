@@ -1,11 +1,18 @@
-import React, { useEffect, useState, Alert } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+
 import { AppLoading } from 'expo';
-import{ StyleProvider, Container, Footer, FooterTab, Content, Header, Left, Body, Right, Button, Icon, Title, Text }from 'native-base';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
+import { StyleProvider }from 'native-base';
 import commonColor from './native-base-theme/variables/commonColor';
 import getTheme from './native-base-theme/components';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+import Home from './screens/Home.js'
+import Search from './screens/Search.js'
+
+const Stack = createStackNavigator();
 
 export default function App(props) {
   
@@ -33,46 +40,17 @@ export default function App(props) {
   }
 
   return (
-      <StyleProvider style={getTheme(commonColor)}>
-        <Container>
-          <Header searchBar>
-            <Left>
-              <Button transparent>
-                <Icon name='menu' />
-              </Button>
-            </Left>
-            <Body>
-              <Title>ICON</Title>
-            </Body>
-            <Right>
-              <Button transparent onPress={() => alert("Searching!")}>
-                <Icon name='search' />
-              </Button>
-            </Right>
-          </Header>
-          <Content>
-            <Button style={styles.logo}>
-              <Text>Ask a question</Text>
-            </Button>
-            <Button>
-              <Text>Post an update</Text>
-            </Button>
-          </Content>
-          <Footer>
-            <FooterTab>
-              <Button full>
-                <Text>Footer</Text>
-              </Button>
-            </FooterTab>
-          </Footer>
-        </Container>
-      </StyleProvider>
+    <StyleProvider style={getTheme(commonColor)}>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Search" component={Search} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </StyleProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  logo: {
-    width: 400,
-    height: 150,
-  },
-});
