@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import { AppLoading } from 'expo';
-import * as Font from 'expo-font';
-import { Ionicons } from '@expo/vector-icons';
-import { StyleProvider, Drawer }from 'native-base';
-import commonColor from './native-base-theme/variables/commonColor';
-import getTheme from './native-base-theme/components';
-import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { AppLoading } from "expo";
+import * as Font from "expo-font";
+import { Ionicons } from "@expo/vector-icons";
+import { StyleProvider, Drawer } from "native-base";
+import commonColor from "./native-base-theme/variables/commonColor";
+import getTheme from "./native-base-theme/components";
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import HomeNavigation from './screens/Home/HomeNavigation.js'
-import Question from './screens/Question.js'
-import Update from './screens/Update.js'
+import HomeNavigation from "./screens/Home/HomeNavigation.js";
+import Question from "./screens/Question.js";
+import Update from "./screens/Update.js";
 
 const DrawerNavigator = createDrawerNavigator();
 
 export default function App(props) {
-  
   // Variable indicating state of fonts loading
   const [fontsReady, setFontsReady] = useState(false);
 
@@ -24,20 +23,20 @@ export default function App(props) {
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
-        Roboto: require('native-base/Fonts/Roboto.ttf'),
-        Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+        Roboto: require("native-base/Fonts/Roboto.ttf"),
+        Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
         ...Ionicons.font,
       });
       // Report that fonts are ready
       setFontsReady(true);
-    }
+    };
 
     loadFonts();
   }, []);
 
   if (!fontsReady) {
     // Show just AppLoading if the fonts are not ready yet
-    return (<AppLoading />);
+    return <AppLoading />;
   }
 
   return (
