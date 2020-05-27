@@ -1,0 +1,12 @@
+image: hasali19/drp-client-mobile-ci-env:latest
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - npm ci
+    - npx jest --ci
+    - npx expo login -u $NPX_USERNAME -p $NPX_PASSWORD
+    - npx expo publish --non-interactive
