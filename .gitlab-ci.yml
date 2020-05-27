@@ -13,5 +13,6 @@ test:
 deploy:
   stage: deploy
   script:
+    - echo $NPX_USERNAME
     - npx expo login -u $NPX_USERNAME -p $NPX_PASSWORD
     - npx expo publish --non-interactive
