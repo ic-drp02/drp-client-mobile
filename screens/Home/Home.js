@@ -14,9 +14,12 @@ import {
   Icon,
   Title,
   Text,
+  H3,
 } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+
+import PostSummary from "../../components/PostSummary.js";
 
 const StackNavigator = createStackNavigator();
 
@@ -40,6 +43,24 @@ export default function Home({ navigation }) {
         </Right>
       </Header>
       <Content padder>
+        <H3 style={styles.margin}>Recently viewed</H3>
+        <PostSummary
+          title="Pre op assessment"
+          summary="New guidelines on pre op assessment for elective surgery during COVID"
+        />
+        <PostSummary
+          title="Minutes from ICON Q&A"
+          summary="The official minutes from yesteray's ICON Q&A"
+        />
+        <H3 style={styles.margin}>Latest updates</H3>
+        <PostSummary
+          title="Antibody testing"
+          summary="Antibody testing is available @ Imperial"
+        />
+        <PostSummary
+          title="COVID patients referral"
+          summary="How to refer vulnerable COVID patients to the LCW"
+        />
         <View style={styles.row}>
           <Button
             style={styles.button}
@@ -68,7 +89,7 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
   button: {
-    width: "40%",
+    width: "45%",
     margin: 10,
     justifyContent: "center",
   },
@@ -79,7 +100,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  center: {
-    alignItems: "center",
+  margin: {
+    margin: 10,
   },
 });

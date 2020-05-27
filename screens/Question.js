@@ -1,5 +1,5 @@
 import React from "react";
-import { StatusBar } from "react-native";
+import { StyleSheet, StatusBar } from "react-native";
 
 import {
   Container,
@@ -21,9 +21,9 @@ export default function Question({ navigation }) {
     <Container>
       <Header>
         <StatusBar barStyle="light-content" />
-        <Left>
-          <Button transparent onPress={() => navigation.openDrawer()}>
-            <Icon name="menu" />
+        <Left style={styles.left}>
+          <Button transparent onPress={() => navigation.goBack()}>
+            <Icon name="arrow-back" />
           </Button>
         </Left>
         <Body>
@@ -43,3 +43,9 @@ export default function Question({ navigation }) {
     </Container>
   );
 }
+
+const styles = StyleSheet.create({
+  left: {
+    flex: 0.15,
+  },
+});

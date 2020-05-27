@@ -11,7 +11,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import HomeNavigation from "./screens/Home/HomeNavigation.js";
 import Question from "./screens/Question.js";
-import Update from "./screens/Update.js";
+import PostUpdate from "./screens/PostUpdate.js";
 
 const DrawerNavigator = createDrawerNavigator();
 
@@ -45,7 +45,10 @@ export default function App(props) {
         <DrawerNavigator.Navigator initialRouteName="Home">
           <DrawerNavigator.Screen name="Home" component={HomeNavigation} />
           <DrawerNavigator.Screen name="Ask a question" component={Question} />
-          <DrawerNavigator.Screen name="Post an update" component={Update} />
+          <DrawerNavigator.Screen
+            name="Post an update"
+            component={PostUpdate}
+          />
         </DrawerNavigator.Navigator>
       </NavigationContainer>
     </StyleProvider>
