@@ -43,7 +43,7 @@ export default function App(props) {
     <StyleProvider style={getTheme(commonColor)}>
       <NavigationContainer>
         <DrawerNavigator.Navigator initialRouteName="Home">
-          <DrawerNavigator.Screen name="Hone" component={HomeNavigation} />
+          <DrawerNavigator.Screen name="Home" component={HomeNavigation} />
           <DrawerNavigator.Screen name="Ask a question" component={Question} />
           <DrawerNavigator.Screen name="Post an update" component={Update} />
         </DrawerNavigator.Navigator>

@@ -28,7 +28,7 @@ export default function Question({ navigation }) {
           <Title>Ask a question</Title>
         </Body>
       </Header>
-      <Content>
+      <Content padder>
         <Text>Ask a question!</Text>
       </Content>
       <Footer>

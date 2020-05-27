@@ -1,4 +1,5 @@
 import React from "react";
+import { StyleSheet, View } from "react-native";
 
 import {
   Container,
@@ -37,13 +38,21 @@ export default function Home({ navigation }) {
           </Button>
         </Right>
       </Header>
-      <Content>
-        <Button>
-          <Text>Ask a question</Text>
-        </Button>
-        <Button>
-          <Text>Post an update</Text>
-        </Button>
+      <Content padder>
+        <View style={styles.row}>
+          <Button
+            style={styles.button}
+            onPress={() => navigation.navigate("Ask a question")}
+          >
+            <Text>Ask a question</Text>
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={() => navigation.navigate("Post an update")}
+          >
+            <Text>Post an update</Text>
+          </Button>
+        </View>
       </Content>
       <Footer>
         <FooterTab>
@@ -55,3 +64,20 @@ export default function Home({ navigation }) {
     </Container>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    width: "40%",
+    margin: 10,
+  },
+  left: {
+    flex: 0.15,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  center: {
+    alignItems: "center",
+  },
+});

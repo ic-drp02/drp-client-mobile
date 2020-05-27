@@ -28,7 +28,7 @@ export default function Update({ navigation }) {
           <Title>Post an update</Title>
         </Body>
       </Header>
-      <Content>
+      <Content padder>
         <Text>Post an update!</Text>
       </Content>
       <Footer>
