@@ -3,9 +3,6 @@ import { StyleSheet, View, StatusBar } from "react-native";
 
 import {
   Container,
-  Footer,
-  FooterTab,
-  Content,
   Header,
   Left,
   Body,
@@ -42,26 +39,28 @@ export default function Home({ navigation }) {
           </Button>
         </Right>
       </Header>
-      <Content padder>
-        <H3 style={styles.margin}>Recently viewed</H3>
-        <PostSummary
-          title="Pre op assessment"
-          summary="New guidelines on pre op assessment for elective surgery during COVID"
-        />
-        <PostSummary
-          title="Minutes from ICON Q&A"
-          summary="The official minutes from yesteray's ICON Q&A"
-        />
-        <H3 style={styles.margin}>Latest updates</H3>
-        <PostSummary
-          title="Antibody testing"
-          summary="Antibody testing is available @ Imperial"
-        />
-        <PostSummary
-          title="COVID patients referral"
-          summary="How to refer vulnerable COVID patients to the LCW"
-        />
-        <View style={styles.row}>
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <H3 style={styles.margin}>Recently viewed</H3>
+          <PostSummary
+            title="Pre op assessment"
+            summary="New guidelines on pre op assessment for elective surgery during COVID"
+          />
+          <PostSummary
+            title="Minutes from ICON Q&A"
+            summary="The official minutes from yesteray's ICON Q&A"
+          />
+          <H3 style={styles.margin}>Latest updates</H3>
+          <PostSummary
+            title="Antibody testing"
+            summary="Antibody testing is available @ Imperial"
+          />
+          <PostSummary
+            title="COVID patients referral"
+            summary="How to refer vulnerable COVID patients to the LCW"
+          />
+        </View>
+        <View style={styles.buttons}>
           <Button
             style={styles.button}
             onPress={() => navigation.navigate("Ask a question")}
@@ -75,29 +74,26 @@ export default function Home({ navigation }) {
             <Text>Post an update</Text>
           </Button>
         </View>
-      </Content>
-      <Footer>
-        <FooterTab>
-          <Button full>
-            <Text>Footer</Text>
-          </Button>
-        </FooterTab>
-      </Footer>
+      </View>
     </Container>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 8,
+  },
+  content: {
+    flex: 1,
+  },
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
   button: {
     width: "45%",
     margin: 10,
-    justifyContent: "center",
-  },
-  left: {
-    flex: 0.15,
-  },
-  row: {
-    flexDirection: "row",
     justifyContent: "center",
   },
   margin: {
