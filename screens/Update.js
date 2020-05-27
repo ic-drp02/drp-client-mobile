@@ -14,11 +14,13 @@ import {
   Title,
   Text,
 } from "native-base";
+import { StatusBar } from "react-native";
 
 export default function Update({ navigation }) {
   return (
     <Container>
       <Header>
+        <StatusBar barStyle="light-content" />
         <Left>
           <Button transparent onPress={() => navigation.openDrawer()}>
             <Icon name="menu" />

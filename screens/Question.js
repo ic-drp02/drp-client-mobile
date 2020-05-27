@@ -1,4 +1,5 @@
 import React from "react";
+import { StatusBar } from "react-native";
 
 import {
   Container,
@@ -19,6 +20,7 @@ export default function Question({ navigation }) {
   return (
     <Container>
       <Header>
+        <StatusBar barStyle="light-content" />
         <Left>
           <Button transparent onPress={() => navigation.openDrawer()}>
             <Icon name="menu" />

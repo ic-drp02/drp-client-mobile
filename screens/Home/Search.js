@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, StatusBar } from "react-native";
 
 import {
   Container,
@@ -15,6 +15,7 @@ export default function Search({ navigation }) {
   return (
     <Container>
       <Header searchBar rounded>
+        <StatusBar barStyle="light-content" />
         <Left style={styles.left}>
           <Button transparent onPress={() => navigation.goBack()}>
             <Icon name="arrow-back" />

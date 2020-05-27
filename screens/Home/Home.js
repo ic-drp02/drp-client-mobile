@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, StatusBar } from "react-native";
 
 import {
   Container,
@@ -24,6 +24,7 @@ export default function Home({ navigation }) {
   return (
     <Container>
       <Header>
+        <StatusBar barStyle="light-content" />
         <Left>
           <Button transparent onPress={() => navigation.openDrawer()}>
             <Icon name="menu" />
