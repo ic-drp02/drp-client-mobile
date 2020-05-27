@@ -1,32 +1,22 @@
 import React from 'react';
-import { Container, Footer, FooterTab, Content, Header, Left, Body, Right, Button, Icon, Title, Text }from 'native-base';
-import { NavigationContainer } from '@react-navigation/native';
 
-export default function Home({ navigation }) {
+import { Container, Footer, FooterTab, Content, Header, Left, Body, Right, Button, Icon, Title, Text }from 'native-base';
+
+export default function Update({ navigation }) {
     return (
         <Container>
             <Header>
                 <Left>
-                    <Button transparent>
+                    <Button transparent onPress={() => navigation.openDrawer()}>
                         <Icon name='menu' />
                     </Button>
                 </Left>
                 <Body>
-                    <Title>ICON</Title>
+                    <Title>Post an update</Title>
                 </Body>
-                <Right>
-                    <Button transparent onPress={() => navigation.navigate('Search')}>
-                      <Icon name='search' />
-                    </Button>
-                </Right>
             </Header>
             <Content>
-                <Button>
-                    <Text>Ask a question</Text>
-                </Button>
-                <Button>
-                    <Text>Post an update</Text>
-                </Button>
+                <Text>Post an update!</Text>
             </Content>
             <Footer>
                 <FooterTab>

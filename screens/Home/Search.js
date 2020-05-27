@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import { Container, Header, Button, Icon, Left, Body, Item, Input }from 'native-base';
+import { Container, Header, Button, Icon, Left, Item, Input }from 'native-base';
 
 export default function Search({ navigation }) {
     return (

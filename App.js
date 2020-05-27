@@ -3,16 +3,17 @@ import React, { useEffect, useState } from 'react';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleProvider }from 'native-base';
+import { StyleProvider, Drawer }from 'native-base';
 import commonColor from './native-base-theme/variables/commonColor';
 import getTheme from './native-base-theme/components';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import Home from './screens/Home.js'
-import Search from './screens/Search.js'
+import HomeNavigation from './screens/Home/HomeNavigation.js'
+import Question from './screens/Question.js'
+import Update from './screens/Update.js'
 
-const Stack = createStackNavigator();
+const DrawerNavigator = createDrawerNavigator();
 
 export default function App(props) {
   
@@ -42,14 +43,11 @@ export default function App(props) {
   return (
     <StyleProvider style={getTheme(commonColor)}>
       <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Search" component={Search} />
-        </Stack.Navigator>
+        <DrawerNavigator.Navigator initialRouteName="Home">
+          <DrawerNavigator.Screen name="Hone" component={HomeNavigation} />
+          <DrawerNavigator.Screen name="Ask a question" component={Question} />
+          <DrawerNavigator.Screen name="Post an update" component={Update} />
+        </DrawerNavigator.Navigator>
       </NavigationContainer>
     </StyleProvider>
   );
