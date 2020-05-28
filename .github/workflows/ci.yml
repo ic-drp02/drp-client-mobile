@@ -29,7 +29,9 @@ jobs:
         run: npm ci
 
       - name: Setup turtle cli
-        run: npm install -g turtle-cli
+        run: |
+          npm config set prefix ~/.npm-global
+          npm install -g turtle-cli
 
       - name: Build android apk
         env:
