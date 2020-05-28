@@ -276,7 +276,7 @@ export default {
   titleFontSize: platform === PLATFORM.IOS ? 17 : 19,
   subTitleFontSize: platform === PLATFORM.IOS ? 11 : 14,
   subtitleColor: platform === PLATFORM.IOS ? "#000" : "#fff",
-  titleFontColor: platform === PLATFORM.IOS ? "#000" : "#fff",
+  titleFontColor: "#fff", // CHANGED FROM platform === PLATFORM.IOS ? "#000" : "#fff",
 
   // Other
   borderRadiusBase: platform === PLATFORM.IOS ? 5 : 2,

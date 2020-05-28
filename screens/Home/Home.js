@@ -54,7 +54,13 @@ export default function Home({ navigation }) {
             author="John Doe"
             date={Date.parse("29 Apr 2020 15:12:00 UTC")}
           />
-          <H3 style={styles.margin}>Latest updates</H3>
+          <View style={styles.headingWithButton}>
+            <H3 style={styles.margin}>Latest updates</H3>
+            <Button transparent onPress={() => navigation.navigate("Updates")}>
+              <Text>View all</Text>
+            </Button>
+          </View>
+
           <PostSummary
             title="Antibody testing"
             summary="Antibody testing is available @ Imperial"
@@ -94,6 +100,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  headingWithButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   buttons: {
     flexDirection: "row",

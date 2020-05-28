@@ -41,7 +41,7 @@ export default function PostUpdate({ navigation }) {
     <Container>
       <Header>
         <StatusBar barStyle="light-content" />
-        <Left style={styles.left}>
+        <Left>
           <Button transparent onPress={() => navigation.goBack()}>
             <Icon name="arrow-back" />
           </Button>
