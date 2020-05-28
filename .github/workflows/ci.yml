@@ -30,7 +30,8 @@ jobs:
 
       - name: Setup turtle cli
         run: |
-          npm config set prefix ~/.npm-global
+          echo "::add-path::$HOME/.npm-global/bin"
+          npm config set prefix $HOME/.npm-global
           npm install -g turtle-cli
 
       - name: Build android apk
