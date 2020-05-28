@@ -9,9 +9,8 @@ import getTheme from "./native-base-theme/components";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import HomeNavigation from "./screens/Home/HomeNavigation.js";
-import Question from "./screens/Question.js";
-import PostUpdate from "./screens/PostUpdate.js";
+import SideBar from "./components/SideBar.js";
+import AppNavigation from "./screens/AppNavigation";
 
 const DrawerNavigator = createDrawerNavigator();
 
@@ -42,12 +41,13 @@ export default function App(props) {
   return (
     <StyleProvider style={getTheme(commonColor)}>
       <NavigationContainer>
-        <DrawerNavigator.Navigator initialRouteName="Home">
-          <DrawerNavigator.Screen name="Home" component={HomeNavigation} />
-          <DrawerNavigator.Screen name="Ask a question" component={Question} />
+        <DrawerNavigator.Navigator
+          initialRouteName="AppNavigation"
+          drawerContent={SideBar}
+        >
           <DrawerNavigator.Screen
-            name="Post an update"
-            component={PostUpdate}
+            name="AppNavigation"
+            component={AppNavigation}
           />
         </DrawerNavigator.Navigator>
       </NavigationContainer>
