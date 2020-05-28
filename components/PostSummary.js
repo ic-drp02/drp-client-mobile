@@ -22,10 +22,11 @@ export default function PostSummary(props) {
 
   // Update the shown time every 10 seconds
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       setAgo(timeElapsedSince(props.date));
     }, 10000);
-  });
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <View style={[styles.row, styles.margin]}>
@@ -33,7 +34,7 @@ export default function PostSummary(props) {
       <View style={[styles.column, styles.wrap]}>
         <Text style={[styles.lmargin, styles.postTitle]}>{props.title}</Text>
         <Text style={[styles.lmargin, styles.postInfo]}>
-          {props.author + ", " + timeElapsedSince(props.date)}
+          {((props.author === undefined) ? 'Anonymous user' : props.author) + ", " + timeElapsedSince(props.date)}
         </Text>
         <Text style={[styles.lmargin, styles.postSummary]}>
           {props.summary}

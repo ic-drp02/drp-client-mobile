@@ -13,12 +13,9 @@ import {
   Text,
   H3,
 } from "native-base";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 
-import PostSummary from "../../components/PostSummary.js";
-
-const StackNavigator = createStackNavigator();
+import PostSummary from "../../components/PostSummary.js"
+import LatestUpdates from "../../components/LatestUpdates.js";
 
 export default function Home({ navigation }) {
   return (
@@ -41,32 +38,21 @@ export default function Home({ navigation }) {
       </Header>
       <View style={styles.container}>
         <View style={styles.content}>
-          <H3 style={styles.margin}>Recently viewed</H3>
-          <PostSummary
-            title="Pre op assessment"
-            summary="New guidelines on pre op assessment for elective surgery during COVID"
-            author="Alice Smith"
-            date={Date.parse("28 Mar 2020 12:47:00 UTC")}
-          />
-          <PostSummary
-            title="Minutes from ICON Q&A"
-            summary="The official minutes from yesteray's ICON Q&A"
-            author="John Doe"
-            date={Date.parse("29 Apr 2020 15:12:00 UTC")}
-          />
-          <H3 style={styles.margin}>Latest updates</H3>
-          <PostSummary
-            title="Antibody testing"
-            summary="Antibody testing is available @ Imperial"
-            author="Bob White"
-            date={Date.parse("28 May 2020 08:52:00 UTC")}
-          />
-          <PostSummary
-            title="COVID patients referral"
-            summary="Please find attached the COVID referral form for reference"
-            author="Carol Black"
-            date={Date.parse("28 May 2020 07:42:00 UTC")}
-          />
+        <H3 style={styles.margin}>Recently viewed</H3>
+        <PostSummary
+          title="Pre op assessment"
+          summary="New guidelines on pre op assessment for elective surgery during COVID"
+          author="Alice Smith"
+          date={Date.parse("28 Mar 2020 12:47:00 UTC")}
+        />
+        <PostSummary
+          title="Minutes from ICON Q&A"
+          summary="The official minutes from yesteray's ICON Q&A"
+          author="John Doe"
+          date={Date.parse("29 Apr 2020 15:12:00 UTC")}
+        />
+        <H3 style={styles.margin}>Latest updates</H3>
+        <LatestUpdates />
         </View>
         <View style={styles.buttons}>
           <Button
