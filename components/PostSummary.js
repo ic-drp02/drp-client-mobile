@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+
+import timeElapsedSince from "../util/date.js";
 
 import {
   Container,
@@ -14,12 +16,26 @@ import {
 } from "native-base";
 
 export default function PostSummary(props) {
+  const [ago, setAgo] = useState(timeElapsedSince(props.date));
+
+  // Update the shown time every 10 seconds
+  useEffect(() => {
+    setInterval(() => {
+      setAgo(timeElapsedSince(props.date));
+    }, 10000);
+  });
+
   return (
     <View style={[styles.row, styles.margin]}>
       <View style={styles.iconView}></View>
       <View style={[styles.column, styles.wrap]}>
-        <H3 style={styles.lmargin}>{props.title}</H3>
-        <Text style={styles.lmargin}>{props.summary}</Text>
+        <Text style={[styles.lmargin, styles.postTitle]}>{props.title}</Text>
+        <Text style={[styles.lmargin, styles.postInfo]}>
+          {props.author + ", " + timeElapsedSince(props.date)}
+        </Text>
+        <Text style={[styles.lmargin, styles.postSummary]}>
+          {props.summary}
+        </Text>
       </View>
     </View>
   );
@@ -28,13 +44,12 @@ export default function PostSummary(props) {
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    alignItems: "center",
   },
   iconView: {
     backgroundColor: "#e8e8e8",
     borderRadius: 10,
-    width: 65,
-    height: 65,
+    width: 70,
+    height: 70,
   },
   margin: {
     margin: 10,
@@ -44,5 +59,16 @@ const styles = StyleSheet.create({
   },
   wrap: {
     flexShrink: 1,
+  },
+  postInfo: {
+    color: "#828282",
+    fontSize: 11,
+  },
+  postSummary: {
+    fontSize: 14,
+  },
+  postTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
