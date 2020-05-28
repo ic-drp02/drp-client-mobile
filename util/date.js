@@ -6,8 +6,8 @@ import {
   differenceInYears,
 } from "date-fns";
 
-export default function timeElapsedSince(date) {
-  const now = new Date();
+export function timeElapsedSince(date) {
+  const now = new Date().getTime();
 
   const diffMins = differenceInMinutes(now, date);
   if (diffMins < 1) {

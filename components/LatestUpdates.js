@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, StatusBar } from "react-native";
 
 import {
-  Text,
+  Spinner
 } from "native-base";
 
 import PostSummary from "./PostSummary.js";
+
+import {COLOR_PRIMARY} from "../util/colors.js"
 
 export default function Home({ navigation }) {
   const [updates, setUpdates] = useState(undefined);
@@ -18,10 +20,7 @@ export default function Home({ navigation }) {
         method: 'GET',
       });
       let json = await response.json();
-      console.warn("Got JSON!");
-      console.warn(json);
       setUpdates(json);
-      console.log(updates);
     } catch (error) {
       console.warn(error);
     }
@@ -40,12 +39,13 @@ export default function Home({ navigation }) {
 
   if (updates === undefined) {
     return (
-      <Text>Loading (or stuck)...</Text>
+      <Spinner color={COLOR_PRIMARY} />
     )
   }
 
   const postSummaries = updates.map(update => (
         <PostSummary
+          key={update.id}
           title={update.title}
           summary={update.summary}
           date={new Date(update.created_at)}

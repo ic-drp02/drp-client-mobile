@@ -3,9 +3,6 @@ import { StyleSheet, View } from "react-native";
 
 import {
   Container,
-  Footer,
-  FooterTab,
-  Content,
   Header,
   Left,
   Body,
@@ -15,12 +12,8 @@ import {
   Title,
   Text,
   Item,
-  Form,
   Input,
-  Label,
-  CheckBox,
   Textarea,
-  ListItem,
 } from "native-base";
 import { StatusBar } from "react-native";
 
@@ -51,7 +44,6 @@ export default function PostUpdate({ navigation }) {
         console.warn("An error occured, status code " + response.status + "!");
         return;
       }
-      console.warn("Success?");
     } catch (error) {
       console.warn(error);
     }
