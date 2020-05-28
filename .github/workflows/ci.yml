@@ -17,7 +17,40 @@ jobs:
       - name: Run tests
         run: echo "No tests at the moment :("
 
-  deploy:
+  build_standalone_android:
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup turtle cli
+        run: npm install -g turtle-cli
+
+      - name: Build android apk
+        env:
+          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+          EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
+          EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+          EXPO_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWWORD }}
+          EXPO_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          turtle setup:android
+          echo $ANDROID_KEYSTORE > ./drp-client-mobile.jks.base64
+          base64 --decode ./drp-client-mobile.jks.base64 > drp-client-mobile.jks
+          turtle build:android --keystore-path ./drp-client-mobile.jks --keystore-alias ${{ secrets.ANDROID_KEYSTORE_ALIAS }} --type apk --output ./drp-client-mobile-$GITHUB_SHA.apk
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: drp-client-mobile-$GITHUB_SHA.apk
+          path: ./drp-client-mobile-$GITHUB_SHA.apk
+
+  deploy_expo:
     runs-on: ubuntu-latest
     needs: [test]
     if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'

@@ -17,6 +17,10 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.ic_drp02.nhs_guidelines",
+      "versionCode": 1
     }
   }
 }
