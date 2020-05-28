@@ -50,8 +50,8 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: drp-client-mobile-$GITHUB_SHA.apk
-          path: ./drp-client-mobile-$GITHUB_SHA.apk
+          name: drp-client-mobile-${{ github.sha }}.apk
+          path: ./drp-client-mobile-${{ github.sha }}.apk
 
   deploy_expo:
     runs-on: ubuntu-latest
