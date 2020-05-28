@@ -21,14 +21,15 @@ export default function Question({ navigation }) {
     <Container>
       <Header>
         <StatusBar barStyle="light-content" />
-        <Left style={styles.left}>
+        <Left>
           <Button transparent onPress={() => navigation.goBack()}>
             <Icon name="arrow-back" />
           </Button>
         </Left>
-        <Body>
+        <Body style={styles.center}>
           <Title>Ask a question</Title>
         </Body>
+        <Right />
       </Header>
       <Content padder>
         <Text>Ask a question!</Text>
@@ -38,7 +39,7 @@ export default function Question({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  left: {
-    flex: 0.15,
+  center: {
+    flex: 2,
   },
 });
