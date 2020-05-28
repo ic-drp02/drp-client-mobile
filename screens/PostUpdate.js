@@ -46,7 +46,7 @@ export default function PostUpdate({ navigation }) {
             <Icon name="arrow-back" />
           </Button>
         </Left>
-        <Body style={styles.center}>
+        <Body>
           <Title>New post</Title>
         </Body>
         <Right />
@@ -87,9 +87,6 @@ export default function PostUpdate({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 2,
-  },
   container: {
     flex: 1,
     padding: 8,

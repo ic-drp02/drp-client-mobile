@@ -277,7 +277,7 @@ export default (variables /* : * */ = variable) => {
       alignItems: "flex-start",
     },
     "NativeBase.Body": {
-      flex: 1,
+      flex: 2, // CHANGED FROM 2
       alignItems:
         platform === PLATFORM.IOS && platformStyle !== PLATFORM.MATERIAL
           ? "center"

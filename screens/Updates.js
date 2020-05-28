@@ -24,7 +24,7 @@ export default function Question({ navigation }) {
             <Icon name="arrow-back" />
           </Button>
         </Left>
-        <Body style={styles.center}>
+        <Body>
           <Title>Updates</Title>
         </Body>
         <Right />
@@ -36,8 +36,4 @@ export default function Question({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  center: {
-    flex: 2,
-  },
-});
+const styles = StyleSheet.create({});

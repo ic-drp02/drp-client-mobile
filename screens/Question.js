@@ -3,8 +3,6 @@ import { StyleSheet, StatusBar } from "react-native";
 
 import {
   Container,
-  Footer,
-  FooterTab,
   Content,
   Header,
   Left,
@@ -26,7 +24,7 @@ export default function Question({ navigation }) {
             <Icon name="arrow-back" />
           </Button>
         </Left>
-        <Body style={styles.center}>
+        <Body>
           <Title>Ask a question</Title>
         </Body>
         <Right />
@@ -38,8 +36,4 @@ export default function Question({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  center: {
-    flex: 2,
-  },
-});
+const styles = StyleSheet.create({});
