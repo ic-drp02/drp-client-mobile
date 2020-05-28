@@ -71,13 +71,13 @@ export default function Home({ navigation }) {
         <View style={styles.buttons}>
           <Button
             style={styles.button}
-            onPress={() => navigation.navigate("Ask a question")}
+            onPress={() => navigation.navigate("Question")}
           >
             <Text>Ask a question</Text>
           </Button>
           <Button
             style={styles.button}
-            onPress={() => navigation.navigate("Post an update")}
+            onPress={() => navigation.navigate("PostUpdate")}
           >
             <Text>Post an update</Text>
           </Button>
