@@ -26,7 +26,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm install -g expo-cli
+          npm ci
 
       - name: Publish to expo
         run: |
