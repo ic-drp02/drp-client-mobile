@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Image } from "react-native";
-import { Container, Content, Text, List, ListItem } from "native-base";
+import { Left, Icon, Body, Text, List, ListItem } from "native-base";
 
 export default function SideBar({ navigation }) {
   return (
@@ -14,14 +14,29 @@ export default function SideBar({ navigation }) {
         }}
       />
       <List>
-        <ListItem button onPress={() => navigation.navigate("Home")}>
-          <Text>Home button</Text>
+        <ListItem icon button onPress={() => navigation.navigate("Home")}>
+          <Left>
+            <Icon name="home"></Icon>
+          </Left>
+          <Body>
+            <Text>Home</Text>
+          </Body>
         </ListItem>
-        <ListItem button onPress={() => navigation.navigate("Question")}>
-          <Text>Ask a question</Text>
+        <ListItem icon button onPress={() => navigation.navigate("Question")}>
+          <Left>
+            <Icon name="question-answer" type="MaterialIcons"></Icon>
+          </Left>
+          <Body>
+            <Text>Ask a question</Text>
+          </Body>
         </ListItem>
-        <ListItem button onPress={() => navigation.navigate("PostUpdate")}>
-          <Text>Post an update</Text>
+        <ListItem icon button onPress={() => navigation.navigate("PostUpdate")}>
+          <Left>
+            <Icon name="edit" type="MaterialIcons"></Icon>
+          </Left>
+          <Body>
+            <Text>Post an update</Text>
+          </Body>
         </ListItem>
       </List>
     </View>
