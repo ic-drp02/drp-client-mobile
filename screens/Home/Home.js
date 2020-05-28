@@ -27,7 +27,7 @@ export default function Home({ navigation }) {
         <StatusBar barStyle="light-content" />
         <Left>
           <Button transparent onPress={() => navigation.openDrawer()}>
-            <Icon name="menu" />
+            <Icon style={styles.navicon} name="menu" />
           </Button>
         </Left>
         <Body>
@@ -35,7 +35,7 @@ export default function Home({ navigation }) {
         </Body>
         <Right>
           <Button transparent onPress={() => navigation.navigate("Search")}>
-            <Icon name="search" />
+            <Icon style={styles.navicon} name="search" />
           </Button>
         </Right>
       </Header>
@@ -98,5 +98,8 @@ const styles = StyleSheet.create({
   },
   margin: {
     margin: 10,
+  },
+  navicon: {
+    color: "#FFF",
   },
 });

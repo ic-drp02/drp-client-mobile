@@ -23,7 +23,7 @@ export default function Question({ navigation }) {
         <StatusBar barStyle="light-content" />
         <Left style={styles.left}>
           <Button transparent onPress={() => navigation.goBack()}>
-            <Icon name="arrow-back" />
+            <Icon style={styles.navicon} name="arrow-back" />
           </Button>
         </Left>
         <Body>
@@ -47,5 +47,8 @@ export default function Question({ navigation }) {
 const styles = StyleSheet.create({
   left: {
     flex: 0.15,
+  },
+  navicon: {
+    color: "#FFF",
   },
 });
