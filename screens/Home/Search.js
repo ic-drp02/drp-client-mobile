@@ -18,7 +18,7 @@ export default function Search({ navigation }) {
         <StatusBar barStyle="light-content" />
         <Left style={styles.left}>
           <Button transparent onPress={() => navigation.goBack()}>
-            <Icon style={styles.navicon} name="arrow-back" />
+            <Icon name="arrow-back" />
           </Button>
         </Left>
         <Item>
@@ -37,8 +37,5 @@ export default function Search({ navigation }) {
 const styles = StyleSheet.create({
   left: {
     flex: 0.15,
-  },
-  navicon: {
-    color: "#FFF",
   },
 });

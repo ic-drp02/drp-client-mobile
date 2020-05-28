@@ -27,7 +27,7 @@ export default function Home({ navigation }) {
         <StatusBar barStyle="light-content" />
         <Left>
           <Button transparent onPress={() => navigation.openDrawer()}>
-            <Icon style={styles.navicon} name="menu" />
+            <Icon name="menu" />
           </Button>
         </Left>
         <Body>
@@ -106,8 +106,5 @@ const styles = StyleSheet.create({
   },
   margin: {
     margin: 10,
-  },
-  navicon: {
-    color: "#FFF",
   },
 });

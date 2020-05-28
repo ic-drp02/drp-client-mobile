@@ -3,6 +3,8 @@ import { StyleSheet, View } from "react-native";
 
 import timeElapsedSince from "../util/date.js";
 
+import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
+
 import {
   Container,
   Header,
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   iconView: {
-    backgroundColor: "#e8e8e8",
+    backgroundColor: COLOR_ICON_BACKGROUND,
     borderRadius: 10,
     width: 70,
     height: 70,
@@ -61,7 +63,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   postInfo: {
-    color: "#828282",
+    color: COLOR_TEXT_SECONDARY,
     fontSize: 11,
   },
   postSummary: {
