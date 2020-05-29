@@ -31,7 +31,8 @@ export default function Home(props) {
     if (updates === undefined) {
       updatePosts();
     }
-    const interval = setInterval(() => updatePosts(), 10000);
+    // TODO: Too short, change after demo
+    const interval = setInterval(() => updatePosts(), 1000);
     return () => clearInterval(interval);
   }, [updates]);
 
