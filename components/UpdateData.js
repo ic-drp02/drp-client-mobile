@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 
 import { Spinner, H3, Text } from "native-base";
 
-import PostSummary from "./PostSummary.js";
+import { getDetails } from "../util/api.js";
 
 import { COLOR_PRIMARY } from "../util/colors.js";
 
@@ -11,15 +11,9 @@ export default function UpdateData(props) {
   const [data, setData] = useState(undefined);
   const id = props.id;
 
-  const BACKEND_ENDPOINT = "http://178.62.116.172:8000/posts";
-
   async function loadPost() {
     try {
-      let response = await fetch(BACKEND_ENDPOINT + "/" + id.toString(), {
-        method: "GET",
-      });
-      let json = await response.json();
-      setData(json);
+      setData(await getDetails(id));
     } catch (error) {
       console.warn(error);
     }

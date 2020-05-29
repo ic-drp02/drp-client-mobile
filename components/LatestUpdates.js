@@ -5,7 +5,7 @@ import PostSummary from "./PostSummary.js";
 
 import { COLOR_PRIMARY } from "../util/colors.js";
 
-import * as api from "../api";
+import * as api from "../util/api";
 
 export default function Home({ navigation }) {
   const [updates, setUpdates] = useState(undefined);

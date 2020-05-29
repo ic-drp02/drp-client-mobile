@@ -31,3 +31,8 @@ export async function createPost({ title, summary, content }) {
     data: await response.json(),
   };
 }
+
+export async function getDetails(id) {
+  let response = await fetch(API_SERVER_BASE + "/posts/" + id.toString());
+  return await response.json();
+}

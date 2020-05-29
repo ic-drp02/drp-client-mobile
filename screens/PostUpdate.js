@@ -18,7 +18,7 @@ import {
 
 import FormLabel from "../components/FormLabel.js";
 
-import * as api from "../api";
+import * as api from "../util/api";
 
 export default function PostUpdate({ navigation }) {
   const [title, setTitle] = useState("");
