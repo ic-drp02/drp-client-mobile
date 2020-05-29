@@ -23,11 +23,7 @@ export default function Search({ navigation }) {
         </Left>
         <Item>
           <Icon name="ios-search" />
-          <Input
-            placeholder="Search"
-            autoFocus
-            onChangeText={(text) => alert("Searching for: " + text)}
-          />
+          <Input placeholder="Search" autoFocus />
         </Item>
       </Header>
     </Container>
