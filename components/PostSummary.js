@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     height: 70,
   },
   margin: {
-    margin: 10,
+    marginVertical: 10,
   },
   lmargin: {
     marginLeft: 10,

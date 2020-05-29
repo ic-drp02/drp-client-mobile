@@ -5,7 +5,15 @@ const API_SERVER_BASE =
 
 export async function getPosts() {
   let response = await fetch(API_SERVER_BASE + "/posts");
-  return await response.json();
+
+  if (response.status != 200) {
+    return { success: false, status: response.status };
+  }
+
+  return {
+    success: true,
+    data: await response.json(),
+  };
 }
 
 export async function createPost({ title, summary, content }) {
@@ -23,7 +31,7 @@ export async function createPost({ title, summary, content }) {
   });
 
   if (response.status != 200) {
-    return { success: false };
+    return { success: false, status: response.status };
   }
 
   return {

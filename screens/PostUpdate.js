@@ -29,7 +29,7 @@ export default function PostUpdate({ navigation }) {
     try {
       const res = await api.createPost({ title, summary, content });
       if (!res.success) {
-        console.warn("An error occured, status code " + response.status + "!");
+        console.warn("An error occured, status code " + res.status + "!");
       }
       navigation.navigate("UpdatePosted");
     } catch (error) {

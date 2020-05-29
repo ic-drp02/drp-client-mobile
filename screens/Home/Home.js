@@ -38,8 +38,8 @@ export default function Home({ navigation }) {
         </Right>
       </Header>
       <View style={styles.container}>
-        <View style={styles.content}>
-          <H3 style={styles.margin}>Recently viewed</H3>
+        <View style={[styles.content, styles.margin]}>
+          <H3>Recently viewed</H3>
           <PostSummary
             title="Pre op assessment"
             summary="New guidelines on pre op assessment for elective surgery during COVID"
@@ -53,12 +53,12 @@ export default function Home({ navigation }) {
             date={Date.parse("29 Apr 2020 15:12:00 UTC")}
           />
           <View style={styles.headingWithButton}>
-            <H3 style={styles.margin}>Latest updates</H3>
+            <H3>Latest updates</H3>
             <Button transparent onPress={() => navigation.navigate("Updates")}>
               <Text>View all</Text>
             </Button>
           </View>
-          <LatestUpdates />
+          <LatestUpdates limit={4} />
         </View>
         <View style={styles.buttons}>
           <Button
