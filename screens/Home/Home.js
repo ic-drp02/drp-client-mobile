@@ -35,7 +35,7 @@ export default function Home({ navigation }) {
             <Title>Latest updates</Title>
             <Button
               compact
-              mode="outlined"
+              mode="text"
               onPress={() => navigation.navigate("Updates")}
             >
               View all
