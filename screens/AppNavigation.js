@@ -2,7 +2,8 @@ import React, { Component } from "react";
 
 import { createStackNavigator } from "@react-navigation/stack";
 
-import HomeNavigation from "./Home/HomeNavigation.js";
+import Home from "./Home/Home.js";
+import Search from "./Home/Search.js";
 import Question from "./Question.js";
 import PostUpdate from "./PostUpdate.js";
 import Updates from "./Updates.js";
@@ -19,7 +20,8 @@ export default function AppNavigation() {
       }}
       initialRouteName="Home"
     >
-      <StackNavigator.Screen name="Home" component={HomeNavigation} />
+      <StackNavigator.Screen name="Home" component={Home} />
+      <StackNavigator.Screen name="Search" component={Search} />
       <StackNavigator.Screen name="Updates" component={Updates} />
       <StackNavigator.Screen name="Question" component={Question} />
       <StackNavigator.Screen name="PostUpdate" component={PostUpdate} />
