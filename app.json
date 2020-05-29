@@ -21,6 +21,9 @@
     "android": {
       "package": "com.ic_drp02.nhs_guidelines",
       "versionCode": 1
+    },
+    "androidStatusBar": {
+      "barStyle": "light-content"
     }
   }
 }
