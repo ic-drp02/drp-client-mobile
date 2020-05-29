@@ -1,44 +1,24 @@
 import React from "react";
-import { StyleSheet, View, StatusBar } from "react-native";
-
-import {
-  Container,
-  Header,
-  Left,
-  Body,
-  Right,
-  Button,
-  Icon,
-  Title,
-  Text,
-  H3,
-} from "native-base";
+import { StyleSheet, View } from "react-native";
+import { Appbar, Button, Text, Title } from "react-native-paper";
 
 import PostSummary from "../../components/PostSummary.js";
 import LatestUpdates from "../../components/LatestUpdates.js";
 
 export default function Home({ navigation }) {
   return (
-    <Container>
-      <Header>
-        <StatusBar barStyle="light-content" />
-        <Left>
-          <Button transparent onPress={() => navigation.openDrawer()}>
-            <Icon name="menu" />
-          </Button>
-        </Left>
-        <Body>
-          <Title>ICON</Title>
-        </Body>
-        <Right>
-          <Button transparent onPress={() => navigation.navigate("Search")}>
-            <Icon style={styles.navicon} name="search" />
-          </Button>
-        </Right>
-      </Header>
+    <>
+      <Appbar.Header>
+        <Appbar.Action icon="menu" onPress={() => navigation.openDrawer()} />
+        <Appbar.Content title="ICON" />
+        <Appbar.Action
+          icon="magnify"
+          onPress={() => navigation.navigate("Search")}
+        />
+      </Appbar.Header>
       <View style={styles.container}>
         <View style={[styles.content, styles.margin]}>
-          <H3>Recently viewed</H3>
+          <Title>Recently viewed</Title>
           <PostSummary
             title="Pre op assessment"
             summary="New guidelines on pre op assessment for elective surgery during COVID"
@@ -52,9 +32,13 @@ export default function Home({ navigation }) {
             date={Date.parse("29 Apr 2020 15:12:00 UTC")}
           />
           <View style={styles.headingWithButton}>
-            <H3>Latest updates</H3>
-            <Button transparent onPress={() => navigation.navigate("Updates")}>
-              <Text>View all</Text>
+            <Title>Latest updates</Title>
+            <Button
+              compact
+              mode="text"
+              onPress={() => navigation.navigate("Updates")}
+            >
+              View all
             </Button>
           </View>
           <LatestUpdates limit={4} />
@@ -62,19 +46,21 @@ export default function Home({ navigation }) {
         <View style={styles.buttons}>
           <Button
             style={styles.button}
+            mode="contained"
             onPress={() => navigation.navigate("Question")}
           >
-            <Text>Ask a question</Text>
+            Ask a question
           </Button>
           <Button
             style={styles.button}
+            mode="contained"
             onPress={() => navigation.navigate("PostUpdate")}
           >
-            <Text>Post an update</Text>
+            Post an update
           </Button>
         </View>
       </View>
-    </Container>
+    </>
   );
 }
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 
-import { Text } from "native-base";
+import { Text } from "react-native-paper";
 
 import { useNavigation } from "@react-navigation/native";
 

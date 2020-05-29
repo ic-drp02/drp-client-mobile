@@ -1,46 +1,24 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
-
-import {
-  Container,
-  Header,
-  Left,
-  Body,
-  Right,
-  Button,
-  Icon,
-  Title,
-  Text,
-  Toast,
-} from "native-base";
-import { StatusBar } from "react-native";
+import { Appbar, Button, Snackbar } from "react-native-paper";
 
 import UpdateData from "../components/UpdateData.js";
 
 import { deletePost } from "../util/api.js";
 
 export default function UpdateDetails({ route, navigation }) {
+  const [showAlert, setShowAlert] = useState(false);
   const { postId } = route.params;
 
   async function requestDeletion(postId) {
     try {
       const res = await deletePost(postId);
+
       if (!res.success) {
         console.warn("An error occured, status code " + res.status + "!");
       }
-      Toast.show({
-        text: "Deleted!",
-        style: {
-          backgroundColor: "green",
-        },
-        buttonText: "Go to home screen",
-        duration: 10000,
-        onClose: (reason) => {
-          if (reason == "user") {
-            navigation.navigate("Home");
-          }
-        },
-      });
+
+      setShowAlert(true);
     } catch (error) {
       console.warn(error);
     }
@@ -51,46 +29,44 @@ export default function UpdateDetails({ route, navigation }) {
   }, [postId]);
 
   return (
-    <Container>
-      <Header>
-        <StatusBar barStyle="light-content" />
-        <Left>
-          <Button transparent onPress={() => navigation.goBack()}>
-            <Icon name="arrow-back" />
-          </Button>
-        </Left>
-        <Body>
-          <Title>Update details</Title>
-        </Body>
-        <Right />
-      </Header>
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <UpdateData style={styles.margin} id={postId} />
-          <Button style={styles.button} onPress={() => del(postId)}>
-            <Text>Delete</Text>
+    <View style={{ flex: 1 }}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Update details" />
+      </Appbar.Header>
+      <View style={styles.content}>
+        <View style={{ flex: 1 }}>
+          <UpdateData id={postId} />
+        </View>
+        <View>
+          <Button
+            mode="contained"
+            color="red"
+            style={styles.button}
+            onPress={() => del(postId)}
+          >
+            Delete
           </Button>
         </View>
       </View>
-    </Container>
+      <Snackbar
+        visible={showAlert}
+        duration={Snackbar.DURATION_SHORT}
+        onDismiss={() => setShowAlert(false)}
+        action={{
+          label: "hide",
+          onPress: () => setShowAlert(false),
+        }}
+      >
+        Deleted!
+      </Snackbar>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 8,
-  },
   content: {
+    padding: 16,
     flex: 1,
-  },
-  margin: {
-    margin: 10,
-  },
-  button: {
-    marginTop: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    backgroundColor: "red",
   },
 });

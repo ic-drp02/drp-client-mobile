@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-
-import { Spinner, H3, Text } from "native-base";
+import { View } from "react-native";
+import { Headline, Text, ProgressBar } from "react-native-paper";
 
 import { getDetails } from "../util/api.js";
-
 import { COLOR_PRIMARY } from "../util/colors.js";
 
 export default function UpdateData(props) {
@@ -26,19 +24,13 @@ export default function UpdateData(props) {
   }, [data]);
 
   if (data === undefined) {
-    return <Spinner color={COLOR_PRIMARY} />;
+    return <ProgressBar color={COLOR_PRIMARY} indeterminate={true} />;
   }
 
   return (
     <View>
-      <H3 style={styles.margin}>{data.title}</H3>
-      <Text style={styles.margin}>{data.content}</Text>
+      <Headline>{data.title}</Headline>
+      <Text>{data.content}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  margin: {
-    margin: 10,
-  },
-});

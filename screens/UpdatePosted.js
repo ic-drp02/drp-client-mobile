@@ -1,49 +1,30 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-
-import {
-  Container,
-  Header,
-  Left,
-  Body,
-  Right,
-  Button,
-  Icon,
-  Title,
-  Text,
-} from "native-base";
-import { StatusBar } from "react-native";
+import { Appbar, Text, Button } from "react-native-paper";
 
 import BigText from "../components/BigText.js";
 
 export default function UpdatePosted({ navigation }) {
   return (
-    <Container>
-      <Header>
-        <StatusBar barStyle="light-content" />
-        <Left>
-          <Button transparent onPress={() => navigation.goBack()}>
-            <Icon name="arrow-back" />
-          </Button>
-        </Left>
-        <Body>
-          <Title>Update posted</Title>
-        </Body>
-        <Right />
-      </Header>
+    <View style={{ flex: 1 }}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Update posted" />
+      </Appbar.Header>
       <View style={styles.container}>
         <View style={[styles.content, styles.center]}>
           <BigText text="Great!" />
           <Text>Your post has been submitted!</Text>
           <Button
-            style={styles.topMargin}
+            mode="contained"
+            style={styles.button}
             onPress={() => navigation.navigate("Home")}
           >
-            <Text>Go to home screen</Text>
+            Go to home screen
           </Button>
         </View>
       </View>
-    </Container>
+    </View>
   );
 }
 
@@ -63,5 +44,9 @@ const styles = StyleSheet.create({
   },
   topMargin: {
     marginTop: 30,
+  },
+  button: {
+    margin: 16,
+    padding: 8,
   },
 });

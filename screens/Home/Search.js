@@ -1,37 +1,24 @@
-import React from "react";
-import { StyleSheet, StatusBar } from "react-native";
-
-import {
-  Container,
-  Header,
-  Button,
-  Icon,
-  Left,
-  Item,
-  Input,
-} from "native-base";
+import React, { useRef, useEffect } from "react";
+import { View } from "react-native";
+import { Appbar, Searchbar } from "react-native-paper";
 
 export default function Search({ navigation }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    return navigation.addListener("focus", () => {
+      if (!!ref.current) {
+        ref.current.focus();
+      }
+    });
+  }, []);
+
   return (
-    <Container>
-      <Header searchBar rounded>
-        <StatusBar barStyle="light-content" />
-        <Left style={styles.left}>
-          <Button transparent onPress={() => navigation.goBack()}>
-            <Icon name="arrow-back" />
-          </Button>
-        </Left>
-        <Item>
-          <Icon name="ios-search" />
-          <Input placeholder="Search" autoFocus />
-        </Item>
-      </Header>
-    </Container>
+    <Appbar.Header>
+      <Appbar.BackAction onPress={() => navigation.goBack()} />
+      <View style={{ flex: 1, marginLeft: 16, marginRight: 8 }}>
+        <Searchbar placeholder="Search" style={{ height: 42 }} ref={ref} />
+      </View>
+    </Appbar.Header>
   );
 }
-
-const styles = StyleSheet.create({
-  left: {
-    flex: 0.15,
-  },
-});
