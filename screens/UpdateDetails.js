@@ -11,12 +11,15 @@ import {
   Icon,
   Title,
   Text,
+  H3,
 } from "native-base";
 import { StatusBar } from "react-native";
 
-import BigText from "../components/BigText.js";
+import UpdateData from "../components/UpdateData.js";
 
-export default function UpdatePosted({ navigation }) {
+export default function UpdateDetails({ route, navigation }) {
+  const { postId } = route.params;
+
   return (
     <Container>
       <Header>
@@ -27,20 +30,13 @@ export default function UpdatePosted({ navigation }) {
           </Button>
         </Left>
         <Body>
-          <Title>Update posted</Title>
+          <Title>Update details</Title>
         </Body>
         <Right />
       </Header>
       <View style={styles.container}>
-        <View style={[styles.content, styles.center]}>
-          <BigText text="Great!" />
-          <Text>Your post has been submitted!</Text>
-          <Button
-            style={styles.topMargin}
-            onPress={() => navigation.navigate("Home")}
-          >
-            <Text>Go to home screen</Text>
-          </Button>
+        <View style={styles.content}>
+          <UpdateData style={styles.margin} id={postId} />
         </View>
       </View>
     </Container>
@@ -55,13 +51,20 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  center: {
-    alignContent: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    alignItems: "center",
+  headingWithButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  topMargin: {
-    marginTop: 30,
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  button: {
+    width: "45%",
+    margin: 10,
+    justifyContent: "center",
+  },
+  margin: {
+    margin: 10,
   },
 });

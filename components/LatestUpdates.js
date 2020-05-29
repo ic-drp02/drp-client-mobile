@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, StatusBar } from "react-native";
 
-import {
-  Spinner
-} from "native-base";
+import { Spinner } from "native-base";
 
 import PostSummary from "./PostSummary.js";
 
-import {COLOR_PRIMARY} from "../util/colors.js"
+import { COLOR_PRIMARY } from "../util/colors.js";
 
 export default function Home({ navigation }) {
   const [updates, setUpdates] = useState(undefined);
 
-  const BACKEND_ENDPOINT = 'http://178.62.116.172:8000/posts';
+  const BACKEND_ENDPOINT = "http://178.62.116.172:8000/posts";
 
   async function updatePosts() {
     try {
       let response = await fetch(BACKEND_ENDPOINT, {
-        method: 'GET',
+        method: "GET",
       });
       let json = await response.json();
       setUpdates(json);
@@ -38,21 +35,18 @@ export default function Home({ navigation }) {
   }, [updates]);
 
   if (updates === undefined) {
-    return (
-      <Spinner color={COLOR_PRIMARY} />
-    )
+    return <Spinner color={COLOR_PRIMARY} />;
   }
 
-  const postSummaries = updates.map(update => (
-        <PostSummary
-          key={update.id}
-          title={update.title}
-          summary={update.summary}
-          date={new Date(update.created_at)}
-        />
-      ))
+  const postSummaries = updates.map((update) => (
+    <PostSummary
+      key={update.id}
+      id={update.id}
+      title={update.title}
+      summary={update.summary}
+      date={new Date(update.created_at)}
+    />
+  ));
 
-  return (
-    <>{postSummaries}</>
-  );
+  return <>{postSummaries}</>;
 }
