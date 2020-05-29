@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
+
 import { Text } from "native-base";
+
+import { useNavigation } from "@react-navigation/native";
 
 import { timeElapsedSince } from "../util/date.js";
 import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
 
 export default function PostSummary(props) {
+  const navigation = useNavigation();
+
   const [ago, setAgo] = useState(timeElapsedSince(props.date));
 
   // Update the shown time every 10 seconds
@@ -17,18 +22,22 @@ export default function PostSummary(props) {
   }, []);
 
   return (
-    <View style={[styles.row, styles.margin]}>
-      <View style={styles.iconView}></View>
-      <View style={[styles.column, styles.wrap]}>
-        <Text style={[styles.lmargin, styles.postTitle]}>{props.title}</Text>
-        <Text style={[styles.lmargin, styles.postInfo]}>
-          {(!props.author ? "Anonymous user" : props.author) + ", " + ago}
-        </Text>
-        <Text style={[styles.lmargin, styles.postSummary]}>
-          {props.summary}
-        </Text>
+    <TouchableOpacity
+      onPress={() => navigation.navigate("UpdateDetails", { postId: props.id })}
+    >
+      <View style={[styles.row, styles.margin]}>
+        <View style={styles.iconView}></View>
+        <View style={[styles.column, styles.wrap]}>
+          <Text style={[styles.lmargin, styles.postTitle]}>{props.title}</Text>
+          <Text style={[styles.lmargin, styles.postInfo]}>
+            {(!props.author ? "Anonymous user" : props.author) + ", " + ago}
+          </Text>
+          <Text style={[styles.lmargin, styles.postSummary]}>
+            {props.summary}
+          </Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

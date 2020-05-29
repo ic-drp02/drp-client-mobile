@@ -4,6 +4,7 @@ import { Spinner } from "native-base";
 import PostSummary from "./PostSummary.js";
 
 import { COLOR_PRIMARY } from "../util/colors.js";
+
 import * as api from "../api";
 
 export default function Home({ navigation }) {
@@ -33,6 +34,7 @@ export default function Home({ navigation }) {
   const postSummaries = updates.map((update) => (
     <PostSummary
       key={update.id}
+      id={update.id}
       title={update.title}
       summary={update.summary}
       date={new Date(update.created_at)}
