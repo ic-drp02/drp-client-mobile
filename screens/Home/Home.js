@@ -11,7 +11,6 @@ import {
   Icon,
   Title,
   Text,
-  Toast,
   H3,
 } from "native-base";
 
