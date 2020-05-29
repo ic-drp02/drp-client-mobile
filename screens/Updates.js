@@ -8,7 +8,7 @@ export default function Question({ navigation }) {
   return (
     <View>
       <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.openDrawer()} />
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="All Updates" />
       </Appbar.Header>
       <View style={{ padding: 16 }}>

@@ -15,7 +15,7 @@ export default function Search({ navigation }) {
 
   return (
     <Appbar.Header>
-      <Appbar.BackAction onPress={() => navigation.openDrawer()} />
+      <Appbar.BackAction onPress={() => navigation.goBack()} />
       <View style={{ flex: 1, marginLeft: 16, marginRight: 8 }}>
         <Searchbar placeholder="Search" style={{ height: 42 }} ref={ref} />
       </View>
