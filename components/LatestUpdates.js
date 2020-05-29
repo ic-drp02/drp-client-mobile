@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
-import { Spinner, Text, Icon } from "native-base";
+import { ProgressBar, Text } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 import PostSummary from "./PostSummary.js";
-
-import { COLOR_PRIMARY } from "../util/colors.js";
 
 import * as api from "../util/api";
 
@@ -37,33 +36,36 @@ export default function Home(props) {
   }, [updates]);
 
   if (updates === undefined) {
-    return <Spinner color={COLOR_PRIMARY} />;
+    return (
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ProgressBar indeterminate />
+      </View>
+    );
   }
 
   if (updates === null) {
     return (
       <View
         style={{
-          flexDirection: "row",
-          alignContent: "center",
+          flex: 1,
+          flexDirection: "column",
+          alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Icon
-          name="error"
-          type="MaterialIcons"
-          style={{ color: "red", marginRight: 10 }}
-        />
-        <Text>An error occured while fetching updates :-(.</Text>
+        <Icon size={36} name="error-outline" color="red" />
+        <Text>An error occured while fetching updates :-(</Text>
       </View>
     );
   }
 
   updates.reverse();
+
   const shownUpdates = updates.slice(
     0,
     !limit ? updates.length : Math.min(updates.length, limit + 1)
   );
+
   const postSummaries = shownUpdates.map((update) => (
     <PostSummary
       key={update.id}

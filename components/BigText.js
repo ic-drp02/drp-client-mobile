@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Text } from "native-base";
+import { Text } from "react-native-paper";
 
 export default function BigText(props) {
   return (

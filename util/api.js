@@ -1,8 +1,10 @@
 import Constants from "expo-constants";
 
 const API_SERVER_BASE =
-  (Constants.manifest.env && Constants.manifest.EXPO_API_SERVER_BASE) ||
+  (Constants.manifest.env && Constants.manifest.env.EXPO_API_SERVER_BASE) ||
   "http://178.62.116.172/api";
+
+console.log(API_SERVER_BASE);
 
 export async function getPosts() {
   let response = await fetch(API_SERVER_BASE + "/posts");

@@ -2,27 +2,11 @@ import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   View,
-  StatusBar,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
 
-import {
-  Container,
-  Header,
-  Left,
-  Body,
-  Right,
-  Button,
-  Icon,
-  Title,
-  Text,
-  Item,
-  Input,
-  Textarea,
-} from "native-base";
-
-import FormLabel from "../components/FormLabel.js";
+import { Appbar, TextInput, Button } from "react-native-paper";
 
 import * as api from "../util/api";
 
@@ -44,58 +28,54 @@ export default function PostUpdate({ navigation }) {
     }
   }
 
-  const submitPost = useCallback(() => {
-    submitData(title, summary, content);
-  }, [title, summary, content]);
+  const submitPost = useCallback(() => submitData(title, summary, content), [
+    title,
+    summary,
+    content,
+  ]);
 
   return (
-    <Container>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <Header>
-          <StatusBar barStyle="light-content" />
-          <Left>
-            <Button transparent onPress={() => navigation.goBack()}>
-              <Icon name="arrow-back" />
-            </Button>
-          </Left>
-          <Body>
-            <Title>New post</Title>
-          </Body>
-          <Right />
-        </Header>
+    <View style={{ flex: 1 }}>
+      <TouchableWithoutFeedback>
+        <Appbar.Header>
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+          <Appbar.Content title="New post" />
+        </Appbar.Header>
       </TouchableWithoutFeedback>
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.content}>
-            <FormLabel text="Title" />
-            <Item regular>
-              <Input
-                placeholder="Brief title for your post"
-                onChangeText={(text) => setTitle(text)}
-              />
-            </Item>
-            <FormLabel text="Summary" />
-            <Item regular>
-              <Input
-                placeholder="Brief summary of your post"
-                onChangeText={(text) => setSummary(text)}
-              />
-            </Item>
-            <FormLabel text="Post text" />
-            <Textarea
-              style={styles.textarea}
-              rowSpan={12}
-              bordered
-              placeholder="The text of your post"
-              onChangeText={(text) => setContent(text)}
+            <TextInput
+              label="Title"
+              mode="outlined"
+              onChangeText={(text) => setTitle(text)}
+              style={{ margin: 8 }}
             />
-            <Button style={styles.button} onPress={() => submitPost()}>
-              <Text>Post</Text>
+            <TextInput
+              label="Summary"
+              mode="outlined"
+              onChangeText={(text) => setSummary(text)}
+              style={{ margin: 8 }}
+            />
+            <TextInput
+              label="Post text"
+              mode="outlined"
+              multiline={true}
+              numberOfLines={7}
+              onChangeText={(text) => setContent(text)}
+              style={{ margin: 8 }}
+            />
+            <Button
+              mode="contained"
+              onPress={() => submitPost()}
+              style={styles.button}
+            >
+              Post
             </Button>
           </View>
         </TouchableWithoutFeedback>
       </View>
-    </Container>
+    </View>
   );
 }
 
@@ -116,8 +96,7 @@ const styles = StyleSheet.create({
     marginLeft: 7,
   },
   button: {
-    marginTop: 10,
-    flexDirection: "row",
-    justifyContent: "center",
+    margin: 8,
+    padding: 8,
   },
 });
