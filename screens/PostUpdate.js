@@ -1,5 +1,11 @@
 import React, { useState, useCallback } from "react";
-import { StyleSheet, View, StatusBar } from "react-native";
+import {
+  StyleSheet,
+  View,
+  StatusBar,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 
 import {
   Container,
@@ -57,33 +63,35 @@ export default function PostUpdate({ navigation }) {
         <Right />
       </Header>
       <View style={styles.container}>
-        <View style={styles.content}>
-          <FormLabel text="Title" />
-          <Item regular>
-            <Input
-              placeholder="Brief title for your post"
-              onChangeText={(text) => setTitle(text)}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={styles.content}>
+            <FormLabel text="Title" />
+            <Item regular>
+              <Input
+                placeholder="Brief title for your post"
+                onChangeText={(text) => setTitle(text)}
+              />
+            </Item>
+            <FormLabel text="Summary" />
+            <Item regular>
+              <Input
+                placeholder="Brief summary of your post"
+                onChangeText={(text) => setSummary(text)}
+              />
+            </Item>
+            <FormLabel text="Post text" />
+            <Textarea
+              style={styles.textarea}
+              rowSpan={12}
+              bordered
+              placeholder="The text of your post"
+              onChangeText={(text) => setContent(text)}
             />
-          </Item>
-          <FormLabel text="Summary" />
-          <Item regular>
-            <Input
-              placeholder="Brief summary of your post"
-              onChangeText={(text) => setSummary(text)}
-            />
-          </Item>
-          <FormLabel text="Post text" />
-          <Textarea
-            style={styles.textarea}
-            rowSpan={12}
-            bordered
-            placeholder="The text of your post"
-            onChangeText={(text) => setContent(text)}
-          />
-          <Button style={styles.button} onPress={() => submitPost()}>
-            <Text>Post</Text>
-          </Button>
-        </View>
+            <Button style={styles.button} onPress={() => submitPost()}>
+              <Text>Post</Text>
+            </Button>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
     </Container>
   );
