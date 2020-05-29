@@ -14,6 +14,8 @@ import {
   Text,
 } from "native-base";
 
+import LatestUpdates from "../components/LatestUpdates.js";
+
 export default function Question({ navigation }) {
   return (
     <Container>
@@ -25,12 +27,12 @@ export default function Question({ navigation }) {
           </Button>
         </Left>
         <Body>
-          <Title>Updates</Title>
+          <Title>All Updates</Title>
         </Body>
         <Right />
       </Header>
       <Content padder>
-        <Text>[All updates]</Text>
+        <LatestUpdates />
       </Content>
     </Container>
   );
