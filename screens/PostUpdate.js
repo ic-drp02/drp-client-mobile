@@ -30,6 +30,7 @@ export default function PostUpdate({ navigation }) {
       const res = await api.createPost({ title, summary, content });
       if (!res.success) {
         console.warn("An error occured, status code " + res.status + "!");
+        return;
       }
       navigation.navigate("UpdatePosted");
     } catch (error) {
@@ -79,7 +80,7 @@ export default function PostUpdate({ navigation }) {
             placeholder="The text of your post"
             onChangeText={(text) => setContent(text)}
           />
-          <Button onPress={() => submitPost()}>
+          <Button style={styles.button} onPress={() => submitPost()}>
             <Text>Post</Text>
           </Button>
         </View>
@@ -103,5 +104,10 @@ const styles = StyleSheet.create({
   noborder: {
     borderBottomWidth: 0,
     marginLeft: 7,
+  },
+  button: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "center",
   },
 });

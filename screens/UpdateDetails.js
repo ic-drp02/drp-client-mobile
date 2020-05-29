@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 
 import {
@@ -11,14 +11,44 @@ import {
   Icon,
   Title,
   Text,
-  H3,
+  Toast,
 } from "native-base";
 import { StatusBar } from "react-native";
 
 import UpdateData from "../components/UpdateData.js";
 
+import { deletePost } from "../util/api.js";
+
 export default function UpdateDetails({ route, navigation }) {
   const { postId } = route.params;
+
+  async function requestDeletion(postId) {
+    try {
+      const res = await deletePost(postId);
+      if (!res.success) {
+        console.warn("An error occured, status code " + res.status + "!");
+      }
+      Toast.show({
+        text: "Deleted!",
+        style: {
+          backgroundColor: "green",
+        },
+        buttonText: "Go to home screen",
+        duration: 10000,
+        onClose: (reason) => {
+          if (reason == "user") {
+            navigation.navigate("Home");
+          }
+        },
+      });
+    } catch (error) {
+      console.warn(error);
+    }
+  }
+
+  const del = useCallback(() => {
+    requestDeletion(postId);
+  }, [postId]);
 
   return (
     <Container>
@@ -37,6 +67,9 @@ export default function UpdateDetails({ route, navigation }) {
       <View style={styles.container}>
         <View style={styles.content}>
           <UpdateData style={styles.margin} id={postId} />
+          <Button style={styles.button} onPress={() => del(postId)}>
+            <Text>Delete</Text>
+          </Button>
         </View>
       </View>
     </Container>
@@ -51,20 +84,13 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  headingWithButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  button: {
-    width: "45%",
-    margin: 10,
-    justifyContent: "center",
-  },
   margin: {
     margin: 10,
+  },
+  button: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: "red",
   },
 });

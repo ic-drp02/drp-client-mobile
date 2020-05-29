@@ -45,3 +45,17 @@ export async function getDetails(id) {
   let response = await fetch(API_SERVER_BASE + "/posts/" + id.toString());
   return await response.json();
 }
+
+export async function deletePost(id) {
+  let response = await fetch(API_SERVER_BASE + "/posts/" + id.toString(), {
+    method: "DELETE",
+  });
+
+  if (response.status != 204) {
+    return { success: false, status: response.status };
+  }
+
+  return {
+    success: true,
+  };
+}
