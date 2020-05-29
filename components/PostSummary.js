@@ -13,17 +13,22 @@ export default function PostSummary(props) {
 
   const [ago, setAgo] = useState(timeElapsedSince(props.date));
 
-  // Update the shown time every 10 seconds
+  // Update the shown time every 2 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setAgo(timeElapsedSince(props.date));
-    }, 10000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate("UpdateDetails", { postId: props.id })}
+      onPress={() => {
+        // TODO: Just for demo, remove later
+        if (props.id !== undefined) {
+          navigation.navigate("UpdateDetails", { postId: props.id });
+        }
+      }}
     >
       <View style={[styles.row, styles.margin]}>
         <View style={styles.iconView}></View>

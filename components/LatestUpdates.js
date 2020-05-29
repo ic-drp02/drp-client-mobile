@@ -26,12 +26,12 @@ export default function Home(props) {
     }
   }
 
-  // Update the shown posts every 15 seconds
+  // Update the shown posts every 10 seconds
   useEffect(() => {
     if (updates === undefined) {
       updatePosts();
     }
-    const interval = setInterval(() => updatePosts(), 15000);
+    const interval = setInterval(() => updatePosts(), 10000);
     return () => clearInterval(interval);
   }, [updates]);
 
@@ -58,11 +58,12 @@ export default function Home(props) {
     );
   }
 
-  const updatesTail = updates.slice(
-    !limit ? 0 : Math.max(0, updates.length - limit),
-    updates.length
+  updates.reverse();
+  const shownUpdates = updates.slice(
+    0,
+    !limit ? updates.length : Math.min(updates.length, limit + 1)
   );
-  const postSummaries = updatesTail.map((update) => (
+  const postSummaries = shownUpdates.map((update) => (
     <PostSummary
       key={update.id}
       id={update.id}
