@@ -50,18 +50,20 @@ export default function PostUpdate({ navigation }) {
 
   return (
     <Container>
-      <Header>
-        <StatusBar barStyle="light-content" />
-        <Left>
-          <Button transparent onPress={() => navigation.goBack()}>
-            <Icon name="arrow-back" />
-          </Button>
-        </Left>
-        <Body>
-          <Title>New post</Title>
-        </Body>
-        <Right />
-      </Header>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <Header>
+          <StatusBar barStyle="light-content" />
+          <Left>
+            <Button transparent onPress={() => navigation.goBack()}>
+              <Icon name="arrow-back" />
+            </Button>
+          </Left>
+          <Body>
+            <Title>New post</Title>
+          </Body>
+          <Right />
+        </Header>
+      </TouchableWithoutFeedback>
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.content}>
