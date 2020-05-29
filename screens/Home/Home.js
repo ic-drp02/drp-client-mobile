@@ -11,10 +11,11 @@ import {
   Icon,
   Title,
   Text,
+  Toast,
   H3,
 } from "native-base";
 
-import PostSummary from "../../components/PostSummary.js"
+import PostSummary from "../../components/PostSummary.js";
 import LatestUpdates from "../../components/LatestUpdates.js";
 
 export default function Home({ navigation }) {
@@ -38,26 +39,26 @@ export default function Home({ navigation }) {
       </Header>
       <View style={styles.container}>
         <View style={styles.content}>
-        <H3 style={styles.margin}>Recently viewed</H3>
-        <PostSummary
-          title="Pre op assessment"
-          summary="New guidelines on pre op assessment for elective surgery during COVID"
-          author="Alice Smith"
-          date={Date.parse("28 Mar 2020 12:47:00 UTC")}
-        />
-        <PostSummary
-          title="Minutes from ICON Q&A"
-          summary="The official minutes from yesteray's ICON Q&A"
-          author="John Doe"
-          date={Date.parse("29 Apr 2020 15:12:00 UTC")}
-        />
-        <View style={styles.headingWithButton}>
-          <H3 style={styles.margin}>Latest updates</H3>
-          <Button transparent onPress={() => navigation.navigate("Updates")}>
-            <Text>View all</Text>
-          </Button>
-        </View>
-        <LatestUpdates />
+          <H3 style={styles.margin}>Recently viewed</H3>
+          <PostSummary
+            title="Pre op assessment"
+            summary="New guidelines on pre op assessment for elective surgery during COVID"
+            author="Alice Smith"
+            date={Date.parse("28 Mar 2020 12:47:00 UTC")}
+          />
+          <PostSummary
+            title="Minutes from ICON Q&A"
+            summary="The official minutes from yesteray's ICON Q&A"
+            author="John Doe"
+            date={Date.parse("29 Apr 2020 15:12:00 UTC")}
+          />
+          <View style={styles.headingWithButton}>
+            <H3 style={styles.margin}>Latest updates</H3>
+            <Button transparent onPress={() => navigation.navigate("Updates")}>
+              <Text>View all</Text>
+            </Button>
+          </View>
+          <LatestUpdates />
         </View>
         <View style={styles.buttons}>
           <Button

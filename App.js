@@ -8,6 +8,7 @@ import commonColor from "./native-base-theme/variables/commonColor";
 import getTheme from "./native-base-theme/components";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { Root } from "native-base";
 
 import SideBar from "./components/SideBar.js";
 import AppNavigation from "./screens/AppNavigation";
@@ -39,18 +40,20 @@ export default function App(props) {
   }
 
   return (
-    <StyleProvider style={getTheme(commonColor)}>
-      <NavigationContainer>
-        <DrawerNavigator.Navigator
-          initialRouteName="AppNavigation"
-          drawerContent={SideBar}
-        >
-          <DrawerNavigator.Screen
-            name="AppNavigation"
-            component={AppNavigation}
-          />
-        </DrawerNavigator.Navigator>
-      </NavigationContainer>
-    </StyleProvider>
+    <Root>
+      <StyleProvider style={getTheme(commonColor)}>
+        <NavigationContainer>
+          <DrawerNavigator.Navigator
+            initialRouteName="AppNavigation"
+            drawerContent={SideBar}
+          >
+            <DrawerNavigator.Screen
+              name="AppNavigation"
+              component={AppNavigation}
+            />
+          </DrawerNavigator.Navigator>
+        </NavigationContainer>
+      </StyleProvider>
+    </Root>
   );
 }

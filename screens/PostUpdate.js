@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, StatusBar } from "react-native";
 
 import {
   Container,
@@ -15,7 +15,6 @@ import {
   Input,
   Textarea,
 } from "native-base";
-import { StatusBar } from "react-native";
 
 import FormLabel from "../components/FormLabel.js";
 
@@ -23,27 +22,28 @@ export default function PostUpdate({ navigation }) {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
-  
-  const BACKEND_ENDPOINT = 'http://178.62.116.172:8000/posts';
+
+  const BACKEND_ENDPOINT = "http://178.62.116.172:8000/posts";
 
   async function submitData(title, summary, content) {
     try {
       let response = await fetch(BACKEND_ENDPOINT, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: title,
           summary: summary,
-          content: content
-        })
+          content: content,
+        }),
       });
       if (response.status != 200) {
         console.warn("An error occured, status code " + response.status + "!");
         return;
       }
+      navigation.navigate("UpdatePosted");
     } catch (error) {
       console.warn(error);
     }
@@ -83,9 +83,7 @@ export default function PostUpdate({ navigation }) {
               onChangeText={(text) => setSummary(text)}
             />
           </Item>
-          <FormLabel
-            text="Post text"
-          />
+          <FormLabel text="Post text" />
           <Textarea
             style={styles.textarea}
             rowSpan={12}
@@ -93,7 +91,7 @@ export default function PostUpdate({ navigation }) {
             placeholder="The text of your post"
             onChangeText={(text) => setContent(text)}
           />
-          <Button style={styles.button} onPress={() => submitPost()}>
+          <Button onPress={() => submitPost()}>
             <Text>Post</Text>
           </Button>
         </View>

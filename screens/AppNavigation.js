@@ -6,6 +6,7 @@ import HomeNavigation from "./Home/HomeNavigation.js";
 import Question from "./Question.js";
 import PostUpdate from "./PostUpdate.js";
 import Updates from "./Updates.js";
+import UpdatePosted from "./UpdatePosted.js";
 
 const StackNavigator = createStackNavigator();
 
@@ -21,6 +22,7 @@ export default function AppNavigation() {
       <StackNavigator.Screen name="Updates" component={Updates} />
       <StackNavigator.Screen name="Question" component={Question} />
       <StackNavigator.Screen name="PostUpdate" component={PostUpdate} />
+      <StackNavigator.Screen name="UpdatePosted" component={UpdatePosted} />
     </StackNavigator.Navigator>
   );
 }

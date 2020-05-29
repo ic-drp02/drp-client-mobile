@@ -22,6 +22,14 @@ export default function SideBar({ navigation }) {
             <Text>Home</Text>
           </Body>
         </ListItem>
+        <ListItem icon button onPress={() => navigation.navigate("Updates")}>
+          <Left>
+            <Icon name="notifications" type="MaterialIcons"></Icon>
+          </Left>
+          <Body>
+            <Text>View all updates</Text>
+          </Body>
+        </ListItem>
         <ListItem icon button onPress={() => navigation.navigate("Question")}>
           <Left>
             <Icon name="question-answer" type="MaterialIcons"></Icon>
