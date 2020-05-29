@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Image } from "react-native";
-import { Drawer } from "react-native-paper";
+import { Drawer, Divider } from "react-native-paper";
 
 export default function SideBar({ navigation }) {
   return (
     <View style={{ width: "100%" }}>
-      <View style={{ height: 120, marginTop: 32 }}>
+      <View style={{ height: 120, marginTop: 24, padding: 8 }}>
         <Image
           source={require("../assets/logo.jpg")}
           style={{
@@ -16,6 +16,7 @@ export default function SideBar({ navigation }) {
           resizeMode="contain"
         />
       </View>
+      <Divider style={{ backgroundColor: "#bbb" }} />
       <Drawer.Item
         icon="home-variant-outline"
         label="Home"
