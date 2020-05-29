@@ -18,30 +18,18 @@ import {
 
 import FormLabel from "../components/FormLabel.js";
 
+import * as api from "../api";
+
 export default function PostUpdate({ navigation }) {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
 
-  const BACKEND_ENDPOINT = "http://178.62.116.172:8000/posts";
-
   async function submitData(title, summary, content) {
     try {
-      let response = await fetch(BACKEND_ENDPOINT, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title,
-          summary: summary,
-          content: content,
-        }),
-      });
-      if (response.status != 200) {
+      const res = await api.createPost({ title, summary, content });
+      if (!res.success) {
         console.warn("An error occured, status code " + response.status + "!");
-        return;
       }
       navigation.navigate("UpdatePosted");
     } catch (error) {

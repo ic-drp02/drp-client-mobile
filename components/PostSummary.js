@@ -1,21 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { Text } from "native-base";
 
 import { timeElapsedSince } from "../util/date.js";
-
 import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
-
-import {
-  Container,
-  Header,
-  Button,
-  Icon,
-  Left,
-  Item,
-  Input,
-  H3,
-  Text,
-} from "native-base";
 
 export default function PostSummary(props) {
   const [ago, setAgo] = useState(timeElapsedSince(props.date));
@@ -34,7 +22,7 @@ export default function PostSummary(props) {
       <View style={[styles.column, styles.wrap]}>
         <Text style={[styles.lmargin, styles.postTitle]}>{props.title}</Text>
         <Text style={[styles.lmargin, styles.postInfo]}>
-          {((props.author === undefined) ? 'Anonymous user' : props.author) + ", " + timeElapsedSince(props.date)}
+          {(!props.author ? "Anonymous user" : props.author) + ", " + ago}
         </Text>
         <Text style={[styles.lmargin, styles.postSummary]}>
           {props.summary}
