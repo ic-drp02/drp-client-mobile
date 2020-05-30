@@ -1,13 +1,14 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Appbar, Button, Snackbar } from "react-native-paper";
 
 import UpdateData from "../components/UpdateData.js";
 
 import { deletePost } from "../util/api.js";
+import SnackbarContext from "../SnackbarContext.js";
 
 export default function UpdateDetails({ route, navigation }) {
-  const [showAlert, setShowAlert] = useState(false);
+  const snackbar = useContext(SnackbarContext);
   const { postId } = route.params;
 
   async function requestDeletion(postId) {
@@ -18,7 +19,14 @@ export default function UpdateDetails({ route, navigation }) {
         console.warn("An error occured, status code " + res.status + "!");
       }
 
-      setShowAlert(true);
+      snackbar.show("Deleted!", Snackbar.DURATION_SHORT, {
+        label: "hide",
+        onPress(hide) {
+          hide();
+        },
+      });
+
+      navigation.goBack();
     } catch (error) {
       console.warn(error);
     }
@@ -49,17 +57,6 @@ export default function UpdateDetails({ route, navigation }) {
           </Button>
         </View>
       </View>
-      <Snackbar
-        visible={showAlert}
-        duration={Snackbar.DURATION_SHORT}
-        onDismiss={() => setShowAlert(false)}
-        action={{
-          label: "hide",
-          onPress: () => setShowAlert(false),
-        }}
-      >
-        Deleted!
-      </Snackbar>
     </View>
   );
 }
