@@ -46,9 +46,7 @@ function TagPickerDialogContent({ initialSelected, onSelectionChange }) {
 
   function onSearchTextChange(e) {
     // Find all tags that contain the search text
-    const matches = tags.filter((tag) =>
-      tags.name.includes(e.nativeEvent.text)
-    );
+    const matches = tags.filter((tag) => tag.name.includes(e.nativeEvent.text));
 
     setMatches(matches);
     setValue(e.nativeEvent.text);
