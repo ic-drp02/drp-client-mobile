@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Linking } from "react-native";
-import { Headline, ActivityIndicator } from "react-native-paper";
+import { Headline, ActivityIndicator, Divider } from "react-native-paper";
 import { WebView } from "react-native-webview";
 
 import * as api from "../util/api.js";
@@ -43,6 +43,10 @@ export default function UpdateData(props) {
         <style>
           html, body {
             margin: 0;
+          }
+
+          * {
+            font-family: sans-serif;
           }
         </style>
       </head>
