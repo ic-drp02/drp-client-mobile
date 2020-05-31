@@ -70,6 +70,7 @@ export default function UpdateData(props) {
       )}
       <View style={{ flex: 1, padding: 8, display: loading ? "none" : "flex" }}>
         <Headline>{data.title}</Headline>
+        <Divider />
         <WebView
           ref={ref}
           originWhitelist={["*"]}
