@@ -77,7 +77,7 @@ function TagPickerDialogContent({ initialSelected, onSelectionChange }) {
   // Only show button if the user has entered some text that
   // is not an exact match of an existing tag.
   const shouldShowCreateTagButton =
-    !!value && (matches.length !== 1 || matches[0] !== value);
+    !!value && (matches.length !== 1 || matches[0].name !== value);
 
   return (
     <>
