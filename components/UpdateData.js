@@ -3,7 +3,7 @@ import { View, Linking } from "react-native";
 import { Headline, ActivityIndicator, Divider } from "react-native-paper";
 import { WebView } from "react-native-webview";
 
-import * as api from "../util/api.js";
+import api from "../util/api.js";
 
 export default function UpdateData(props) {
   const [data, setData] = useState(undefined);
@@ -13,7 +13,7 @@ export default function UpdateData(props) {
 
   async function loadPost() {
     try {
-      setData(await api.getDetails(id));
+      setData(await api.getPost(id));
     } catch (error) {
       console.warn(error);
     }

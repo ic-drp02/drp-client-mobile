@@ -8,7 +8,7 @@ import {
 
 import { Appbar, TextInput, Button } from "react-native-paper";
 
-import * as api from "../util/api";
+import api from "../util/api";
 
 export default function PostUpdate({ navigation }) {
   const [title, setTitle] = useState("");

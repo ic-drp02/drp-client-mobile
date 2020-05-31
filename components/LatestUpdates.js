@@ -5,7 +5,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 
 import PostSummary from "./PostSummary.js";
 
-import * as api from "../util/api";
+import api from "../util/api";
 
 export default function Home(props) {
   const limit = props.limit;

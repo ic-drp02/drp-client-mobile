@@ -4,7 +4,7 @@ import { Appbar, Button, Snackbar } from "react-native-paper";
 
 import UpdateData from "../components/UpdateData.js";
 
-import { deletePost } from "../util/api.js";
+import api from "../util/api.js";
 import SnackbarContext from "../SnackbarContext.js";
 
 export default function UpdateDetails({ route, navigation }) {
@@ -13,7 +13,7 @@ export default function UpdateDetails({ route, navigation }) {
 
   async function requestDeletion(postId) {
     try {
-      const res = await deletePost(postId);
+      const res = await api.deletePost(postId);
 
       if (!res.success) {
         console.warn("An error occured, status code " + res.status + "!");
