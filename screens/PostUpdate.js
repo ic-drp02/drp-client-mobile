@@ -53,7 +53,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableWithoutFeedback>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="New post" />
