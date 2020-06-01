@@ -4,13 +4,20 @@ import { Appbar, Button, TextInput } from "react-native-paper";
 
 import Dropdown from "../components/Dropdown";
 
+import { Grade } from "drp-api-js";
 import api from "../util/api";
+
+const grades = Object.keys(Grade).map((g) => ({
+  label: g == "CoreTrainee" ? "Core trainee" : g,
+  value: Grade[g],
+}));
 
 export default function Question({ navigation }) {
   const [sites, setSites] = useState(null);
   const [subjects, setSubjects] = useState(null);
 
   const [site, setSite] = useState(undefined);
+  const [grade, setGrade] = useState(Grade.Consultant);
   const [specialty, setSpecialty] = useState(undefined);
   const [subject, setSubject] = useState(undefined);
   const [query, setQuery] = useState(undefined);
@@ -22,13 +29,24 @@ export default function Question({ navigation }) {
 
   const submitQuestion = useCallback(() => {
     api
-      .createQuestion({
+      .createQuestions({
         site: sites.find((s) => s.id === site).name,
         specialty,
-        subject: subjects.find((s) => s.id === subject).name,
-        text: query,
+        grade,
+        questions: [
+          {
+            subject: subjects.find((s) => s.id === subject).name,
+            text: query,
+          },
+        ],
       })
-      .then(() => navigation.navigate("Home"));
+      .then((res) => {
+        if (res.success) {
+          navigation.navigate("Home");
+        } else {
+          console.warn("Failed with code " + res.status);
+        }
+      });
   }, [site, specialty, subject, query, sites, subjects]);
 
   return (
@@ -53,6 +71,12 @@ export default function Question({ navigation }) {
               }
               selected={site}
               onSelectionChange={(s) => setSite(s)}
+              style={{ marginVertical: 8 }}
+            />
+            <Dropdown
+              items={grades}
+              selected={grade}
+              onSelectionChange={(v) => setGrade(v)}
               style={{ marginVertical: 8 }}
             />
             <TextInput
