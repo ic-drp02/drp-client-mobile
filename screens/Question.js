@@ -112,7 +112,7 @@ export default function Question({ navigation }) {
             onPress={Keyboard.dismiss}
             accessible={false}
           >
-            <ScrollView>
+            <ScrollView keyboardShouldPersistTaps="handled">
               <View style={styles.formContainer}>
                 <DropdownField
                   label="Which Imperial site are you at?"
@@ -129,7 +129,7 @@ export default function Question({ navigation }) {
                 <TextField
                   label="What is your specialty?"
                   short="Specialty"
-                  onChangeText={(v) => setSpecialty}
+                  onChangeText={(v) => setSpecialty(v)}
                 />
                 <DropdownField
                   label="What is your question about?"
