@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   submit: {
-    marginTop: 8,
+    marginTop: 16,
     padding: 8,
   },
 });
