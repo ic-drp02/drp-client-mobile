@@ -4,6 +4,7 @@ import {
   Keyboard,
   ScrollView,
   TouchableWithoutFeedback,
+  StyleSheet,
 } from "react-native";
 
 import {
@@ -81,6 +82,20 @@ export default function Question({ navigation }) {
       });
   }, [site, specialty, subject, query, sites, subjects]);
 
+  const siteItems = !!sites
+    ? sites.map((site) => ({
+        label: site.name,
+        value: site.id,
+      }))
+    : [];
+
+  const subjectItems = !!subjects
+    ? subjects.map((subject) => ({
+        label: subject.name,
+        value: subject.id,
+      }))
+    : [];
+
   return (
     <View style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -98,71 +113,44 @@ export default function Question({ navigation }) {
             accessible={false}
           >
             <ScrollView>
-              <View style={{ padding: 24 }}>
-                <View style={{ marginVertical: 4 }}>
-                  <Text>Which Imperial site are you at?</Text>
-                  <Dropdown
-                    items={
-                      !!sites
-                        ? sites.map((site) => ({
-                            label: site.name,
-                            value: site.id,
-                          }))
-                        : []
-                    }
-                    selected={site}
-                    onSelectionChange={(s) => setSite(s)}
-                    style={{ marginVertical: 8 }}
-                  />
-                </View>
-                <View style={{ marginVertical: 4 }}>
-                  <Text>What is your grade?</Text>
-                  <Dropdown
-                    items={grades}
-                    selected={grade}
-                    onSelectionChange={(v) => setGrade(v)}
-                    style={{ marginVertical: 8 }}
-                  />
-                </View>
-                <View style={{ marginVertical: 4 }}>
-                  <Text>What is your specialty?</Text>
-                  <TextInput
-                    label="Specialty"
-                    mode="outlined"
-                    onChangeText={(v) => setSpecialty(v)}
-                    style={{ marginVertical: 8 }}
-                  />
-                </View>
-                <View style={{ marginVertical: 4 }}>
-                  <Text>What is your question about?</Text>
-                  <Dropdown
-                    items={
-                      !!subjects
-                        ? subjects.map((subject) => ({
-                            label: subject.name,
-                            value: subject.id,
-                          }))
-                        : []
-                    }
-                    selected={subject}
-                    onSelectionChange={(s) => setSubject(s)}
-                    style={{ marginVertical: 8 }}
-                  />
-                </View>
+              <View style={styles.formContainer}>
+                <DropdownField
+                  label="Which Imperial site are you at?"
+                  items={siteItems}
+                  selected={site}
+                  onSelectionChange={(s) => setSite(s)}
+                />
+                <DropdownField
+                  label="What is your grade?"
+                  items={grades}
+                  selected={grade}
+                  onSelectionChange={(v) => setGrade(v)}
+                />
+                <TextField
+                  label="What is your specialty?"
+                  short="Specialty"
+                  onChangeText={(v) => setSpecialty}
+                />
+                <DropdownField
+                  label="What is your question about?"
+                  items={subjectItems}
+                  selected={subject}
+                  onSelectionChange={(s) => setSubject(s)}
+                />
                 <TextInput
                   label="Query"
                   mode="outlined"
                   multiline={true}
                   numberOfLines={7}
                   onChangeText={(v) => setQuery(v)}
-                  style={{ marginVertical: 8 }}
+                  style={styles.fieldContainer}
                 />
                 <Button
                   mode="contained"
                   onPress={submitQuestion}
                   disabled={submitting}
                   loading={submitting}
-                  style={{ marginTop: 16, padding: 8 }}
+                  style={styles.submit}
                 >
                   Submit
                 </Button>
@@ -174,3 +162,47 @@ export default function Question({ navigation }) {
     </View>
   );
 }
+
+function DropdownField({ label, items, selected, onSelectionChange }) {
+  return (
+    <View style={styles.fieldContainer}>
+      <Text>{label}</Text>
+      <Dropdown
+        items={items}
+        selected={selected}
+        onSelectionChange={onSelectionChange}
+        style={styles.field}
+      />
+    </View>
+  );
+}
+
+function TextField({ label, short, onChangeText }) {
+  return (
+    <View style={styles.fieldContainer}>
+      <Text>{label}</Text>
+      <TextInput
+        label={short}
+        mode="outlined"
+        onChangeText={onChangeText}
+        style={styles.field}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  formContainer: {
+    padding: 24,
+  },
+  fieldContainer: {
+    marginVertical: 4,
+  },
+  field: {
+    marginVertical: 8,
+  },
+  submit: {
+    marginTop: 8,
+    padding: 8,
+  },
+});
