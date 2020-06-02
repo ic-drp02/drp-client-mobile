@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Keyboard, TouchableWithoutFeedback } from "react-native";
-import { Appbar, Button, TextInput } from "react-native-paper";
+import {
+  View,
+  Keyboard,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { Appbar, Button, Text, TextInput } from "react-native-paper";
 
 import Dropdown from "../components/Dropdown";
 
@@ -57,63 +62,77 @@ export default function Question({ navigation }) {
           <Appbar.Content title="Ask a question" />
         </Appbar.Header>
       </TouchableWithoutFeedback>
-      <View style={{ flex: 1, padding: 24 }}>
+      <View style={{ flex: 1 }}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <View style={{ flex: 1 }}>
-            <Dropdown
-              items={
-                !!sites
-                  ? sites.map((site) => ({
-                      label: site.name,
-                      value: site.id,
-                    }))
-                  : []
-              }
-              selected={site}
-              onSelectionChange={(s) => setSite(s)}
-              style={{ marginVertical: 8 }}
-            />
-            <Dropdown
-              items={grades}
-              selected={grade}
-              onSelectionChange={(v) => setGrade(v)}
-              style={{ marginVertical: 8 }}
-            />
-            <TextInput
-              label="Specialty"
-              mode="outlined"
-              onChangeText={(v) => setSpecialty(v)}
-              style={{ marginVertical: 8 }}
-            />
-            <Dropdown
-              items={
-                !!subjects
-                  ? subjects.map((subject) => ({
-                      label: subject.name,
-                      value: subject.id,
-                    }))
-                  : []
-              }
-              selected={subject}
-              onSelectionChange={(s) => setSubject(s)}
-              style={{ marginVertical: 8 }}
-            />
-            <TextInput
-              label="Query"
-              mode="outlined"
-              multiline={true}
-              numberOfLines={7}
-              onChangeText={(v) => setQuery(v)}
-              style={{ marginVertical: 8 }}
-            />
-            <Button
-              mode="contained"
-              onPress={submitQuestion}
-              style={{ marginVertical: 8 }}
-            >
-              Submit
-            </Button>
-          </View>
+          <ScrollView>
+            <View style={{ padding: 24 }}>
+              <View style={{ marginVertical: 4 }}>
+                <Text>Which Imperial site are you at?</Text>
+                <Dropdown
+                  items={
+                    !!sites
+                      ? sites.map((site) => ({
+                          label: site.name,
+                          value: site.id,
+                        }))
+                      : []
+                  }
+                  selected={site}
+                  onSelectionChange={(s) => setSite(s)}
+                  style={{ marginVertical: 8 }}
+                />
+              </View>
+              <View style={{ marginVertical: 4 }}>
+                <Text>What is your grade?</Text>
+                <Dropdown
+                  items={grades}
+                  selected={grade}
+                  onSelectionChange={(v) => setGrade(v)}
+                  style={{ marginVertical: 8 }}
+                />
+              </View>
+              <View style={{ marginVertical: 4 }}>
+                <Text>What is your specialty?</Text>
+                <TextInput
+                  label="Specialty"
+                  mode="outlined"
+                  onChangeText={(v) => setSpecialty(v)}
+                  style={{ marginVertical: 8 }}
+                />
+              </View>
+              <View style={{ marginVertical: 4 }}>
+                <Text>What is your question about?</Text>
+                <Dropdown
+                  items={
+                    !!subjects
+                      ? subjects.map((subject) => ({
+                          label: subject.name,
+                          value: subject.id,
+                        }))
+                      : []
+                  }
+                  selected={subject}
+                  onSelectionChange={(s) => setSubject(s)}
+                  style={{ marginVertical: 8 }}
+                />
+              </View>
+              <TextInput
+                label="Query"
+                mode="outlined"
+                multiline={true}
+                numberOfLines={7}
+                onChangeText={(v) => setQuery(v)}
+                style={{ marginVertical: 8 }}
+              />
+              <Button
+                mode="contained"
+                onPress={submitQuestion}
+                style={{ marginVertical: 8 }}
+              >
+                Submit
+              </Button>
+            </View>
+          </ScrollView>
         </TouchableWithoutFeedback>
       </View>
     </View>
