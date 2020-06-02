@@ -52,7 +52,6 @@ export default function Question({ navigation }) {
 
   const submitQuestion = useCallback(() => {
     setSubmitting(true);
-    console.log(site, grade, specialty, subject, query);
     api
       .createQuestions({
         site: sites.find((s) => s.id === site).name,
@@ -68,7 +67,7 @@ export default function Question({ navigation }) {
       .then((res) => {
         setSubmitting(false);
         if (res.success) {
-          navigation.navigate("Home");
+          navigation.replace("QuestionSubmitted");
         } else {
           snackbar.show(
             "An error occurred while submitting your questions",
