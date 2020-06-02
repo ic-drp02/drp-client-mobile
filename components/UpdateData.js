@@ -13,7 +13,12 @@ export default function UpdateData(props) {
 
   async function loadPost() {
     try {
-      setData(await api.getPost(id));
+      const res = await api.getPost(id);
+      if (res.success) {
+        setData(res.data);
+      } else {
+        console.warn("Failed to get post data with status " + res.status);
+      }
     } catch (error) {
       console.warn(error);
     }
