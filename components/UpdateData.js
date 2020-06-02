@@ -65,7 +65,7 @@ export default function UpdateData(props) {
   `;
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
       {loading && (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
@@ -74,39 +74,41 @@ export default function UpdateData(props) {
         </View>
       )}
       <View style={{ flex: 1, display: loading ? "none" : "flex" }}>
-        <Headline style={{ marginVertical: 8 }}>{data.title}</Headline>
-        <Divider />
-        <WebView
-          ref={ref}
-          originWhitelist={["*"]}
-          style={{ backgroundColor: "transparent" }}
-          source={{ html: htmlContent }}
-          onMessage={({ nativeEvent: { data } }) =>
-            data === "onload" && setLoading(false)
-          }
-          onNavigationStateChange={(event) => {
-            if (event.url !== "about:blank") {
-              ref.current.stopLoading();
-              Linking.openURL(event.url);
+        <View style={{ flex: 1 }}>
+          <Headline style={{ marginVertical: 8 }}>{data.title}</Headline>
+          <Divider />
+          <WebView
+            ref={ref}
+            originWhitelist={["*"]}
+            style={{ backgroundColor: "transparent" }}
+            source={{ html: htmlContent }}
+            onMessage={({ nativeEvent: { data } }) =>
+              data === "onload" && setLoading(false)
             }
-          }}
-        />
-      </View>
-      <View style={{ marginTop: 8, marginBottom: 16 }}>
-        <View style={{ flexDirection: "row" }}>
-          {data.tags && data.tags.length > 0 ? (
-            data.tags.map((tag) => (
-              <Chip key={tag.id} mode="outlined" style={{ margin: 4 }}>
-                {tag.name}
+            onNavigationStateChange={(event) => {
+              if (event.url !== "about:blank") {
+                ref.current.stopLoading();
+                Linking.openURL(event.url);
+              }
+            }}
+          />
+        </View>
+        <View style={{ marginTop: 8, marginBottom: 16 }}>
+          <View style={{ flexDirection: "row" }}>
+            {data.tags && data.tags.length > 0 ? (
+              data.tags.map((tag) => (
+                <Chip key={tag.id} mode="outlined" style={{ margin: 4 }}>
+                  {tag.name}
+                </Chip>
+              ))
+            ) : (
+              <Chip mode="outlined" icon="tag-remove" style={{ margin: 4 }}>
+                No tags
               </Chip>
-            ))
-          ) : (
-            <Chip mode="outlined" icon="tag-remove" style={{ margin: 4 }}>
-              No tags
-            </Chip>
-          )}
+            )}
+          </View>
         </View>
       </View>
-    </View>
+    </>
   );
 }
