@@ -162,7 +162,7 @@ export default function Question({ navigation }) {
                   onPress={submitQuestion}
                   disabled={submitting}
                   loading={submitting}
-                  style={{ marginVertical: 8 }}
+                  style={{ marginTop: 16, padding: 8 }}
                 >
                   Submit
                 </Button>
