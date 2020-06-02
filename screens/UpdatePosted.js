@@ -14,7 +14,7 @@ export default function UpdatePosted({ navigation }) {
       <View style={styles.container}>
         <View style={[styles.content, styles.center]}>
           <BigText text="Great!" />
-          <Text>Your post has been submitted!</Text>
+          <Text style={styles.center}>Your post has been submitted!</Text>
           <Button
             mode="contained"
             style={styles.button}
