@@ -31,7 +31,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
       const res = await api.createPost({
         title,
         summary,
-        content,
+        content: "<p>" + content.replace(/\n/g, "<br/>") + "</p>",
         tags: tags.map((t) => t.name),
       });
 
