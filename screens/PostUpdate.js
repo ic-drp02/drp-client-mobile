@@ -80,7 +80,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
         return;
       }
 
-      navigation.navigate("UpdatePosted");
+      navigation.replace("UpdatePosted");
     } catch (error) {
       console.warn(error);
     }
