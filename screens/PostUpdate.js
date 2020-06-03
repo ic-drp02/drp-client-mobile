@@ -70,8 +70,8 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
         tags: tags.map((t) => t.name),
         files: files,
         names: files.map((f) => f.name),
-        onProgress: (event) => {
-          setProgress(event.loaded / event.total);
+        onUploadedFraction: (fraction) => {
+          setProgress(fraction);
         },
       });
 
