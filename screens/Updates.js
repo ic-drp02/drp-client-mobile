@@ -1,21 +1,23 @@
 import React from "react";
-import { StyleSheet, StatusBar, View } from "react-native";
+import { View, ScrollView } from "react-native";
 import { Appbar } from "react-native-paper";
 
 import LatestUpdates from "../components/LatestUpdates.js";
 
 export default function Question({ navigation }) {
+  const fullHeight = { flex: 1 };
+
   return (
-    <View>
+    <View style={fullHeight}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="All Updates" />
       </Appbar.Header>
-      <View style={{ padding: 16 }}>
-        <LatestUpdates />
+      <View style={fullHeight}>
+        <ScrollView contentContainerStyle={{ padding: 16 }}>
+          <LatestUpdates />
+        </ScrollView>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({});
