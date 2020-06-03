@@ -18,6 +18,7 @@ import {
 
 import Dropdown from "../components/Dropdown";
 import SnackbarContext from "../SnackbarContext";
+import IosKeyboardAvoidingView from "../components/IosKeyboardAvoidingView.js";
 
 import { Grade } from "drp-api-js";
 import api from "../util/api";
@@ -99,7 +100,7 @@ export default function Question({ navigation }) {
   return (
     <View style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <Appbar.Header>
+        <Appbar.Header style={{ zIndex: 10 }}>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="Ask a question" />
         </Appbar.Header>
@@ -112,50 +113,52 @@ export default function Question({ navigation }) {
             onPress={Keyboard.dismiss}
             accessible={false}
           >
-            <ScrollView keyboardShouldPersistTaps="handled">
-              <View style={styles.formContainer}>
-                <DropdownField
-                  label="Which Imperial site are you at?"
-                  items={siteItems}
-                  selected={site}
-                  onSelectionChange={(s) => setSite(s)}
-                />
-                <DropdownField
-                  label="What is your grade?"
-                  items={grades}
-                  selected={grade}
-                  onSelectionChange={(v) => setGrade(v)}
-                />
-                <TextField
-                  label="What is your specialty?"
-                  short="Specialty"
-                  onChangeText={(v) => setSpecialty(v)}
-                />
-                <DropdownField
-                  label="What is your question about?"
-                  items={subjectItems}
-                  selected={subject}
-                  onSelectionChange={(s) => setSubject(s)}
-                />
-                <TextInput
-                  label="Query"
-                  mode="outlined"
-                  multiline={true}
-                  numberOfLines={7}
-                  onChangeText={(v) => setQuery(v)}
-                  style={styles.fieldContainer}
-                />
-                <Button
-                  mode="contained"
-                  onPress={submitQuestion}
-                  disabled={submitting}
-                  loading={submitting}
-                  style={styles.submit}
-                >
-                  Submit
-                </Button>
-              </View>
-            </ScrollView>
+            <IosKeyboardAvoidingView>
+              <ScrollView keyboardShouldPersistTaps="handled">
+                <View style={styles.formContainer}>
+                  <DropdownField
+                    label="Which Imperial site are you at?"
+                    items={siteItems}
+                    selected={site}
+                    onSelectionChange={(s) => setSite(s)}
+                  />
+                  <DropdownField
+                    label="What is your grade?"
+                    items={grades}
+                    selected={grade}
+                    onSelectionChange={(v) => setGrade(v)}
+                  />
+                  <TextField
+                    label="What is your specialty?"
+                    short="Specialty"
+                    onChangeText={(v) => setSpecialty(v)}
+                  />
+                  <DropdownField
+                    label="What is your question about?"
+                    items={subjectItems}
+                    selected={subject}
+                    onSelectionChange={(s) => setSubject(s)}
+                  />
+                  <TextInput
+                    label="Query"
+                    mode="outlined"
+                    multiline={true}
+                    numberOfLines={7}
+                    onChangeText={(v) => setQuery(v)}
+                    style={styles.fieldContainer}
+                  />
+                  <Button
+                    mode="contained"
+                    onPress={submitQuestion}
+                    disabled={submitting}
+                    loading={submitting}
+                    style={styles.submit}
+                  >
+                    Submit
+                  </Button>
+                </View>
+              </ScrollView>
+            </IosKeyboardAvoidingView>
           </TouchableWithoutFeedback>
         )}
       </View>
