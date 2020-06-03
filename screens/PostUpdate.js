@@ -15,6 +15,8 @@ import {
   Portal,
 } from "react-native-paper";
 
+import * as DocumentPicker from "expo-document-picker";
+
 import TagPickerDialog from "../components/TagPickerDialog";
 
 import api from "../util/api";
@@ -25,6 +27,17 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
   const [tagsDialogVisible, setTagsDialogVisible] = useState(false);
+
+  async function selectDocument() {
+    const selected = await DocumentPicker.getDocumentAsync();
+    const result = selected.type;
+    if (result !== "success") {
+      return;
+    }
+    console.warn(selected);
+  }
+
+  const addDocument = useCallback(() => selectDocument(), []);
 
   async function submitData(title, summary, content, tags) {
     try {
@@ -124,6 +137,14 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                 />
               </Portal>
             </View>
+            <Button
+              icon="plus"
+              mode="outlined"
+              onPress={() => addDocument()}
+              style={styles.button}
+            >
+              Add attachment
+            </Button>
             <Button
               mode="contained"
               onPress={() => submitPost()}
