@@ -192,6 +192,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
               {files.map((file, index) => (
                 <Chip
                   key={index}
+                  icon="pen"
                   mode="outlined"
                   onClose={() => setFiles(files.filter((_, i) => i != index))}
                   onPress={() => {
