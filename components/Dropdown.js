@@ -35,7 +35,10 @@ export default function Dropdown({
                 style={{
                   flex: 1,
                   fontSize: 16,
-                  color: theme.colors.placeholder,
+                  color:
+                    selected && selected.label
+                      ? theme.colors.text
+                      : theme.colors.placeholder,
                 }}
               >
                 {(selected && selected.label) || "Select"}
