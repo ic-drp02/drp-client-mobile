@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import {
   Appbar,
   ProgressBar,
@@ -8,6 +8,7 @@ import {
   Paragraph,
   Button,
   Divider,
+  useTheme,
 } from "react-native-paper";
 
 import { Grade } from "drp-api-js";
@@ -57,26 +58,52 @@ export default function Question({ route, navigation }) {
   );
 }
 
+function getGrade(value) {
+  const grade = Object.keys(Grade).filter((g) => Grade[g] === value)[0];
+  if (grade !== "CoreTrainee") {
+    return grade;
+  } else {
+    return "Core Trainee";
+  }
+}
+
 function QuestionsList({ questions, onResolved }) {
+  const theme = useTheme();
+  const labelStyle = {
+    fontStyle: "italic",
+    color: theme.colors.placeholder,
+  };
+
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ padding: 4 }}>
       {questions.map((q) => (
-        <Card key={q.id} style={{ margin: 8 }}>
+        <Card key={q.id} style={{ margin: 4 }}>
           <Card.Content>
             <Paragraph>{q.text}</Paragraph>
             <Divider style={{ marginVertical: 8 }} />
-            <View>
-              <Paragraph>
-                <Text style={{ fontStyle: "italic" }}>Site:</Text> {q.site.name}
-              </Paragraph>
-              <Paragraph>
-                <Text style={{ fontStyle: "italic" }}>Grade:</Text>{" "}
-                {Object.keys(Grade).filter((g) => Grade[g] === q.grade)[0]}
-              </Paragraph>
-              <Paragraph>
-                <Text style={{ fontStyle: "italic" }}>Specialty:</Text>{" "}
-                {q.specialty}
-              </Paragraph>
+            <View style={{ flexDirection: "row" }}>
+              <View>
+                <Paragraph>
+                  <Text style={labelStyle}>Site:</Text>
+                </Paragraph>
+                <Paragraph>
+                  <Text style={labelStyle}>Grade:</Text>
+                </Paragraph>
+                <Paragraph>
+                  <Text style={labelStyle}>Specialty:</Text>
+                </Paragraph>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Paragraph style={{ textAlign: "right" }}>
+                  <Text> {q.site.name}</Text>
+                </Paragraph>
+                <Paragraph style={{ textAlign: "right" }}>
+                  <Text> {getGrade(q.grade)}</Text>
+                </Paragraph>
+                <Paragraph style={{ textAlign: "right" }}>
+                  <Text> {q.specialty}</Text>
+                </Paragraph>
+              </View>
             </View>
             <Divider style={{ marginTop: 8 }} />
           </Card.Content>
@@ -90,3 +117,9 @@ function QuestionsList({ questions, onResolved }) {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  label: {
+    fontStyle: "italic",
+  },
+});
