@@ -32,7 +32,7 @@ export default function Question({ navigation }) {
   const [subjects, setSubjects] = useState(null);
 
   const [site, setSite] = useState(undefined);
-  const [grade, setGrade] = useState(Grade.Consultant);
+  const [grade, setGrade] = useState(undefined);
   const [specialty, setSpecialty] = useState("");
   const [subject, setSubject] = useState(undefined);
   const [query, setQuery] = useState("");
@@ -55,12 +55,12 @@ export default function Question({ navigation }) {
     setSubmitting(true);
     api
       .createQuestions({
-        site: sites.find((s) => s.id === site).name,
+        site: site.label,
         specialty,
-        grade,
+        grade: grade.value,
         questions: [
           {
-            subject: subjects.find((s) => s.id === subject).name,
+            subject: subject.label,
             text: query,
           },
         ],

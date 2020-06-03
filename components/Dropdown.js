@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { View } from "react-native";
-import { useTheme } from "react-native-paper";
-import { Picker } from "@react-native-community/picker";
+import { useTheme, Text, TouchableRipple, Menu } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function Dropdown({
   items,
@@ -10,26 +10,53 @@ export default function Dropdown({
   style,
 }) {
   const theme = useTheme();
+  const [visible, setVisible] = useState(false);
+
+  const openMenu = useCallback(() => setVisible(true));
+  const closeMenu = useCallback(() => setVisible(false));
+
   return (
-    <View
-      style={{
-        borderWidth: 1,
-        borderRadius: theme.roundness,
-        borderColor: theme.colors.placeholder,
-        padding: 4,
-        ...style,
-      }}
-    >
-      <Picker
-        mode="dropdown"
-        selectedValue={selected}
-        onValueChange={onSelectionChange}
+    <View style={style}>
+      <Menu
+        visible={visible}
+        onDismiss={closeMenu}
+        anchor={
+          <TouchableRipple onPress={openMenu}>
+            <View
+              style={{
+                borderColor: theme.colors.placeholder,
+                borderWidth: 1,
+                borderRadius: theme.roundness,
+                padding: 16,
+                flexDirection: "row",
+              }}
+            >
+              <Text
+                style={{
+                  flex: 1,
+                  fontSize: 16,
+                  color: theme.colors.placeholder,
+                }}
+              >
+                {(selected && selected.label) || "Select"}
+              </Text>
+              <Icon name="chevron-down" size={16} />
+            </View>
+          </TouchableRipple>
+        }
       >
         {items &&
-          items.map(({ label, value }) => (
-            <Picker.Item key={value} label={label} value={value} />
+          items.map((item) => (
+            <Menu.Item
+              key={item.value}
+              title={item.label}
+              onPress={() => {
+                onSelectionChange(item);
+                closeMenu();
+              }}
+            />
           ))}
-      </Picker>
+      </Menu>
     </View>
   );
 }
