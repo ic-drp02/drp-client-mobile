@@ -5,6 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Home from "./Home/Home.js";
 import Search from "./Home/Search.js";
 import Question from "./Question.js";
+import QuestionSubmitted from "./QuestionSubmitted.js";
 import PostUpdate from "./PostUpdate.js";
 import Updates from "./Updates.js";
 import UpdatePosted from "./UpdatePosted.js";
@@ -24,6 +25,10 @@ export default function AppNavigation() {
       <StackNavigator.Screen name="Search" component={Search} />
       <StackNavigator.Screen name="Updates" component={Updates} />
       <StackNavigator.Screen name="Question" component={Question} />
+      <StackNavigator.Screen
+        name="QuestionSubmitted"
+        component={QuestionSubmitted}
+      />
       <StackNavigator.Screen name="PostUpdate" component={PostUpdate} />
       <StackNavigator.Screen name="UpdatePosted" component={UpdatePosted} />
       <StackNavigator.Screen name="UpdateDetails" component={UpdateDetails} />

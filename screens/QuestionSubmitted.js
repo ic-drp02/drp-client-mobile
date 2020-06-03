@@ -9,12 +9,15 @@ export default function UpdatePosted({ navigation }) {
     <View style={{ flex: 1 }}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Update posted" />
+        <Appbar.Content title="Question submitted" />
       </Appbar.Header>
       <View style={styles.container}>
         <View style={[styles.content, styles.center]}>
           <BigText text="Great!" />
-          <Text style={styles.center}>Your post has been submitted!</Text>
+          <Text style={styles.center}>Your question has been submitted!</Text>
+          <Text style={styles.center}>
+            We hope to update you as soon as possible with a response.
+          </Text>
           <Button
             mode="contained"
             style={styles.button}
