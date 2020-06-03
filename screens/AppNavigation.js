@@ -10,6 +10,8 @@ import PostUpdate from "./PostUpdate.js";
 import Updates from "./Updates.js";
 import UpdatePosted from "./UpdatePosted.js";
 import UpdateDetails from "./UpdateDetails.js";
+import Questions from "./Questions";
+import QuestionCategory from "./QuestionCategory";
 
 const StackNavigator = createStackNavigator();
 
@@ -32,6 +34,11 @@ export default function AppNavigation() {
       <StackNavigator.Screen name="PostUpdate" component={PostUpdate} />
       <StackNavigator.Screen name="UpdatePosted" component={UpdatePosted} />
       <StackNavigator.Screen name="UpdateDetails" component={UpdateDetails} />
+      <StackNavigator.Screen name="Questions" component={Questions} />
+      <StackNavigator.Screen
+        name="QuestionCategory"
+        component={QuestionCategory}
+      />
     </StackNavigator.Navigator>
   );
 }

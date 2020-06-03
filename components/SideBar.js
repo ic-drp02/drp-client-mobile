@@ -31,6 +31,11 @@ export default function SideBar({ navigation }) {
           onPress={() => navigation.navigate("Updates")}
         />
         <Drawer.Item
+          icon="comment-question-outline"
+          label="Questions"
+          onPress={() => navigation.navigate("Questions")}
+        />
+        <Drawer.Item
           icon="magnify"
           label="Search"
           onPress={() => navigation.navigate("Search")}
