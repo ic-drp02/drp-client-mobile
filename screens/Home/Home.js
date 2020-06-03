@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import { Appbar, Button, Text, Title } from "react-native-paper";
 
 import PostSummary from "../../components/PostSummary.js";
@@ -41,7 +41,9 @@ export default function Home({ navigation }) {
               View all
             </Button>
           </View>
-          <LatestUpdates limit={4} />
+          <ScrollView>
+            <LatestUpdates limit={4} />
+          </ScrollView>
         </View>
         <View style={styles.buttons}>
           <Button
