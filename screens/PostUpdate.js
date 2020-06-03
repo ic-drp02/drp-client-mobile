@@ -20,6 +20,7 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 
 import TagPickerDialog from "../components/TagPickerDialog";
+import FileRenameDialog from "../components/FileRenameDialog";
 import BigText from "../components/BigText";
 
 import api from "../util/api";
@@ -31,8 +32,18 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
   const [tags, setTags] = useState([]);
   const [tagsDialogVisible, setTagsDialogVisible] = useState(false);
   const [files, setFiles] = useState([]);
+  const [renameDialogVisible, setRenameDialogVisible] = useState(false);
+  const [renamedFile, setRenamedFile] = useState(0);
   const [progress, setProgress] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+
+  function newFile(name, uri) {
+    return {
+      uri: uri,
+      type: "*/*",
+      name: name,
+    };
+  }
 
   async function selectDocument() {
     const selected = await DocumentPicker.getDocumentAsync();
@@ -41,11 +52,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
       return;
     }
 
-    const file = {
-      uri: selected.uri,
-      type: "*/*",
-      name: selected.name,
-    };
+    const file = newFile(selected.name, selected.uri);
     setFiles([...files, file]);
   }
 
@@ -187,6 +194,10 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                   key={index}
                   mode="outlined"
                   onClose={() => setFiles(files.filter((_, i) => i != index))}
+                  onPress={() => {
+                    setRenamedFile(index);
+                    setRenameDialogVisible(true);
+                  }}
                   style={{ margin: 4 }}
                 >
                   {file.name}
@@ -201,6 +212,28 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
               >
                 Add attachment
               </Chip>
+              <Portal>
+                <FileRenameDialog
+                  visible={renameDialogVisible}
+                  renamedFile={
+                    renameDialogVisible ? files[renamedFile].name : ""
+                  }
+                  onCancel={() => setRenameDialogVisible(false)}
+                  onRenameTo={(newName) => {
+                    let oldName = files[renamedFile].name;
+                    setFiles(
+                      files.map((f, i) => {
+                        return i !== renamedFile
+                          ? f
+                          : newFile(newName, files[renamedFile].uri);
+                      })
+                    );
+
+                    setRenameDialogVisible(false);
+                  }}
+                  style={{ maxHeight: "80%" }}
+                />
+              </Portal>
             </View>
             <Button
               mode="contained"
