@@ -36,12 +36,24 @@ export default function Question({ route, navigation }) {
         {!questions && <ProgressBar indeterminate />}
         {questions &&
           (questions.length !== 0 ? (
-            <QuestionsList
-              questions={questions}
-              onResolved={(question) =>
-                setQuestions(questions.filter((q) => q.id !== question.id))
-              }
-            />
+            <ScrollView contentContainerStyle={{ padding: 4 }}>
+              <View style={{ flexDirection: "row-reverse" }}>
+                <Button
+                  mode="contained"
+                  style={{ margin: 4 }}
+                  icon="check-all"
+                  onPress={() => setQuestions([])}
+                >
+                  Resolve all
+                </Button>
+              </View>
+              <QuestionsList
+                questions={questions}
+                onResolved={(question) =>
+                  setQuestions(questions.filter((q) => q.id !== question.id))
+                }
+              />
+            </ScrollView>
           ) : (
             <View
               style={{
@@ -75,7 +87,7 @@ function QuestionsList({ questions, onResolved }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 4 }}>
+    <>
       {questions.map((q) => (
         <Card key={q.id} style={{ margin: 4 }}>
           <Card.Content>
@@ -114,7 +126,7 @@ function QuestionsList({ questions, onResolved }) {
           </Card.Actions>
         </Card>
       ))}
-    </ScrollView>
+    </>
   );
 }
 
