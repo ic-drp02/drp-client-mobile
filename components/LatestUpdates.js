@@ -60,7 +60,9 @@ export default function Home(props) {
     );
   }
 
-  updates.reverse();
+  if (search === "") {
+    updates.reverse();
+  }
 
   let shownUpdates = updates.slice(
     0,
