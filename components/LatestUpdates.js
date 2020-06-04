@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
-import { ProgressBar, Text } from "react-native-paper";
+import {
+  ProgressBar,
+  Text,
+  List,
+  Avatar,
+  IconButton,
+} from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 import PostSummary from "./PostSummary.js";
 
 import api from "../util/api";
+import { getExtensionNoDot, downloadFile, openFile } from "../util/files.js";
 
 export default function Home(props) {
   const limit = props.limit;
@@ -88,5 +95,62 @@ export default function Home(props) {
     />
   ));
 
-  return <>{postSummaries}</>;
+  const relatedFiles = [].concat.apply(
+    [],
+    shownUpdates.map((update) => update.files)
+  );
+
+  const relatedFilesView = relatedFiles.map((file) => (
+    <List.Item
+      key={file.id}
+      title={file.name}
+      left={() => (
+        <Avatar.Text style={{ marginRight: 10 }} size={40} label="PDF" />
+      )}
+      left={(props) => {
+        const extension = getExtensionNoDot(file.name).toUpperCase();
+        if (getExtensionNoDot(file.name).length <= 3) {
+          return (
+            <Avatar.Text
+              style={{ marginRight: 10 }}
+              size={40}
+              label={extension}
+            />
+          );
+        }
+        return (
+          <Avatar.Icon style={{ marginRight: 10 }} size={40} icon="file" />
+        );
+      }}
+      right={(props) => (
+        <IconButton
+          {...props}
+          icon="arrow-down"
+          onPress={() => {
+            downloadFile(
+              api.baseUrl + "/api/rawfiles/download/" + file.id,
+              file.id,
+              file.name
+            );
+          }}
+        />
+      )}
+      onPress={() =>
+        openFile(
+          api.baseUrl + "/api/rawfiles/view/" + file.id,
+          file.id,
+          file.name
+        )
+      }
+    />
+  ));
+
+  return (
+    <>
+      <View>
+        {postSummaries}
+        {search !== "" && relatedFilesView}
+      </View>
+    </>
+  );
 }
