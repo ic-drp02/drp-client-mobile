@@ -1,9 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Linking } from "react-native";
-import { Headline, ActivityIndicator, Divider, Chip } from "react-native-paper";
+import {
+  Headline,
+  ActivityIndicator,
+  Divider,
+  Chip,
+  Avatar,
+  IconButton,
+  Card,
+  List,
+} from "react-native-paper";
 import { WebView } from "react-native-webview";
 
 import api from "../util/api.js";
+import { getExtensionNoDot, downloadFile, openFile } from "../util/files.js";
 
 export default function UpdateData(props) {
   const [data, setData] = useState(undefined);
@@ -92,6 +102,71 @@ export default function UpdateData(props) {
               }
             }}
           />
+        </View>
+        <View>
+          {data.files.length > 0 && (
+            <Card>
+              <List.Accordion
+                title="Attached files"
+                left={(props) => <List.Icon {...props} icon="file" />}
+              >
+                {data.files.map((file) => (
+                  <List.Item
+                    key={file.id}
+                    title={file.name}
+                    left={() => (
+                      <Avatar.Text
+                        style={{ marginRight: 10 }}
+                        size={40}
+                        label="PDF"
+                      />
+                    )}
+                    left={(props) => {
+                      const extension = getExtensionNoDot(
+                        file.name
+                      ).toUpperCase();
+                      if (getExtensionNoDot(file.name).length <= 3) {
+                        return (
+                          <Avatar.Text
+                            style={{ marginRight: 10 }}
+                            size={40}
+                            label={extension}
+                          />
+                        );
+                      }
+                      return (
+                        <Avatar.Icon
+                          style={{ marginRight: 10 }}
+                          size={40}
+                          icon="file"
+                        />
+                      );
+                    }}
+                    right={(props) => (
+                      <IconButton
+                        {...props}
+                        icon="arrow-down"
+                        onPress={() => {
+                          downloadFile(
+                            api.baseUrl + "/api/rawfiles/download/" + file.id,
+                            file.id,
+                            file.name
+                          );
+                        }}
+                      />
+                    )}
+                    onPress={() =>
+                      openFile(
+                        api.baseUrl + "/api/rawfiles/download/" + file.id,
+                        file.id,
+                        file.name
+                      )
+                    }
+                  />
+                ))}
+              </List.Accordion>
+            </Card>
+          )}
         </View>
         <View style={{ marginTop: 8, marginBottom: 16 }}>
           <View style={{ flexDirection: "row" }}>
