@@ -103,9 +103,24 @@ export default function UpdateData(props) {
             }}
           />
         </View>
+        <View style={{ marginTop: 8, marginBottom: 16 }}>
+          <View style={{ flexDirection: "row" }}>
+            {data.tags && data.tags.length > 0 ? (
+              data.tags.map((tag) => (
+                <Chip key={tag.id} mode="outlined" style={{ margin: 4 }}>
+                  {tag.name}
+                </Chip>
+              ))
+            ) : (
+              <Chip mode="outlined" icon="tag-remove" style={{ margin: 4 }}>
+                No tags
+              </Chip>
+            )}
+          </View>
+        </View>
         <View>
           {data.files.length > 0 && (
-            <Card>
+            <Card style={{ marginBottom: 20 }}>
               <List.Accordion
                 title="Attached files"
                 left={(props) => <List.Icon {...props} icon="file" />}
@@ -167,21 +182,6 @@ export default function UpdateData(props) {
               </List.Accordion>
             </Card>
           )}
-        </View>
-        <View style={{ marginTop: 8, marginBottom: 16 }}>
-          <View style={{ flexDirection: "row" }}>
-            {data.tags && data.tags.length > 0 ? (
-              data.tags.map((tag) => (
-                <Chip key={tag.id} mode="outlined" style={{ margin: 4 }}>
-                  {tag.name}
-                </Chip>
-              ))
-            ) : (
-              <Chip mode="outlined" icon="tag-remove" style={{ margin: 4 }}>
-                No tags
-              </Chip>
-            )}
-          </View>
         </View>
       </View>
     </>
