@@ -7,15 +7,17 @@ import LatestUpdates from "../../components/LatestUpdates.js";
 export default function Search({ navigation }) {
   const fullHeight = { flex: 1 };
   const ref = useRef(null);
+  const [firstFocus, setFirstFocus] = useState(true);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     return navigation.addListener("focus", () => {
-      if (!!ref.current) {
+      if (!!ref.current && firstFocus) {
         ref.current.focus();
+        setFirstFocus(false);
       }
     });
-  }, []);
+  }, [firstFocus]);
 
   return (
     <View style={fullHeight}>
