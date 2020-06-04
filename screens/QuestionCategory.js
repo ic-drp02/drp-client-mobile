@@ -18,13 +18,27 @@ export default function Question({ route, navigation }) {
   const fullHeight = { flex: 1 };
   const { subject } = route.params;
 
+  const [focus, setFocus] = useState(true);
   const [questions, setQuestions] = useState(null);
 
   useEffect(() => {
-    api.getQuestions().then((res) => {
-      setQuestions(res.data.filter((q) => q.subject.id == subject.id));
-    });
-  }, []);
+    return navigation.addListener("focus", () => setFocus(true));
+  }, [navigation]);
+
+  useEffect(() => {
+    return navigation.addListener("blur", () => setFocus(false));
+  }, [navigation]);
+
+  useEffect(() => {
+    if (focus) {
+      const interval = setInterval(() => {
+        api.getQuestions().then((res) => {
+          setQuestions(res.data.filter((q) => q.subject.id == subject.id));
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [focus]);
 
   return (
     <View style={fullHeight}>

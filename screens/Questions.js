@@ -7,21 +7,36 @@ import api from "../util/api";
 export default function Question({ navigation }) {
   const fullHeight = { flex: 1 };
 
+  const [focus, setFocus] = useState(true);
   const [subjects, setSubjects] = useState(null);
 
   useEffect(() => {
-    Promise.all([api.getQuestionSubjects(), api.getQuestions()]).then(
-      ([sRes, qRes]) => {
-        const subjects = sRes.data;
-        for (const subject of subjects) {
-          const count = qRes.data.filter((q) => q.subject.id == subject.id)
-            .length;
-          subject.count = count;
-        }
-        setSubjects(subjects);
-      }
-    );
-  }, []);
+    return navigation.addListener("focus", () => setFocus(true));
+  }, [navigation]);
+
+  useEffect(() => {
+    return navigation.addListener("blur", () => setFocus(false));
+  }, [navigation]);
+
+  useEffect(() => {
+    // TODO: Improve this at some point so we don't thrash the server
+    if (focus) {
+      const interval = setInterval(() => {
+        Promise.all([api.getQuestionSubjects(), api.getQuestions()]).then(
+          ([sRes, qRes]) => {
+            const subjects = sRes.data;
+            for (const subject of subjects) {
+              const count = qRes.data.filter((q) => q.subject.id == subject.id)
+                .length;
+              subject.count = count;
+            }
+            setSubjects(subjects);
+          }
+        );
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [focus]);
 
   return (
     <View style={fullHeight}>
