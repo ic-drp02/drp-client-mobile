@@ -172,7 +172,7 @@ export default function UpdateData(props) {
                     )}
                     onPress={() =>
                       openFile(
-                        api.baseUrl + "/api/rawfiles/download/" + file.id,
+                        api.baseUrl + "/api/rawfiles/view/" + file.id,
                         file.id,
                         file.name
                       )

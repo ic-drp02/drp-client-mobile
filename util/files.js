@@ -67,7 +67,8 @@ export async function fileExists(uri) {
 export async function openFile(url, id, name) {
   if (Platform.OS == "ios") {
     // TODO
-    WebBrowser.openBrowserAsync(url);
+    await WebBrowser.openBrowserAsync(url);
+    return;
   }
 
   let fileName = appendToName(name, id);
