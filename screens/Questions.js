@@ -45,6 +45,7 @@ export default function Question({ navigation }) {
         <Appbar.Content title="Questions" />
       </Appbar.Header>
       <View style={fullHeight}>
+        {!subjects && <ProgressBar indeterminate />}
         {subjects &&
           subjects.map((s) => (
             <List.Item
