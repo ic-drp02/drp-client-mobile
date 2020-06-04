@@ -9,7 +9,7 @@ import api from "../util/api";
 
 export default function Home(props) {
   const limit = props.limit;
-  const search = props.search ? props.search : "";
+  const search = props.search ? props.search.toLowerCase() : "";
   const [updates, setUpdates] = useState(undefined);
 
   async function updatePosts() {
@@ -70,9 +70,9 @@ export default function Home(props) {
   if (search != "") {
     shownUpdates = shownUpdates.filter(
       (update) =>
-        update.title.includes(search) ||
-        update.summary.includes(search) ||
-        update.content.includes(search)
+        update.title.toLowerCase().includes(search) ||
+        update.summary.toLowerCase().includes(search) ||
+        update.content.toLowerCase().includes(search)
     );
   }
 
