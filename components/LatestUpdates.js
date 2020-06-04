@@ -9,6 +9,7 @@ import api from "../util/api";
 
 export default function Home(props) {
   const limit = props.limit;
+  const search = props.search ? props.search : "";
   const [updates, setUpdates] = useState(undefined);
 
   async function updatePosts() {
@@ -61,10 +62,19 @@ export default function Home(props) {
 
   updates.reverse();
 
-  const shownUpdates = updates.slice(
+  let shownUpdates = updates.slice(
     0,
     !limit ? updates.length : Math.min(updates.length, limit)
   );
+
+  if (search != "") {
+    shownUpdates = shownUpdates.filter(
+      (update) =>
+        update.title.includes(search) ||
+        update.summary.includes(search) ||
+        update.content.includes(search)
+    );
+  }
 
   const postSummaries = shownUpdates.map((update) => (
     <PostSummary
