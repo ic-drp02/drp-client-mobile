@@ -63,7 +63,7 @@ export default function Home(props) {
 
   const shownUpdates = updates.slice(
     0,
-    !limit ? updates.length : Math.min(updates.length, limit + 1)
+    !limit ? updates.length : Math.min(updates.length, limit)
   );
 
   const postSummaries = shownUpdates.map((update) => (

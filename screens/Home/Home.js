@@ -42,7 +42,7 @@ export default function Home({ navigation }) {
             </Button>
           </View>
           <ScrollView>
-            <LatestUpdates limit={4} />
+            <LatestUpdates limit={3} />
           </ScrollView>
         </View>
         <View style={styles.buttons}>
