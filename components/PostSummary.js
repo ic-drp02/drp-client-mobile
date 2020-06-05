@@ -5,7 +5,7 @@ import { Text, useTheme } from "react-native-paper";
 
 import { useNavigation } from "@react-navigation/native";
 
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { timeElapsedSince } from "../util/date.js";
 import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
@@ -26,9 +26,9 @@ export default function PostSummary(props) {
 
   let icon;
   if (!props.files || props.files.length === 0) {
-    icon = <Icon name="notifications-none" size={35} />;
+    icon = <Icon name="bell-outline" size={35} />;
   } else {
-    icon = <Icon name="attach-file" size={40} />;
+    icon = <Icon name="file-outline" size={35} />;
   }
 
   return (
