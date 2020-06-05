@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Platform } from "react-native";
+import { Notifications } from "expo";
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -61,6 +65,42 @@ export default function App() {
       </Snackbar>
     );
   }
+
+  async function registerForPushNotifications() {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(
+        Permissions.NOTIFICATIONS
+      );
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Permissions.askAsync(
+          Permissions.NOTIFICATIONS
+        );
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        console.warn("Failed to get push token for push notification!");
+        return;
+      }
+      const token = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+    } else {
+      console.log("Must use physical device for push notifications");
+    }
+
+    if (Platform.OS == "android") {
+      Notifications.createChannelAndroidAsync("default", {
+        name: "default",
+        sound: true,
+        priority: "max",
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+  }
+
+  useEffect(() => {
+    registerForPushNotifications();
+  }, []);
 
   return (
     <PaperProvider theme={theme}>
