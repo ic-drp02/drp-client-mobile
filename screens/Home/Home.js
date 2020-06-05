@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
-import { Appbar, Button, Text, Title } from "react-native-paper";
+import { Appbar, Button, Text, Title, Surface } from "react-native-paper";
 
 import PostSummary from "../../components/PostSummary.js";
 import LatestUpdates from "../../components/LatestUpdates.js";
@@ -16,8 +16,8 @@ export default function Home({ navigation }) {
           onPress={() => navigation.navigate("Search")}
         />
       </Appbar.Header>
-      <View style={styles.container}>
-        <View style={[styles.content, styles.margin]}>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View>
           <Title>Recently viewed</Title>
           <PostSummary
             title="Pre op assessment"
@@ -31,6 +31,8 @@ export default function Home({ navigation }) {
             author="John Doe"
             date={Date.parse("29 Apr 2020 15:12:00 UTC")}
           />
+        </View>
+        <View>
           <View style={styles.headingWithButton}>
             <Title>Latest updates</Title>
             <Button
@@ -41,10 +43,23 @@ export default function Home({ navigation }) {
               View all
             </Button>
           </View>
-          <ScrollView>
-            <LatestUpdates limit={3} />
-          </ScrollView>
+          <LatestUpdates limit={3} />
         </View>
+        <View>
+          <View style={styles.headingWithButton}>
+            <Title>Most Popular</Title>
+            <Button
+              compact
+              mode="text"
+              onPress={() => navigation.navigate("Updates")}
+            >
+              More
+            </Button>
+          </View>
+          <LatestUpdates limit={3} />
+        </View>
+      </ScrollView>
+      <Surface style={{ elevation: 10 }}>
         <View style={styles.buttons}>
           <Button
             style={styles.button}
@@ -61,18 +76,14 @@ export default function Home({ navigation }) {
             Post an update
           </Button>
         </View>
-      </View>
+      </Surface>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 8,
-  },
-  content: {
-    flex: 1,
+  contentContainer: {
+    padding: 16,
   },
   headingWithButton: {
     flexDirection: "row",
@@ -81,13 +92,11 @@ const styles = StyleSheet.create({
   buttons: {
     flexDirection: "row",
     justifyContent: "center",
+    paddingVertical: 8,
   },
   button: {
     width: "45%",
-    margin: 10,
     justifyContent: "center",
-  },
-  margin: {
-    margin: 10,
+    marginHorizontal: 8,
   },
 });
