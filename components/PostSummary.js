@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 
-import { Text } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -11,6 +11,7 @@ import { timeElapsedSince } from "../util/date.js";
 import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
 
 export default function PostSummary(props) {
+  const theme = useTheme();
   const navigation = useNavigation();
 
   const [ago, setAgo] = useState(timeElapsedSince(props.date));
@@ -25,7 +26,7 @@ export default function PostSummary(props) {
 
   let icon;
   if (!props.files || props.files.length === 0) {
-    icon = <Icon name="notifications" size={40} />;
+    icon = <Icon name="notifications-none" size={35} />;
   } else {
     icon = <Icon name="attach-file" size={40} />;
   }
