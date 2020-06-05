@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { Appbar, Button, Snackbar } from "react-native-paper";
 
@@ -35,6 +35,17 @@ export default function UpdateDetails({ route, navigation }) {
   const del = useCallback(() => {
     requestDeletion(postId);
   }, [postId]);
+
+  useEffect(() => {
+    api.getPostStats(postId).then(async (s) => {
+      if (s.success) {
+        await api.updatePostStats(postId, {
+          ...s.data,
+          views: s.data.views + 1,
+        });
+      }
+    });
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>

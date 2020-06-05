@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
-import { Appbar, Button, Text, Title, Surface } from "react-native-paper";
+import { Appbar, Button, Title } from "react-native-paper";
 
 import PostSummary from "../../components/PostSummary.js";
 import LatestUpdates from "../../components/LatestUpdates.js";
@@ -72,7 +72,7 @@ export default function Home({ navigation }) {
               More
             </Button>
           </View>
-          <LatestUpdates limit={3} />
+          <LatestUpdates limit={3} sort="views" reverse={false} />
         </View>
       </ScrollView>
     </>

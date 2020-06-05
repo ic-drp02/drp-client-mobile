@@ -15,13 +15,14 @@ import api from "../util/api";
 import { getExtensionNoDot, downloadFile, openFile } from "../util/files.js";
 
 export default function Home(props) {
+  const sort = props.sort;
   const limit = props.limit;
   const search = props.search ? props.search.toLowerCase() : "";
   const [updates, setUpdates] = useState(undefined);
 
   async function updatePosts() {
     try {
-      const res = await api.getPosts();
+      const res = await api.getPosts(sort);
       if (!res.success) {
         console.warn("An error occured, status code " + res.status + "!");
         setUpdates(null);
@@ -67,7 +68,7 @@ export default function Home(props) {
     );
   }
 
-  if (search === "") {
+  if (search === "" && props.reverse !== false) {
     updates.reverse();
   }
 
