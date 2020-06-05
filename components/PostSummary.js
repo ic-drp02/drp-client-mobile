@@ -5,6 +5,8 @@ import { Text } from "react-native-paper";
 
 import { useNavigation } from "@react-navigation/native";
 
+import Icon from "react-native-vector-icons/MaterialIcons";
+
 import { timeElapsedSince } from "../util/date.js";
 import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
 
@@ -21,6 +23,13 @@ export default function PostSummary(props) {
     return () => clearInterval(interval);
   }, []);
 
+  let icon;
+  if (!props.files || props.files.length === 0) {
+    icon = <Icon name="notifications" size={40} />;
+  } else {
+    icon = <Icon name="attach-file" size={40} />;
+  }
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -31,7 +40,7 @@ export default function PostSummary(props) {
       }}
     >
       <View style={[styles.row, styles.margin]}>
-        <View style={styles.iconView}></View>
+        <View style={styles.iconView}>{icon}</View>
         <View style={[styles.column, styles.wrap]}>
           <Text style={[styles.lmargin, styles.postTitle]}>{props.title}</Text>
           <Text style={[styles.lmargin, styles.postInfo]}>
@@ -55,6 +64,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 70,
     height: 70,
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
   },
   margin: {
     marginVertical: 10,
