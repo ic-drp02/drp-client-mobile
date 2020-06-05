@@ -17,6 +17,22 @@ export default function Home({ navigation }) {
         />
       </Appbar.Header>
       <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={styles.buttons}>
+          <Button
+            style={styles.button}
+            mode="contained"
+            onPress={() => navigation.navigate("Question")}
+          >
+            Ask a question
+          </Button>
+          <Button
+            style={styles.button}
+            mode="contained"
+            onPress={() => navigation.navigate("PostUpdate")}
+          >
+            Post an update
+          </Button>
+        </View>
         <View>
           <Title>Recently viewed</Title>
           <PostSummary
@@ -59,24 +75,6 @@ export default function Home({ navigation }) {
           <LatestUpdates limit={3} />
         </View>
       </ScrollView>
-      <Surface style={{ elevation: 10 }}>
-        <View style={styles.buttons}>
-          <Button
-            style={styles.button}
-            mode="contained"
-            onPress={() => navigation.navigate("Question")}
-          >
-            Ask a question
-          </Button>
-          <Button
-            style={styles.button}
-            mode="contained"
-            onPress={() => navigation.navigate("PostUpdate")}
-          >
-            Post an update
-          </Button>
-        </View>
-      </Surface>
     </>
   );
 }
@@ -91,12 +89,12 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: "row",
-    justifyContent: "center",
-    paddingVertical: 8,
+    justifyContent: "space-between",
+    paddingBottom: 8,
   },
   button: {
-    width: "45%",
+    width: "48%",
     justifyContent: "center",
-    marginHorizontal: 8,
+    marginVertical: 8,
   },
 });
