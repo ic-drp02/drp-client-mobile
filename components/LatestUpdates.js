@@ -91,6 +91,7 @@ export default function Home(props) {
       id={update.id}
       title={update.title}
       summary={update.summary}
+      files={update.files}
       date={new Date(update.created_at)}
     />
   ));
