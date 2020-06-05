@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
-import { Appbar, Button, Text, Title } from "react-native-paper";
+import { Appbar, Button, Text, Title, Surface } from "react-native-paper";
 
 import PostSummary from "../../components/PostSummary.js";
 import LatestUpdates from "../../components/LatestUpdates.js";
@@ -16,35 +16,7 @@ export default function Home({ navigation }) {
           onPress={() => navigation.navigate("Search")}
         />
       </Appbar.Header>
-      <View style={styles.container}>
-        <View style={[styles.content, styles.margin]}>
-          <Title>Recently viewed</Title>
-          <PostSummary
-            title="Pre op assessment"
-            summary="New guidelines on pre op assessment for elective surgery during COVID"
-            author="Alice Smith"
-            date={Date.parse("28 Mar 2020 12:47:00 UTC")}
-          />
-          <PostSummary
-            title="Minutes from ICON Q&A"
-            summary="The official minutes from yesteray's ICON Q&A"
-            author="John Doe"
-            date={Date.parse("29 Apr 2020 15:12:00 UTC")}
-          />
-          <View style={styles.headingWithButton}>
-            <Title>Latest updates</Title>
-            <Button
-              compact
-              mode="text"
-              onPress={() => navigation.navigate("Updates")}
-            >
-              View all
-            </Button>
-          </View>
-          <ScrollView>
-            <LatestUpdates limit={3} />
-          </ScrollView>
-        </View>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.buttons}>
           <Button
             style={styles.button}
@@ -61,18 +33,55 @@ export default function Home({ navigation }) {
             Post an update
           </Button>
         </View>
-      </View>
+        <View>
+          <Title>Recently viewed</Title>
+          <PostSummary
+            title="Pre op assessment"
+            summary="New guidelines on pre op assessment for elective surgery during COVID"
+            author="Alice Smith"
+            date={Date.parse("28 Mar 2020 12:47:00 UTC")}
+          />
+          <PostSummary
+            title="Minutes from ICON Q&A"
+            summary="The official minutes from yesteray's ICON Q&A"
+            author="John Doe"
+            date={Date.parse("29 Apr 2020 15:12:00 UTC")}
+          />
+        </View>
+        <View>
+          <View style={styles.headingWithButton}>
+            <Title>Latest updates</Title>
+            <Button
+              compact
+              mode="text"
+              onPress={() => navigation.navigate("Updates")}
+            >
+              View all
+            </Button>
+          </View>
+          <LatestUpdates limit={3} />
+        </View>
+        <View>
+          <View style={styles.headingWithButton}>
+            <Title>Most Popular</Title>
+            <Button
+              compact
+              mode="text"
+              onPress={() => navigation.navigate("Updates")}
+            >
+              More
+            </Button>
+          </View>
+          <LatestUpdates limit={3} />
+        </View>
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 8,
-  },
-  content: {
-    flex: 1,
+  contentContainer: {
+    padding: 16,
   },
   headingWithButton: {
     flexDirection: "row",
@@ -80,14 +89,12 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    paddingBottom: 8,
   },
   button: {
-    width: "45%",
-    margin: 10,
+    width: "48%",
     justifyContent: "center",
-  },
-  margin: {
-    margin: 10,
+    marginVertical: 8,
   },
 });
