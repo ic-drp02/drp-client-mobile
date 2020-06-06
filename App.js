@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Platform } from "react-native";
+import { Platform, AppState } from "react-native";
 import { Notifications } from "expo";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
@@ -101,6 +101,20 @@ export default function App() {
 
   useEffect(() => {
     registerForPushNotifications();
+
+    // Dismiss any current notifications when the app is opened.
+    AppState.addEventListener("change", async (s) => {
+      if (s === "active") {
+        await Notifications.dismissAllNotificationsAsync();
+      }
+    });
+
+    // Ignore notifications when app is open.
+    Notifications.addListener(async (n) => {
+      if (AppState.currentState === "active") {
+        await Notifications.dismissNotificationAsync(n.notificationId);
+      }
+    });
   }, []);
 
   return (
