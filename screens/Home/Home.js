@@ -98,7 +98,11 @@ function LatestUpdates({ posts, onViewAll, ...props }) {
           View all
         </Button>
       </View>
-      {posts ? <PostsList posts={posts} /> : <ProgressBar indeterminate />}
+      {posts ? (
+        <PostsList posts={posts} limit={3} />
+      ) : (
+        <ProgressBar indeterminate />
+      )}
     </View>
   );
 }
@@ -112,7 +116,11 @@ function MostPopular({ posts, onMore, ...props }) {
           More
         </Button>
       </View>
-      {posts ? <PostsList posts={posts} /> : <ProgressBar indeterminate />}
+      {posts ? (
+        <PostsList posts={posts} limit={3} />
+      ) : (
+        <ProgressBar indeterminate />
+      )}
     </View>
   );
 }
