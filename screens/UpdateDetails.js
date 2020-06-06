@@ -1,39 +1,18 @@
 import React, { useCallback, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Appbar, Button, Snackbar } from "react-native-paper";
+import { useDispatch } from "react-redux";
 
 import UpdateData from "../components/UpdateData.js";
 
-import api from "../util/api.js";
-import SnackbarContext from "../SnackbarContext.js";
+import { deletePost } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
-  const snackbar = useContext(SnackbarContext);
   const { postId } = route.params;
-
-  async function requestDeletion(postId) {
-    try {
-      const res = await api.deletePost(postId);
-
-      if (!res.success) {
-        console.warn("An error occured, status code " + res.status + "!");
-      }
-
-      snackbar.show("Deleted!", Snackbar.DURATION_SHORT, {
-        label: "hide",
-        onPress(hide) {
-          hide();
-        },
-      });
-
-      navigation.goBack();
-    } catch (error) {
-      console.warn(error);
-    }
-  }
+  const dispatch = useDispatch();
 
   const del = useCallback(() => {
-    requestDeletion(postId);
+    dispatch(deletePost(postId).then(() => navigation.goBack()));
   }, [postId]);
 
   return (

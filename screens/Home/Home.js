@@ -1,11 +1,21 @@
-import React from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
-import { Appbar, Button, Text, Title, Surface } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, ScrollView, RefreshControl } from "react-native";
+import { Appbar, Button, Title, ProgressBar } from "react-native-paper";
+import { useSelector, useDispatch } from "react-redux";
 
-import PostSummary from "../../components/PostSummary.js";
-import LatestUpdates from "../../components/LatestUpdates.js";
+import PostSummary from "../../components/PostSummary";
+
+import { refreshPosts } from "../../store";
 
 export default function Home({ navigation }) {
+  const posts = useSelector((s) => s.posts);
+  const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    dispatch(refreshPosts());
+  }, []);
+
   return (
     <>
       <Appbar.Header>
@@ -16,7 +26,18 @@ export default function Home({ navigation }) {
           onPress={() => navigation.navigate("Search")}
         />
       </Appbar.Header>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              dispatch(refreshPosts()).then(() => setRefreshing(false));
+            }}
+          />
+        }
+      >
         <View style={styles.buttons}>
           <Button
             style={styles.button}
@@ -59,7 +80,11 @@ export default function Home({ navigation }) {
               View all
             </Button>
           </View>
-          <LatestUpdates limit={3} />
+          {posts ? (
+            <LatestPosts posts={posts} />
+          ) : (
+            <ProgressBar indeterminate />
+          )}
         </View>
         <View>
           <View style={styles.headingWithButton}>
@@ -72,11 +97,30 @@ export default function Home({ navigation }) {
               More
             </Button>
           </View>
-          <LatestUpdates limit={3} />
+          {posts ? (
+            <LatestPosts posts={posts} />
+          ) : (
+            <ProgressBar indeterminate />
+          )}
         </View>
       </ScrollView>
     </>
   );
+}
+
+function LatestPosts({ posts }) {
+  return posts
+    .slice(0, Math.min(posts.length, 3))
+    .map((post) => (
+      <PostSummary
+        key={post.id}
+        id={post.id}
+        title={post.title}
+        summary={post.summary}
+        files={post.files}
+        date={new Date(post.created_at)}
+      />
+    ));
 }
 
 const styles = StyleSheet.create({
