@@ -4,6 +4,7 @@ import { Appbar, Button, Title, ProgressBar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
 import PostSummary from "../../components/PostSummary";
+import PostsList from "../../components/PostsList";
 
 import { refreshPosts } from "../../store";
 
@@ -55,8 +56,14 @@ export default function Home({ navigation }) {
           </Button>
         </View>
         <RecentlyViewed />
-        <LatestUpdates posts={posts} />
-        <MostPopular posts={posts} />
+        <LatestUpdates
+          posts={posts}
+          onViewAll={() => navigation.navigate("Updates")}
+        />
+        <MostPopular
+          posts={posts}
+          onMore={() => navigation.navigate("Updates")}
+        />
       </ScrollView>
     </>
   );
@@ -82,16 +89,12 @@ function RecentlyViewed({ ...props }) {
   );
 }
 
-function LatestUpdates({ posts, ...props }) {
+function LatestUpdates({ posts, onViewAll, ...props }) {
   return (
     <View {...props}>
       <View style={styles.headingWithButton}>
         <Title>Latest updates</Title>
-        <Button
-          compact
-          mode="text"
-          onPress={() => navigation.navigate("Updates")}
-        >
+        <Button compact mode="text" onPress={onViewAll}>
           View all
         </Button>
       </View>
@@ -100,37 +103,18 @@ function LatestUpdates({ posts, ...props }) {
   );
 }
 
-function MostPopular({ posts, ...props }) {
+function MostPopular({ posts, onMore, ...props }) {
   return (
     <View {...props}>
       <View style={styles.headingWithButton}>
         <Title>Most Popular</Title>
-        <Button
-          compact
-          mode="text"
-          onPress={() => navigation.navigate("Updates")}
-        >
+        <Button compact mode="text" onPress={onMore}>
           More
         </Button>
       </View>
       {posts ? <PostsList posts={posts} /> : <ProgressBar indeterminate />}
     </View>
   );
-}
-
-function PostsList({ posts, limit }) {
-  return posts
-    .slice(0, Math.min(posts.length, limit || 3))
-    .map((post) => (
-      <PostSummary
-        key={post.id}
-        id={post.id}
-        title={post.title}
-        summary={post.summary}
-        files={post.files}
-        date={new Date(post.created_at)}
-      />
-    ));
 }
 
 const styles = StyleSheet.create({

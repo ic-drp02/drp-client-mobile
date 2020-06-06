@@ -1,12 +1,13 @@
 import React from "react";
 import { View, ScrollView } from "react-native";
-import { Appbar } from "react-native-paper";
+import { useSelector } from "react-redux";
+import { Appbar, ProgressBar } from "react-native-paper";
 
-import LatestUpdates from "../components/LatestUpdates.js";
+import PostsList from "../components/PostsList";
 
-export default function Question({ navigation }) {
+export default function Updates({ navigation }) {
+  const posts = useSelector((s) => s.posts);
   const fullHeight = { flex: 1 };
-
   return (
     <View style={fullHeight}>
       <Appbar.Header>
@@ -15,7 +16,7 @@ export default function Question({ navigation }) {
       </Appbar.Header>
       <View style={fullHeight}>
         <ScrollView contentContainerStyle={{ padding: 16 }}>
-          <LatestUpdates />
+          {posts ? <PostsList posts={posts} /> : <ProgressBar indeterminate />}
         </ScrollView>
       </View>
     </View>
