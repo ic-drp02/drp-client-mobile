@@ -17,6 +17,7 @@ import SideBar from "./components/SideBar.js";
 import AppNavigation from "./screens/AppNavigation";
 
 import SnackbarContext from "./SnackbarContext";
+import api from "./util/api.js";
 
 const theme = {
   ...DefaultTheme,
@@ -79,11 +80,11 @@ export default function App() {
         finalStatus = status;
       }
       if (finalStatus !== "granted") {
-        console.warn("Failed to get push token for push notification!");
+        console.warn("Failed to get token for push notifications!");
         return;
       }
       const token = await Notifications.getExpoPushTokenAsync();
-      console.log(token);
+      api.registerForNotifications(token);
     } else {
       console.log("Must use physical device for push notifications");
     }
