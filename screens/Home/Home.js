@@ -54,63 +54,73 @@ export default function Home({ navigation }) {
             Post an update
           </Button>
         </View>
-        <View>
-          <Title>Recently viewed</Title>
-          <PostSummary
-            title="Pre op assessment"
-            summary="New guidelines on pre op assessment for elective surgery during COVID"
-            author="Alice Smith"
-            date={Date.parse("28 Mar 2020 12:47:00 UTC")}
-          />
-          <PostSummary
-            title="Minutes from ICON Q&A"
-            summary="The official minutes from yesteray's ICON Q&A"
-            author="John Doe"
-            date={Date.parse("29 Apr 2020 15:12:00 UTC")}
-          />
-        </View>
-        <View>
-          <View style={styles.headingWithButton}>
-            <Title>Latest updates</Title>
-            <Button
-              compact
-              mode="text"
-              onPress={() => navigation.navigate("Updates")}
-            >
-              View all
-            </Button>
-          </View>
-          {posts ? (
-            <LatestPosts posts={posts} />
-          ) : (
-            <ProgressBar indeterminate />
-          )}
-        </View>
-        <View>
-          <View style={styles.headingWithButton}>
-            <Title>Most Popular</Title>
-            <Button
-              compact
-              mode="text"
-              onPress={() => navigation.navigate("Updates")}
-            >
-              More
-            </Button>
-          </View>
-          {posts ? (
-            <LatestPosts posts={posts} />
-          ) : (
-            <ProgressBar indeterminate />
-          )}
-        </View>
+        <RecentlyViewed />
+        <LatestUpdates posts={posts} />
+        <MostPopular posts={posts} />
       </ScrollView>
     </>
   );
 }
 
-function LatestPosts({ posts }) {
+function RecentlyViewed({ ...props }) {
+  return (
+    <View {...props}>
+      <Title>Recently viewed</Title>
+      <PostSummary
+        title="Pre op assessment"
+        summary="New guidelines on pre op assessment for elective surgery during COVID"
+        author="Alice Smith"
+        date={Date.parse("28 Mar 2020 12:47:00 UTC")}
+      />
+      <PostSummary
+        title="Minutes from ICON Q&A"
+        summary="The official minutes from yesteray's ICON Q&A"
+        author="John Doe"
+        date={Date.parse("29 Apr 2020 15:12:00 UTC")}
+      />
+    </View>
+  );
+}
+
+function LatestUpdates({ posts, ...props }) {
+  return (
+    <View {...props}>
+      <View style={styles.headingWithButton}>
+        <Title>Latest updates</Title>
+        <Button
+          compact
+          mode="text"
+          onPress={() => navigation.navigate("Updates")}
+        >
+          View all
+        </Button>
+      </View>
+      {posts ? <PostsList posts={posts} /> : <ProgressBar indeterminate />}
+    </View>
+  );
+}
+
+function MostPopular({ posts, ...props }) {
+  return (
+    <View {...props}>
+      <View style={styles.headingWithButton}>
+        <Title>Most Popular</Title>
+        <Button
+          compact
+          mode="text"
+          onPress={() => navigation.navigate("Updates")}
+        >
+          More
+        </Button>
+      </View>
+      {posts ? <PostsList posts={posts} /> : <ProgressBar indeterminate />}
+    </View>
+  );
+}
+
+function PostsList({ posts, limit }) {
   return posts
-    .slice(0, Math.min(posts.length, 3))
+    .slice(0, Math.min(posts.length, limit || 3))
     .map((post) => (
       <PostSummary
         key={post.id}

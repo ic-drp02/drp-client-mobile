@@ -1,7 +1,6 @@
-import { createStore, applyMiddleware } from "redux";
-import thunkMiddleware from "redux-thunk";
+import api from "../util/api";
 
-import api from "./util/api";
+import { showSnackbar, hideSnackbar } from "./snackbar";
 
 function refreshPostsBegin() {
   return { type: "REFRESH_POSTS_BEGIN" };
@@ -58,52 +57,18 @@ export function deletePost(id) {
   };
 }
 
-export function showSnackbar(message, duration, action) {
-  return { type: "SHOW_SNACKBAR", message, duration, action };
-}
-
-export function hideSnackbar() {
-  return { type: "HIDE_SNACKBAR" };
-}
-
-const initialState = {
-  posts: null,
-  snackbar: {
-    visible: false,
-    message: null,
-    duration: 0,
-    action: null,
-  },
-};
-
-function reducer(state = initialState, action) {
+export default function reducer(state = null, action) {
   switch (action.type) {
     case "REFRESH_POSTS_BEGIN":
-      return { ...state, posts: null };
+      return null;
 
     case "REFRESH_POSTS_SUCCESS":
-      return { ...state, posts: action.posts };
+      return action.posts;
 
     case "DELETE_POST_SUCCESS":
-      return { ...state, posts: state.posts.filter((p) => p.id !== action.id) };
-
-    case "SHOW_SNACKBAR":
-      return {
-        ...state,
-        snackbar: {
-          visible: true,
-          message: action.message,
-          duration: action.duration,
-          action: action.action,
-        },
-      };
-
-    case "HIDE_SNACKBAR":
-      return { ...state, snackbar: { ...state.snackbar, visible: false } };
+      return state.posts.filter((p) => p.id !== action.id);
 
     default:
       return state;
   }
 }
-
-export default createStore(reducer, applyMiddleware(thunkMiddleware));
