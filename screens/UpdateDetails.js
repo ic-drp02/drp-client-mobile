@@ -1,6 +1,13 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Appbar, Button, Snackbar } from "react-native-paper";
+import {
+  Appbar,
+  Button,
+  Snackbar,
+  Portal,
+  Dialog,
+  Paragraph,
+} from "react-native-paper";
 import { useDispatch } from "react-redux";
 
 import UpdateData from "../components/UpdateData.js";
@@ -10,10 +17,34 @@ import { deletePost } from "../store";
 export default function UpdateDetails({ route, navigation }) {
   const { postId } = route.params;
   const dispatch = useDispatch();
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const del = useCallback(() => {
     dispatch(deletePost(postId)).then(() => navigation.goBack());
   }, [postId]);
+
+  function DeleteConfirmationDialog() {
+    return (
+      <Dialog visible={confirmDelete} onDismiss={() => setConfirmDelete(false)}>
+        <Dialog.Title>Delete post</Dialog.Title>
+        <Dialog.Content>
+          <Paragraph>Are you sure you want to delete this post?</Paragraph>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button
+            color="red"
+            onPress={() => {
+              setConfirmDelete(false);
+              del();
+            }}
+          >
+            Delete
+          </Button>
+          <Button onPress={() => setConfirmDelete(false)}>Cancel</Button>
+        </Dialog.Actions>
+      </Dialog>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -30,10 +61,13 @@ export default function UpdateDetails({ route, navigation }) {
             mode="contained"
             color="red"
             style={styles.button}
-            onPress={() => del(postId)}
+            onPress={() => setConfirmDelete(true)}
           >
             Delete
           </Button>
+          <Portal>
+            <DeleteConfirmationDialog />
+          </Portal>
         </View>
       </View>
     </View>
