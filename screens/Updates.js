@@ -1,11 +1,27 @@
-import React from "react";
-import { View, ScrollView } from "react-native";
-import { Appbar } from "react-native-paper";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, ScrollView, RefreshControl } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { Appbar, ProgressBar } from "react-native-paper";
 
-import LatestUpdates from "../components/LatestUpdates.js";
+import PostsList from "../components/PostsList";
+import { refreshPosts } from "../store";
 
-export default function Question({ navigation }) {
+export default function Updates({ navigation }) {
+  const posts = useSelector((s) => s.posts);
+  const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
+
   const fullHeight = { flex: 1 };
+
+  const refresh = async () => {
+    setRefreshing(true);
+    await dispatch(refreshPosts());
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   return (
     <View style={fullHeight}>
@@ -14,8 +30,13 @@ export default function Question({ navigation }) {
         <Appbar.Content title="All Updates" />
       </Appbar.Header>
       <View style={fullHeight}>
-        <ScrollView contentContainerStyle={{ padding: 16 }}>
-          <LatestUpdates />
+        <ScrollView
+          contentContainerStyle={{ padding: 16 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+          }
+        >
+          <PostsList posts={posts || []} />
         </ScrollView>
       </View>
     </View>

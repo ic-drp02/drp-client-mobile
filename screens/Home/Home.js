@@ -1,11 +1,22 @@
-import React from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
-import { Appbar, Button, Text, Title, Surface } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, ScrollView, RefreshControl } from "react-native";
+import { Appbar, Button, Title, ProgressBar } from "react-native-paper";
+import { useSelector, useDispatch } from "react-redux";
 
-import PostSummary from "../../components/PostSummary.js";
-import LatestUpdates from "../../components/LatestUpdates.js";
+import PostSummary from "../../components/PostSummary";
+import PostsList from "../../components/PostsList";
+
+import { refreshPosts } from "../../store";
 
 export default function Home({ navigation }) {
+  const posts = useSelector((s) => s.posts);
+  const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    dispatch(refreshPosts());
+  }, []);
+
   return (
     <>
       <Appbar.Header>
@@ -16,7 +27,18 @@ export default function Home({ navigation }) {
           onPress={() => navigation.navigate("Search")}
         />
       </Appbar.Header>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              dispatch(refreshPosts()).then(() => setRefreshing(false));
+            }}
+          />
+        }
+      >
         <View style={styles.buttons}>
           <Button
             style={styles.button}
@@ -33,49 +55,73 @@ export default function Home({ navigation }) {
             Post an update
           </Button>
         </View>
-        <View>
-          <Title>Recently viewed</Title>
-          <PostSummary
-            title="Pre op assessment"
-            summary="New guidelines on pre op assessment for elective surgery during COVID"
-            author="Alice Smith"
-            date={Date.parse("28 Mar 2020 12:47:00 UTC")}
-          />
-          <PostSummary
-            title="Minutes from ICON Q&A"
-            summary="The official minutes from yesteray's ICON Q&A"
-            author="John Doe"
-            date={Date.parse("29 Apr 2020 15:12:00 UTC")}
-          />
-        </View>
-        <View>
-          <View style={styles.headingWithButton}>
-            <Title>Latest updates</Title>
-            <Button
-              compact
-              mode="text"
-              onPress={() => navigation.navigate("Updates")}
-            >
-              View all
-            </Button>
-          </View>
-          <LatestUpdates limit={3} />
-        </View>
-        <View>
-          <View style={styles.headingWithButton}>
-            <Title>Most Popular</Title>
-            <Button
-              compact
-              mode="text"
-              onPress={() => navigation.navigate("Updates")}
-            >
-              More
-            </Button>
-          </View>
-          <LatestUpdates limit={3} />
-        </View>
+        <RecentlyViewed />
+        <LatestUpdates
+          posts={posts}
+          onViewAll={() => navigation.navigate("Updates")}
+        />
+        <MostPopular
+          posts={posts}
+          onMore={() => navigation.navigate("Updates")}
+        />
       </ScrollView>
     </>
+  );
+}
+
+function RecentlyViewed({ ...props }) {
+  return (
+    <View {...props}>
+      <Title>Recently viewed</Title>
+      <PostSummary
+        title="Pre op assessment"
+        summary="New guidelines on pre op assessment for elective surgery during COVID"
+        author="Alice Smith"
+        date={Date.parse("28 Mar 2020 12:47:00 UTC")}
+      />
+      <PostSummary
+        title="Minutes from ICON Q&A"
+        summary="The official minutes from yesteray's ICON Q&A"
+        author="John Doe"
+        date={Date.parse("29 Apr 2020 15:12:00 UTC")}
+      />
+    </View>
+  );
+}
+
+function LatestUpdates({ posts, onViewAll, ...props }) {
+  return (
+    <View {...props}>
+      <View style={styles.headingWithButton}>
+        <Title>Latest updates</Title>
+        <Button compact mode="text" onPress={onViewAll}>
+          View all
+        </Button>
+      </View>
+      {posts ? (
+        <PostsList posts={posts} limit={3} />
+      ) : (
+        <ProgressBar indeterminate />
+      )}
+    </View>
+  );
+}
+
+function MostPopular({ posts, onMore, ...props }) {
+  return (
+    <View {...props}>
+      <View style={styles.headingWithButton}>
+        <Title>Most Popular</Title>
+        <Button compact mode="text" onPress={onMore}>
+          More
+        </Button>
+      </View>
+      {posts ? (
+        <PostsList posts={posts} limit={3} />
+      ) : (
+        <ProgressBar indeterminate />
+      )}
+    </View>
   );
 }
 

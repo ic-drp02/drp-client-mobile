@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
+import { useDispatch } from "react-redux";
 import {
   View,
   Keyboard,
@@ -17,11 +18,11 @@ import {
 } from "react-native-paper";
 
 import Dropdown from "../components/Dropdown";
-import SnackbarContext from "../SnackbarContext";
 import IosKeyboardAvoidingView from "../components/IosKeyboardAvoidingView.js";
 
 import { Grade } from "drp-api-js";
 import api from "../util/api";
+import { showSnackbar, hideSnackbar } from "../store";
 
 const grades = Object.keys(Grade).map((g) => ({
   label: g == "CoreTrainee" ? "Core trainee" : g,
@@ -39,7 +40,7 @@ export default function Question({ navigation }) {
   const [query, setQuery] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
-  const snackbar = useContext(SnackbarContext);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     api.getSites().then((res) => {
@@ -71,13 +72,12 @@ export default function Question({ navigation }) {
         if (res.success) {
           navigation.replace("QuestionSubmitted");
         } else {
-          snackbar.show(
-            "An error occurred while submitting your questions",
-            Snackbar.DURATION_SHORT,
-            {
-              label: "ok",
-              onPress: (hide) => hide(),
-            }
+          dispatch(
+            showSnackbar(
+              "An error occurred while submitting your questions",
+              Snackbar.DURATION_SHORT,
+              { label: "ok", onPress: () => dispatch(hideSnackbar()) }
+            )
           );
         }
       });

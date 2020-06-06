@@ -1,18 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { Provider as ReduxProvider } from "react-redux";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import {
-  DefaultTheme,
-  Provider as PaperProvider,
-  Snackbar,
-} from "react-native-paper";
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 
 import SideBar from "./components/SideBar.js";
 import AppNavigation from "./screens/AppNavigation";
+import AppSnackbar from "./components/AppSnackbar";
 
-import SnackbarContext from "./SnackbarContext";
+import store from "./store";
+import * as notifications from "./util/notifications.js";
 
 const theme = {
   ...DefaultTheme,
@@ -26,45 +25,14 @@ const theme = {
 const DrawerNavigator = createDrawerNavigator();
 
 export default function App() {
-  const [snackbar, setSnackbar] = useState({
-    visible: false,
-    message: undefined,
-    duration: undefined,
-    action: undefined,
-    show(message, duration, action) {
-      setSnackbar({ ...snackbar, visible: true, message, duration, action });
-    },
-  });
-
-  function hideSnackbar() {
-    setSnackbar({ ...snackbar, visible: false });
-  }
-
-  function AppSnackbar() {
-    let label = undefined;
-    let onPress = undefined;
-
-    if (!!snackbar.action) {
-      label = snackbar.action.label;
-      onPress = () =>
-        snackbar.action.onPress && snackbar.action.onPress(hideSnackbar);
-    }
-
-    return (
-      <Snackbar
-        visible={snackbar.visible}
-        duration={snackbar.duration}
-        onDismiss={hideSnackbar}
-        action={{ label, onPress }}
-      >
-        {snackbar.message}
-      </Snackbar>
-    );
-  }
+  useEffect(() => {
+    notifications.registerForPushNotifications();
+    notifications.registerNotificationHandlers();
+  }, []);
 
   return (
     <PaperProvider theme={theme}>
-      <SnackbarContext.Provider value={snackbar}>
+      <ReduxProvider store={store}>
         <NavigationContainer>
           <DrawerNavigator.Navigator
             initialRouteName="AppNavigation"
@@ -77,7 +45,7 @@ export default function App() {
           </DrawerNavigator.Navigator>
         </NavigationContainer>
         <AppSnackbar />
-      </SnackbarContext.Provider>
+      </ReduxProvider>
     </PaperProvider>
   );
 }
