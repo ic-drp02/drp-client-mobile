@@ -60,13 +60,13 @@ export function deletePost(id) {
 export default function reducer(state = null, action) {
   switch (action.type) {
     case "REFRESH_POSTS_BEGIN":
-      return null;
+      return state;
 
     case "REFRESH_POSTS_SUCCESS":
       return action.posts;
 
     case "DELETE_POST_SUCCESS":
-      return state.posts.filter((p) => p.id !== action.id);
+      return state.filter((p) => p.id !== action.id);
 
     default:
       return state;

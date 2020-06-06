@@ -12,7 +12,7 @@ export default function UpdateDetails({ route, navigation }) {
   const dispatch = useDispatch();
 
   const del = useCallback(() => {
-    dispatch(deletePost(postId).then(() => navigation.goBack()));
+    dispatch(deletePost(postId)).then(() => navigation.goBack());
   }, [postId]);
 
   return (
