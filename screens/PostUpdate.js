@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -221,7 +221,6 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                   }
                   onCancel={() => setRenameDialogVisible(false)}
                   onRenameTo={(newName) => {
-                    let oldName = files[renamedFile].name;
                     setFiles(
                       files.map((f, i) => {
                         return i !== renamedFile

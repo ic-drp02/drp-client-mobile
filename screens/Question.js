@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   View,
   Keyboard,
@@ -8,21 +8,19 @@ import {
   StyleSheet,
 } from "react-native";
 
-import {
-  Appbar,
-  Button,
-  Text,
-  TextInput,
-  ProgressBar,
-  Snackbar,
-} from "react-native-paper";
+import { Appbar, Button, Text, TextInput, Snackbar } from "react-native-paper";
 
 import Dropdown from "../components/Dropdown";
 import IosKeyboardAvoidingView from "../components/IosKeyboardAvoidingView.js";
 
 import { Grade } from "drp-api-js";
 import api from "../util/api";
-import { showSnackbar, hideSnackbar } from "../store";
+import {
+  showSnackbar,
+  hideSnackbar,
+  fetchSites,
+  fetchSubjects,
+} from "../store";
 
 const grades = Object.keys(Grade).map((g) => ({
   label: g == "CoreTrainee" ? "Core trainee" : g,
@@ -30,8 +28,9 @@ const grades = Object.keys(Grade).map((g) => ({
 }));
 
 export default function Question({ navigation }) {
-  const [sites, setSites] = useState(null);
-  const [subjects, setSubjects] = useState(null);
+  const dispatch = useDispatch();
+  const sites = useSelector((s) => s.questions.sites);
+  const subjects = useSelector((s) => s.questions.subjects);
 
   const [site, setSite] = useState(undefined);
   const [grade, setGrade] = useState(undefined);
@@ -40,17 +39,10 @@ export default function Question({ navigation }) {
   const [query, setQuery] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    api.getSites().then((res) => {
-      res.data.length > 0 && setSite(res.data[0].id);
-      setSites(res.data);
-    });
-    api.getQuestionSubjects().then((res) => {
-      res.data.length > 0 && setSubject(res.data[0].id);
-      setSubjects(res.data);
-    });
+    dispatch(fetchSites());
+    dispatch(fetchSubjects());
   }, []);
 
   const submitQuestion = useCallback(() => {
@@ -74,7 +66,7 @@ export default function Question({ navigation }) {
         } else {
           dispatch(
             showSnackbar(
-              "An error occurred while submitting your questions",
+              "An error occurred while submitting your question",
               Snackbar.DURATION_SHORT,
               { label: "ok", onPress: () => dispatch(hideSnackbar()) }
             )
@@ -106,61 +98,54 @@ export default function Question({ navigation }) {
         </Appbar.Header>
       </TouchableWithoutFeedback>
       <View style={{ flex: 1 }}>
-        {sites === null || subjects === null ? (
-          <ProgressBar indeterminate />
-        ) : (
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
-            <IosKeyboardAvoidingView>
-              <ScrollView keyboardShouldPersistTaps="handled">
-                <View style={styles.formContainer}>
-                  <DropdownField
-                    label="Which Imperial site are you at?"
-                    items={siteItems}
-                    selected={site}
-                    onSelectionChange={(s) => setSite(s)}
-                  />
-                  <DropdownField
-                    label="What is your grade?"
-                    items={grades}
-                    selected={grade}
-                    onSelectionChange={(v) => setGrade(v)}
-                  />
-                  <TextField
-                    label="What is your specialty?"
-                    short="Specialty"
-                    onChangeText={(v) => setSpecialty(v)}
-                  />
-                  <DropdownField
-                    label="What is your question about?"
-                    items={subjectItems}
-                    selected={subject}
-                    onSelectionChange={(s) => setSubject(s)}
-                  />
-                  <TextInput
-                    label="Query"
-                    mode="outlined"
-                    multiline={true}
-                    numberOfLines={7}
-                    onChangeText={(v) => setQuery(v)}
-                    style={styles.fieldContainer}
-                  />
-                  <Button
-                    mode="contained"
-                    onPress={submitQuestion}
-                    disabled={submitting}
-                    loading={submitting}
-                    style={styles.submit}
-                  >
-                    Submit
-                  </Button>
-                </View>
-              </ScrollView>
-            </IosKeyboardAvoidingView>
-          </TouchableWithoutFeedback>
-        )}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <IosKeyboardAvoidingView>
+            <ScrollView keyboardShouldPersistTaps="handled">
+              <View style={styles.formContainer}>
+                <DropdownField
+                  label="Which Imperial site are you at?"
+                  items={siteItems}
+                  selected={site}
+                  onSelectionChange={(s) => setSite(s)}
+                />
+                <DropdownField
+                  label="What is your grade?"
+                  items={grades}
+                  selected={grade}
+                  onSelectionChange={(v) => setGrade(v)}
+                />
+                <TextField
+                  label="What is your specialty?"
+                  short="Specialty"
+                  onChangeText={(v) => setSpecialty(v)}
+                />
+                <DropdownField
+                  label="What is your question about?"
+                  items={subjectItems}
+                  selected={subject}
+                  onSelectionChange={(s) => setSubject(s)}
+                />
+                <TextInput
+                  label="Query"
+                  mode="outlined"
+                  multiline={true}
+                  numberOfLines={7}
+                  onChangeText={(v) => setQuery(v)}
+                  style={styles.fieldContainer}
+                />
+                <Button
+                  mode="contained"
+                  onPress={submitQuestion}
+                  disabled={submitting}
+                  loading={submitting}
+                  style={styles.submit}
+                >
+                  Submit
+                </Button>
+              </View>
+            </ScrollView>
+          </IosKeyboardAvoidingView>
+        </TouchableWithoutFeedback>
       </View>
     </View>
   );
