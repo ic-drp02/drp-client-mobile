@@ -21,7 +21,9 @@ export default function Question({ navigation }) {
     const subjects = sRes.data;
 
     for (const subject of subjects) {
-      const count = qRes.data.filter((q) => q.subject.id == subject.id).length;
+      const count = qRes.data.filter(
+        (q) => q.subject.id === subject.id && !q.resolved
+      ).length;
       subject.count = count;
     }
 

@@ -19,12 +19,22 @@ export default function Question({ route, navigation }) {
 
   const [refreshing, setRefreshing] = useState(true);
   const [questions, setQuestions] = useState(null);
+  const [resolving, setResolving] = useState(false);
 
   async function refresh() {
     setRefreshing(true);
     const res = await api.getQuestions();
-    setQuestions(res.data.filter((q) => q.subject.id === subject.id));
+    setQuestions(
+      res.data.filter((q) => q.subject.id === subject.id && !q.resolved)
+    );
     setRefreshing(false);
+  }
+
+  async function resolveAll() {
+    setResolving(true);
+    await Promise.all(questions.map((q) => api.resolveQuestion(q.id)));
+    setResolving(false);
+    setQuestions([]);
   }
 
   useEffect(() => {
@@ -52,7 +62,9 @@ export default function Question({ route, navigation }) {
                     mode="contained"
                     style={{ margin: 4 }}
                     icon="check-all"
-                    onPress={() => setQuestions([])}
+                    disabled={resolving}
+                    loading={resolving}
+                    onPress={resolveAll}
                   >
                     Resolve all
                   </Button>
@@ -104,6 +116,8 @@ function QuestionCard({ question, onResolved }) {
     color: theme.colors.placeholder,
   };
 
+  const [resolving, setResolving] = useState(false);
+
   return (
     <Card style={{ margin: 4 }}>
       <Card.Content>
@@ -136,8 +150,19 @@ function QuestionCard({ question, onResolved }) {
         <Divider style={{ marginTop: 8 }} />
       </Card.Content>
       <Card.Actions>
-        <Button compact onPress={() => onResolved(question)}>
-          Resolved
+        <Button
+          compact
+          disabled={resolving}
+          loading={resolving}
+          onPress={async () => {
+            setResolving(true);
+            const res = await api.resolveQuestion(question.id);
+            if (res.success) {
+              onResolved(question);
+            }
+          }}
+        >
+          Resolve
         </Button>
       </Card.Actions>
     </Card>
