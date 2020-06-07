@@ -88,10 +88,10 @@ function MainContent({ title, content }) {
 
 function TagsView({ tags }) {
   return (
-    <View style={{ flexDirection: "row" }}>
+    <View style={styles.tagsView}>
       {tags && tags.length > 0 ? (
         tags.map((tag) => (
-          <Chip key={tag.id} mode="outlined" style={styles.tagsView}>
+          <Chip key={tag.id} mode="outlined" style={styles.tag}>
             {tag.name}
           </Chip>
         ))
