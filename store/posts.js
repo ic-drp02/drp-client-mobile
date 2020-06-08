@@ -1,6 +1,7 @@
 import api from "../util/api";
 
 import { showSnackbar, hideSnackbar } from "./snackbar";
+import { removeRecentPost } from "./recents";
 
 function refreshPostsBegin() {
   return { type: "REFRESH_POSTS_BEGIN" };
@@ -54,6 +55,7 @@ export function deletePost(id) {
     );
 
     dispatch(deletePostSuccess(id));
+    dispatch(removeRecentPost(id));
   };
 }
 

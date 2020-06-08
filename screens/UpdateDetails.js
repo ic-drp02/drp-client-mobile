@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   Appbar,
@@ -12,12 +12,16 @@ import { useDispatch } from "react-redux";
 
 import UpdateData from "../components/UpdateData.js";
 
-import { deletePost } from "../store";
+import { deletePost, addRecentPost } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
   const { postId } = route.params;
   const dispatch = useDispatch();
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  useEffect(() => {
+    dispatch(addRecentPost(postId));
+  }, []);
 
   const del = useCallback(() => {
     dispatch(deletePost(postId)).then(() => navigation.goBack());

@@ -9,10 +9,9 @@ import {
 import { Appbar, Button, Title, ProgressBar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
-import PostSummary from "../../components/PostSummary";
 import PostsList from "../../components/PostsList";
 
-import { refreshPosts } from "../../store";
+import { refreshPosts, fetchRecentPosts } from "../../store";
 
 async function shouldShowWelcome() {
   const value = await AsyncStorage.getItem("SHOW_WELCOME");
@@ -23,10 +22,19 @@ async function setWelcomeShown() {
   await AsyncStorage.setItem("SHOW_WELCOME", "0");
 }
 
+function selectRecentPosts(s) {
+  return s.posts
+    ? s.recents.posts
+        .map((id) => s.posts.find((p) => p.id === id))
+        .filter((p) => !!p)
+    : [];
+}
+
 export default function Home({ navigation }) {
   const posts = useSelector((s) => s.posts);
+  const recents = useSelector(selectRecentPosts);
   const dispatch = useDispatch();
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -36,7 +44,14 @@ export default function Home({ navigation }) {
       }
     })();
     dispatch(refreshPosts());
+    dispatch(fetchRecentPosts());
   }, []);
+
+  useEffect(() => {
+    if (posts) {
+      setRefreshing(false);
+    }
+  }, [posts]);
 
   return (
     <>
@@ -55,7 +70,10 @@ export default function Home({ navigation }) {
             refreshing={refreshing}
             onRefresh={() => {
               setRefreshing(true);
-              dispatch(refreshPosts()).then(() => setRefreshing(false));
+              Promise.all([
+                dispatch(refreshPosts()),
+                dispatch(fetchRecentPosts()),
+              ]);
             }}
           />
         }
@@ -76,36 +94,29 @@ export default function Home({ navigation }) {
             Post an update
           </Button>
         </View>
-        <RecentlyViewed />
-        <LatestUpdates
-          posts={posts}
-          onViewAll={() => navigation.navigate("Updates")}
-        />
-        <MostPopular
-          posts={posts}
-          onMore={() => navigation.navigate("Updates")}
-        />
+        {recents.length > 0 && <RecentlyViewed recents={recents} />}
+        {posts && (
+          <LatestUpdates
+            posts={posts}
+            onViewAll={() => navigation.navigate("Updates")}
+          />
+        )}
+        {posts && (
+          <MostPopular
+            posts={posts}
+            onMore={() => navigation.navigate("Updates")}
+          />
+        )}
       </ScrollView>
     </>
   );
 }
 
-function RecentlyViewed({ ...props }) {
+function RecentlyViewed({ recents, ...props }) {
   return (
     <View {...props}>
       <Title>Recently viewed</Title>
-      <PostSummary
-        title="Pre op assessment"
-        summary="New guidelines on pre op assessment for elective surgery during COVID"
-        author="Alice Smith"
-        date={Date.parse("28 Mar 2020 12:47:00 UTC")}
-      />
-      <PostSummary
-        title="Minutes from ICON Q&A"
-        summary="The official minutes from yesteray's ICON Q&A"
-        author="John Doe"
-        date={Date.parse("29 Apr 2020 15:12:00 UTC")}
-      />
+      {recents && <PostsList posts={recents} limit={3} />}
     </View>
   );
 }
@@ -119,11 +130,7 @@ function LatestUpdates({ posts, onViewAll, ...props }) {
           View all
         </Button>
       </View>
-      {posts ? (
-        <PostsList posts={posts} limit={3} />
-      ) : (
-        <ProgressBar indeterminate />
-      )}
+      {posts && <PostsList posts={posts} limit={3} />}
     </View>
   );
 }
@@ -137,11 +144,7 @@ function MostPopular({ posts, onMore, ...props }) {
           More
         </Button>
       </View>
-      {posts ? (
-        <PostsList posts={posts} limit={3} />
-      ) : (
-        <ProgressBar indeterminate />
-      )}
+      {posts && <PostsList posts={posts} limit={3} />}
     </View>
   );
 }
