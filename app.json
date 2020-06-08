@@ -3,7 +3,7 @@
     "name": "ICON",
     "slug": "icon-guidelines",
     "platforms": ["ios", "android", "web"],
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon_logo.png",
     "splash": {
