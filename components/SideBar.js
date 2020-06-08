@@ -44,7 +44,7 @@ export default function SideBar({ navigation }) {
       <DarkDivider />
       <View>
         <Drawer.Item
-          icon="help-circle-outline"
+          icon="comment-question-outline"
           label="Ask a question"
           onPress={() => navigation.navigate("Question")}
         />
@@ -52,6 +52,11 @@ export default function SideBar({ navigation }) {
           icon="pencil-outline"
           label="Post an update"
           onPress={() => navigation.navigate("PostUpdate")}
+        />
+        <Drawer.Item
+          icon="information-outline"
+          label="About"
+          onPress={() => navigation.navigate("Welcome")}
         />
       </View>
     </View>
