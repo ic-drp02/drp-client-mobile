@@ -34,7 +34,7 @@ export default function Home({ navigation }) {
   const posts = useSelector((s) => s.posts);
   const recents = useSelector(selectRecentPosts);
   const dispatch = useDispatch();
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -46,6 +46,12 @@ export default function Home({ navigation }) {
     dispatch(refreshPosts());
     dispatch(fetchRecentPosts());
   }, []);
+
+  useEffect(() => {
+    if (posts) {
+      setRefreshing(false);
+    }
+  }, [posts]);
 
   return (
     <>
@@ -62,13 +68,12 @@ export default function Home({ navigation }) {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={async () => {
+            onRefresh={() => {
               setRefreshing(true);
-              await Promise.all([
+              Promise.all([
                 dispatch(refreshPosts()),
                 dispatch(fetchRecentPosts()),
               ]);
-              setRefreshing(false);
             }}
           />
         }
@@ -90,14 +95,18 @@ export default function Home({ navigation }) {
           </Button>
         </View>
         {recents.length > 0 && <RecentlyViewed recents={recents} />}
-        <LatestUpdates
-          posts={posts}
-          onViewAll={() => navigation.navigate("Updates")}
-        />
-        <MostPopular
-          posts={posts}
-          onMore={() => navigation.navigate("Updates")}
-        />
+        {posts && (
+          <LatestUpdates
+            posts={posts}
+            onViewAll={() => navigation.navigate("Updates")}
+          />
+        )}
+        {posts && (
+          <MostPopular
+            posts={posts}
+            onMore={() => navigation.navigate("Updates")}
+          />
+        )}
       </ScrollView>
     </>
   );
@@ -107,11 +116,7 @@ function RecentlyViewed({ recents, ...props }) {
   return (
     <View {...props}>
       <Title>Recently viewed</Title>
-      {recents ? (
-        <PostsList posts={recents} limit={3} />
-      ) : (
-        <ProgressBar indeterminate />
-      )}
+      {recents && <PostsList posts={recents} limit={3} />}
     </View>
   );
 }
@@ -125,11 +130,7 @@ function LatestUpdates({ posts, onViewAll, ...props }) {
           View all
         </Button>
       </View>
-      {posts ? (
-        <PostsList posts={posts} limit={3} />
-      ) : (
-        <ProgressBar indeterminate />
-      )}
+      {posts && <PostsList posts={posts} limit={3} />}
     </View>
   );
 }
@@ -143,11 +144,7 @@ function MostPopular({ posts, onMore, ...props }) {
           More
         </Button>
       </View>
-      {posts ? (
-        <PostsList posts={posts} limit={3} />
-      ) : (
-        <ProgressBar indeterminate />
-      )}
+      {posts && <PostsList posts={posts} limit={3} />}
     </View>
   );
 }
