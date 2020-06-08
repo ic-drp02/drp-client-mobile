@@ -10,6 +10,8 @@ export default function PostsListWithButton({
   buttonText,
   onButtonPress,
   posts,
+  loading,
+  limit,
   ...props
 }) {
   return (
@@ -19,10 +21,10 @@ export default function PostsListWithButton({
       onButtonPress={onButtonPress}
       {...props}
     >
-      {posts ? (
-        <PostsList posts={posts} limit={3} />
-      ) : (
+      {(loading ? loading : !posts) ? (
         <ProgressBar indeterminate />
+      ) : (
+        <PostsList posts={posts} limit={limit ? limit : 3} />
       )}
     </SectionWithButton>
   );

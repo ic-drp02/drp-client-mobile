@@ -1,28 +1,33 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
-import { Appbar, Searchbar, ProgressBar, Text } from "react-native-paper";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  StyleSheet,
+} from "react-native";
+import { Appbar, Searchbar, ProgressBar } from "react-native-paper";
 
-import PostsList from "../components/PostsList.js";
-import InfiniteScrollView from "../components/InfiniteScrollView.js";
+import PostsListWithButton from "../components/PostsListWithButton";
+import SectionWithButton from "../components/SectionWithButton";
+import AttachmentsList from "../components/AttachmentsList";
 
 import api from "../util/api";
 
 export default function Search({ navigation }) {
   const DEFAULT_SEARCH_LIMIT = 10;
-  const Modes = Object.freeze({
-    ALL: 0,
-    POSTS: 1,
-    FILES: 2,
-  });
-  const fullHeight = { flex: 1 };
+  const DEFAULT_RESULTS_SHOWN = 4;
 
   const ref = useRef(null);
   const [firstFocus, setFirstFocus] = useState(true);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState(true);
   const [foundPosts, setFoundPosts] = useState([]);
-  const [limit, setLimit] = useState(DEFAULT_SEARCH_LIMIT);
   const [loading, setLoading] = useState(false);
-  const [loadedAll, setLoadedAll] = useState(false);
+  const relatedFiles = [].concat
+    .apply(
+      [],
+      foundPosts.map((post) => post.files)
+    )
+    .slice(0, DEFAULT_RESULTS_SHOWN);
 
   useEffect(() => {
     return navigation.addListener("focus", () => {
@@ -34,40 +39,18 @@ export default function Search({ navigation }) {
   }, [firstFocus]);
 
   const update = useCallback(
-    ({ text, loadMore }) => {
-      if (text === "" || (text === undefined && searchText == "")) {
+    ({ text }) => {
+      if (text === "") {
         // Return [] when searching for an empty strings
         setFoundPosts([]);
         return;
       }
 
       let ignoreOutdated = false;
-      // Keep limit in a temporary variable so that it can be updated synchronously
-      let currentLimit = limit;
-
-      if (loadMore === true && !loading) {
-        if (foundPosts.length < currentLimit) {
-          // No more posts to load
-          setLoadedAll(true);
-          return;
-        }
-        currentLimit = currentLimit + DEFAULT_SEARCH_LIMIT;
-        setLimit(currentLimit);
-      } else if (!loadMore) {
-        /* Search triggered through change of search term,
-           reset limit and carry on with search */
-        currentLimit = DEFAULT_SEARCH_LIMIT;
-        setLimit(currentLimit);
-        setLoadedAll(false);
-      } else if (loading) {
-        /* Search triggered through reaching end of the list,
-           but other request is pending - cancel */
-        return;
-      }
       setLoading(true);
 
-      async function search(text, fetchNumber) {
-        const results = await api.searchPosts(text, 0, fetchNumber);
+      async function search(text) {
+        const results = await api.searchPosts(text, 0, DEFAULT_SEARCH_LIMIT);
         if (!results.success) {
           return;
         }
@@ -77,19 +60,17 @@ export default function Search({ navigation }) {
         }
       }
 
-      search(text ? text : searchText, currentLimit).then(() =>
-        setLoading(false)
-      );
+      search(text).then(() => setLoading(false));
       return () => {
         // Cancel update of found posts
         ignoreOutdated = true;
       };
     },
-    [foundPosts, searchText, limit, loading]
+    [foundPosts, loading]
   );
 
   return (
-    <View style={fullHeight}>
+    <View style={styles.fullHeight}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
@@ -106,20 +87,41 @@ export default function Search({ navigation }) {
           </View>
         </Appbar.Header>
       </TouchableWithoutFeedback>
-      <View style={fullHeight}>
+      <View style={[styles.fullHeight, styles.contentContainer]}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <InfiniteScrollView
-            onEndReached={() => update({ loadMore: true })}
-            onEndReachedThreshold={30}
-          >
-            <PostsList posts={foundPosts} />
-            {loadedAll && (
-              <Text style={{ textAlign: "center" }}>No more results</Text>
-            )}
+          <View>
+            <PostsListWithButton
+              title="Found posts"
+              buttonText="More"
+              onButtonPress={() =>
+                navigation.navigate("SearchPosts", { searchText: searchText })
+              }
+              loading={loading}
+              limit={4}
+              posts={foundPosts}
+            />
+            <SectionWithButton
+              title="Related files"
+              buttonText="More"
+              onButtonPress={() =>
+                navigation.navigate("SearchFiles", { searchText: searchText })
+              }
+            >
+              <AttachmentsList files={relatedFiles} />
+            </SectionWithButton>
             {loading && <ProgressBar indeterminate={true} />}
-          </InfiniteScrollView>
+          </View>
         </TouchableWithoutFeedback>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    padding: 16,
+  },
+  fullHeight: {
+    flex: 1,
+  },
+});
