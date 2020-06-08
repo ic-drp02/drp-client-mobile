@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ICON",
-    "slug": "icon-guidelines",
+    "slug": "drp-client-mobile",
     "platforms": ["ios", "android", "web"],
     "version": "0.1.0",
     "orientation": "portrait",
