@@ -12,6 +12,7 @@ import UpdatePosted from "./UpdatePosted.js";
 import UpdateDetails from "./UpdateDetails.js";
 import Questions from "./Questions";
 import QuestionCategory from "./QuestionCategory";
+import Welcome from "./Welcome";
 
 const StackNavigator = createStackNavigator();
 
@@ -39,6 +40,7 @@ export default function AppNavigation() {
         name="QuestionCategory"
         component={QuestionCategory}
       />
+      <StackNavigator.Screen name="Welcome" component={Welcome} />
     </StackNavigator.Navigator>
   );
 }

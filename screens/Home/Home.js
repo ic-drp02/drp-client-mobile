@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, ScrollView, RefreshControl } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  RefreshControl,
+  AsyncStorage,
+} from "react-native";
 import { Appbar, Button, Title, ProgressBar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -8,12 +14,27 @@ import PostsList from "../../components/PostsList";
 
 import { refreshPosts } from "../../store";
 
+async function shouldShowWelcome() {
+  const value = await AsyncStorage.getItem("SHOW_WELCOME");
+  return value === null || value !== "0";
+}
+
+async function setWelcomeShown() {
+  await AsyncStorage.setItem("SHOW_WELCOME", "0");
+}
+
 export default function Home({ navigation }) {
   const posts = useSelector((s) => s.posts);
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    (async () => {
+      if (await shouldShowWelcome()) {
+        navigation.navigate("Welcome");
+        await setWelcomeShown();
+      }
+    })();
     dispatch(refreshPosts());
   }, []);
 
