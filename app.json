@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "drp-client-mobile",
-    "slug": "drp-client-mobile",
+    "name": "ICON",
+    "slug": "icon-guidelines",
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ic_drp02.nhs_guidelines",
+      "package": "com.ic_drp02.icon_guidelines",
       "versionCode": 1
     },
     "androidStatusBar": {
