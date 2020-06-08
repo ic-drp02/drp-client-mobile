@@ -12,7 +12,7 @@ export default function Welcome({ navigation }) {
         top: -50,
       }}
     >
-      <View style={styles.padding}>
+      <View style={styles.root}>
         <View style={styles.imageContainer}>
           <Image
             source={require("../assets/icon_full.png")}
@@ -24,12 +24,12 @@ export default function Welcome({ navigation }) {
           Welcome to ICON, the Imperial Comms Network
         </Headline>
         <Text style={styles.text}>
-          A network designed to help you, as junior doctors, get your questions
-          to senior management.
+          A network facilitating clear communication with senior management and
+          easy access to trust guidelines
         </Text>
         <Button
           mode="contained"
-          style={{ margin: 8 }}
+          style={{ margin: 8, marginVertical: 24 }}
           onPress={() => navigation.goBack()}
         >
           Start
