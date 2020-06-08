@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Image } from "react-native";
-import { Button, Text, Headline } from "react-native-paper";
+import { View, Image, StyleSheet } from "react-native";
+import { Button, Text, Headline, Checkbox } from "react-native-paper";
 
 export default function Welcome({ navigation }) {
   return (
@@ -12,22 +12,18 @@ export default function Welcome({ navigation }) {
         top: -50,
       }}
     >
-      <View>
-        <View style={{ height: 200, marginTop: 24, padding: 8 }}>
+      <View style={styles.padding}>
+        <View style={styles.imageContainer}>
           <Image
             source={require("../assets/icon_full.png")}
-            style={{
-              width: undefined,
-              height: undefined,
-              flex: 1,
-            }}
+            style={styles.image}
             resizeMode="contain"
           />
         </View>
-        <Headline style={{ textAlign: "center", margin: 8 }}>
+        <Headline style={styles.text}>
           Welcome to ICON, the Imperial Comms Network
         </Headline>
-        <Text style={{ textAlign: "center", margin: 8 }}>
+        <Text style={styles.text}>
           A network designed to help you, as junior doctors, get your questions
           to senior management.
         </Text>
@@ -42,3 +38,23 @@ export default function Welcome({ navigation }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    padding: 16,
+  },
+  imageContainer: {
+    height: 200,
+    marginTop: 24,
+    padding: 8,
+  },
+  image: {
+    flex: 1,
+    width: undefined,
+    height: undefined,
+  },
+  text: {
+    textAlign: "center",
+    margin: 8,
+  },
+});
