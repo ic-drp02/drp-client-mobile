@@ -2,14 +2,20 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { Appbar, Searchbar, ProgressBar, Text } from "react-native-paper";
 
-import PostsList from "../../components/PostsList.js";
-import InfiniteScrollView from "../../components/InfiniteScrollView.js";
+import PostsList from "../components/PostsList.js";
+import InfiniteScrollView from "../components/InfiniteScrollView.js";
 
-import api from "../../util/api";
+import api from "../util/api";
 
 export default function Search({ navigation }) {
   const DEFAULT_SEARCH_LIMIT = 10;
+  const Modes = Object.freeze({
+    ALL: 0,
+    POSTS: 1,
+    FILES: 2,
+  });
   const fullHeight = { flex: 1 };
+
   const ref = useRef(null);
   const [firstFocus, setFirstFocus] = useState(true);
   const [searchText, setSearchText] = useState("");
@@ -52,6 +58,7 @@ export default function Search({ navigation }) {
            reset limit and carry on with search */
         currentLimit = DEFAULT_SEARCH_LIMIT;
         setLimit(currentLimit);
+        setLoadedAll(false);
       } else if (loading) {
         /* Search triggered through reaching end of the list,
            but other request is pending - cancel */
@@ -109,9 +116,9 @@ export default function Search({ navigation }) {
             {loadedAll && (
               <Text style={{ textAlign: "center" }}>No more results</Text>
             )}
+            {loading && <ProgressBar indeterminate={true} />}
           </InfiniteScrollView>
         </TouchableWithoutFeedback>
-        {loading && <ProgressBar indeterminate={true} />}
       </View>
     </View>
   );

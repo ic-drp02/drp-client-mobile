@@ -6,12 +6,12 @@ import {
   RefreshControl,
   AsyncStorage,
 } from "react-native";
-import { Appbar, Button, Title, ProgressBar } from "react-native-paper";
+import { Appbar, Button, Title } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
-import PostsList from "../../components/PostsList";
+import PostsListWithButton from "../components/PostsListWithButton";
 
-import { refreshPosts, fetchRecentPosts } from "../../store";
+import { refreshPosts, refreshPosts, fetchRecentPosts } from "../../store";
 
 async function shouldShowWelcome() {
   const value = await AsyncStorage.getItem("SHOW_WELCOME");
@@ -96,15 +96,19 @@ export default function Home({ navigation }) {
         </View>
         {recents.length > 0 && <RecentlyViewed recents={recents} />}
         {posts && (
-          <LatestUpdates
+          <PostsListWithButton
+            title="Latest updates"
+            buttonText="View all"
+            onButtonPress={() => navigation.navigate("Updates")}
             posts={posts}
-            onViewAll={() => navigation.navigate("Updates")}
           />
         )}
         {posts && (
-          <MostPopular
+          <PostsListWithButton
+            title="Most popular"
+            buttonText="More"
+            onButtonPress={() => navigation.navigate("Updates")}
             posts={posts}
-            onMore={() => navigation.navigate("Updates")}
           />
         )}
       </ScrollView>
@@ -121,41 +125,9 @@ function RecentlyViewed({ recents, ...props }) {
   );
 }
 
-function LatestUpdates({ posts, onViewAll, ...props }) {
-  return (
-    <View {...props}>
-      <View style={styles.headingWithButton}>
-        <Title>Latest updates</Title>
-        <Button compact mode="text" onPress={onViewAll}>
-          View all
-        </Button>
-      </View>
-      {posts && <PostsList posts={posts} limit={3} />}
-    </View>
-  );
-}
-
-function MostPopular({ posts, onMore, ...props }) {
-  return (
-    <View {...props}>
-      <View style={styles.headingWithButton}>
-        <Title>Most Popular</Title>
-        <Button compact mode="text" onPress={onMore}>
-          More
-        </Button>
-      </View>
-      {posts && <PostsList posts={posts} limit={3} />}
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   contentContainer: {
     padding: 16,
-  },
-  headingWithButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
   },
   buttons: {
     flexDirection: "row",

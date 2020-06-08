@@ -3,8 +3,8 @@ import { AsyncStorage } from "react-native";
 
 import { createStackNavigator } from "@react-navigation/stack";
 
-import Home from "./Home/Home.js";
-import Search from "./Home/Search.js";
+import Home from "./Home.js";
+import Search from "./Search.js";
 import Question from "./Question.js";
 import QuestionSubmitted from "./QuestionSubmitted.js";
 import PostUpdate from "./PostUpdate.js";
