@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Provider as ReduxProvider } from "react-redux";
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -25,15 +25,19 @@ const theme = {
 const DrawerNavigator = createDrawerNavigator();
 
 export default function App() {
+  const navRef = useRef();
+
   useEffect(() => {
     notifications.registerForPushNotifications();
-    notifications.registerNotificationHandlers();
+    notifications.registerNotificationHandlers((postId) => {
+      navRef.current.navigate("UpdateDetails", { postId });
+    });
   }, []);
 
   return (
     <PaperProvider theme={theme}>
       <ReduxProvider store={store}>
-        <NavigationContainer>
+        <NavigationContainer ref={navRef}>
           <DrawerNavigator.Navigator
             initialRouteName="AppNavigation"
             drawerContent={SideBar}

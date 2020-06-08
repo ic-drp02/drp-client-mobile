@@ -39,7 +39,7 @@ export async function registerForPushNotifications() {
   }
 }
 
-export function registerNotificationHandlers() {
+export function registerNotificationHandlers(onSelect) {
   // Dismiss any current notifications when the app is opened.
   AppState.addEventListener("change", async (s) => {
     if (s === "active") {
@@ -48,10 +48,14 @@ export function registerNotificationHandlers() {
   });
 
   // Refresh posts if notification received when app is open.
-  Notifications.addListener(async () => {
+  Notifications.addListener(async (n) => {
     if (AppState.currentState === "active") {
       await Notifications.dismissAllNotificationsAsync();
       store.dispatch(refreshPosts());
+    }
+
+    if (onSelect && n.origin === "selected") {
+      onSelect(n.data.id);
     }
   });
 }
