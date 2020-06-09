@@ -2,19 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Linking, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 
-import {
-  Headline,
-  ActivityIndicator,
-  Divider,
-  Chip,
-  Avatar,
-  IconButton,
-  Card,
-  List,
-} from "react-native-paper";
+import { Headline, ActivityIndicator, Divider, Chip } from "react-native-paper";
+
+import AttachmentsAccordion from "./AttachmentsAccordion.js";
 
 import api from "../util/api.js";
-import { getExtensionNoDot, downloadFile, openFile } from "../util/files.js";
 
 export default function UpdateData(props) {
   const [data, setData] = useState(undefined);
@@ -57,7 +49,7 @@ export default function UpdateData(props) {
         <View style={{ marginVertical: 16 }}>
           <TagsView tags={data.tags} />
         </View>
-        <AttachmentsView files={data.files} />
+        <AttachmentsAccordion files={data.files} />
       </View>
     </>
   );
@@ -101,69 +93,6 @@ function TagsView({ tags }) {
         </Chip>
       )}
     </View>
-  );
-}
-
-function AttachmentsView({ files }) {
-  return (
-    <View>
-      {files.length > 0 && (
-        <Card style={{ marginBottom: 20 }}>
-          <List.Accordion
-            title="Attached files"
-            left={(props) => <List.Icon {...props} icon="file" />}
-          >
-            {files.map((file) => (
-              <Attachment key={file.id} file={file} />
-            ))}
-          </List.Accordion>
-        </Card>
-      )}
-    </View>
-  );
-}
-
-function Attachment({ file }) {
-  const extension = getExtensionNoDot(file.name).toUpperCase();
-
-  function FileIcon() {
-    if (getExtensionNoDot(file.name).length <= 3) {
-      return (
-        <Avatar.Text style={styles.fileIcon} size={40} label={extension} />
-      );
-    } else {
-      return <Avatar.Icon style={styles.fileIcon} size={40} icon="file" />;
-    }
-  }
-
-  function DownloadButton(props) {
-    return (
-      <IconButton
-        {...props}
-        icon="arrow-down"
-        onPress={() => {
-          downloadFile(
-            api.baseUrl + "/api/rawfiles/download/" + file.id,
-            file.id,
-            file.name
-          );
-        }}
-      />
-    );
-  }
-
-  function open() {
-    openFile(api.baseUrl + "/api/rawfiles/view/" + file.id, file.id, file.name);
-  }
-
-  return (
-    <List.Item
-      key={file.id}
-      title={file.name}
-      left={FileIcon}
-      right={DownloadButton}
-      onPress={open}
-    />
   );
 }
 
