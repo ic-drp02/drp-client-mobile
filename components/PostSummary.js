@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 
-import { Text, useTheme } from "react-native-paper";
+import { Text, useTheme, Chip } from "react-native-paper";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -9,23 +9,26 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { timeElapsedSince } from "../util/date.js";
 import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
+import { openFile } from "../util/files.js";
+import api from "../util/api";
 
-export default function PostSummary(props) {
+export default function PostSummary({ post, showAttachments }) {
   const theme = useTheme();
   const navigation = useNavigation();
+  const date = new Date(post.created_at);
 
-  const [ago, setAgo] = useState(timeElapsedSince(props.date));
+  const [ago, setAgo] = useState(timeElapsedSince(date));
 
   // Update the shown time every 2 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setAgo(timeElapsedSince(props.date));
+      setAgo(timeElapsedSince(date));
     }, 2000);
     return () => clearInterval(interval);
   }, []);
 
   let icon;
-  if (!props.files || props.files.length === 0) {
+  if (!post.files || post.files.length === 0) {
     icon = <Icon name="bell-outline" size={35} />;
   } else {
     icon = <Icon name="file-outline" size={35} />;
@@ -34,22 +37,51 @@ export default function PostSummary(props) {
   return (
     <TouchableOpacity
       onPress={() => {
-        // TODO: Just for demo, remove later
-        if (props.id !== undefined) {
-          navigation.navigate("UpdateDetails", { postId: props.id });
-        }
+        navigation.navigate("UpdateDetails", { postId: post.id });
       }}
     >
       <View style={[styles.row, styles.margin]}>
         <View style={styles.iconView}>{icon}</View>
         <View style={[styles.column, styles.wrap]}>
-          <Text style={[styles.lmargin, styles.postTitle]}>{props.title}</Text>
+          <Text style={[styles.lmargin, styles.postTitle]}>{post.title}</Text>
           <Text style={[styles.lmargin, styles.postInfo]}>
-            {(!props.author ? "Anonymous user" : props.author) + ", " + ago}
+            {(!post.author ? "Anonymous user" : post.author) + ", " + ago}
           </Text>
-          <Text style={[styles.lmargin, styles.postSummary]}>
-            {props.summary}
-          </Text>
+          {post.summary != "" && (
+            <Text style={[styles.lmargin, styles.postSummary]}>
+              {post.summary}
+            </Text>
+          )}
+          {showAttachments && (
+            <View
+              style={[
+                {
+                  marginLeft: 10,
+                  marginTop: 5,
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                },
+              ]}
+            >
+              {post.files.map((file, index) => (
+                <Chip
+                  key={index}
+                  icon="file-outline"
+                  mode="outlined"
+                  onPress={() => {
+                    openFile(
+                      api.baseUrl + "/api/rawfiles/view/" + file.id,
+                      file.id,
+                      file.name
+                    );
+                  }}
+                  style={{ margin: 4 }}
+                >
+                  {file.name}
+                </Chip>
+              ))}
+            </View>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -89,4 +121,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  attachments: {},
 });
