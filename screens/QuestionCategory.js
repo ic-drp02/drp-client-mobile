@@ -8,6 +8,9 @@ import {
   Button,
   Divider,
   useTheme,
+  Portal,
+  Dialog,
+  TextInput,
 } from "react-native-paper";
 
 import { Grade } from "drp-api-js";
@@ -73,6 +76,7 @@ export default function Question({ route, navigation }) {
                   <QuestionCard
                     key={q.id}
                     question={q}
+                    onSaved={refresh}
                     onResolved={(question) =>
                       setQuestions(
                         questions.filter((q) => q.id !== question.id)
@@ -109,7 +113,7 @@ function getGrade(value) {
   }
 }
 
-function QuestionCard({ question, onResolved }) {
+function QuestionCard({ question, onResolved, onSaved }) {
   const theme = useTheme();
   const labelStyle = {
     fontStyle: "italic",
@@ -117,6 +121,9 @@ function QuestionCard({ question, onResolved }) {
   };
 
   const [resolving, setResolving] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [editContent, setEditContent] = useState(question.text);
+  const [saving, setSaving] = useState(false);
 
   return (
     <Card style={{ margin: 4 }}>
@@ -154,6 +161,14 @@ function QuestionCard({ question, onResolved }) {
           compact
           disabled={resolving}
           loading={resolving}
+          onPress={() => setEdit(true)}
+        >
+          Edit
+        </Button>
+        <Button
+          compact
+          disabled={resolving}
+          loading={resolving}
           onPress={async () => {
             setResolving(true);
             const res = await api.resolveQuestion(question.id);
@@ -164,6 +179,37 @@ function QuestionCard({ question, onResolved }) {
         >
           Resolve
         </Button>
+        <Portal>
+          <Dialog visible={edit} onDismiss={() => setEdit(false)}>
+            <Dialog.Title>Edit question</Dialog.Title>
+            <ScrollView>
+              <Dialog.Content>
+                <TextInput
+                  multiline
+                  numberOfLines={5}
+                  mode="outlined"
+                  value={editContent}
+                  onChangeText={(v) => setEditContent(v)}
+                />
+              </Dialog.Content>
+            </ScrollView>
+            <Dialog.Actions>
+              <Button
+                disabled={saving}
+                loading={saving}
+                onPress={async () => {
+                  setSaving(true);
+                  await api.updateQuestion(question.id, editContent);
+                  setSaving(false);
+                  setEdit(false);
+                  onSaved && onSaved();
+                }}
+              >
+                Save
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </Card.Actions>
     </Card>
   );
