@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
+import { AsyncStorage } from "react-native";
 
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -13,16 +14,35 @@ import UpdateDetails from "./UpdateDetails.js";
 import Questions from "./Questions";
 import QuestionCategory from "./QuestionCategory";
 import Welcome from "./Welcome";
+import Login from "./Login";
 
 const StackNavigator = createStackNavigator();
 
 export default function AppNavigation() {
+  const [loggedIn, setLoggedIn] = useState(undefined);
+
+  useEffect(() => {
+    (async () => {
+      const value = await AsyncStorage.getItem("LOGGED_IN");
+      if (!value) {
+        await AsyncStorage.setItem("LOGGED_IN", "false");
+      }
+      setLoggedIn(value === "true");
+    })();
+  }, []);
+
+  if (loggedIn === undefined) {
+    return <></>;
+  }
+
+  const initialRoute = loggedIn ? "Home" : "Login";
+
   return (
     <StackNavigator.Navigator
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="Home"
+      initialRouteName={initialRoute}
     >
       <StackNavigator.Screen name="Home" component={Home} />
       <StackNavigator.Screen name="Search" component={Search} />
@@ -41,6 +61,7 @@ export default function AppNavigation() {
         component={QuestionCategory}
       />
       <StackNavigator.Screen name="Welcome" component={Welcome} />
+      <StackNavigator.Screen name="Login" component={Login} />
     </StackNavigator.Navigator>
   );
 }

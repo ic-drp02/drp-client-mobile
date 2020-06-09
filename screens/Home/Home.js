@@ -37,12 +37,12 @@ export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      if (await shouldShowWelcome()) {
-        navigation.navigate("Welcome");
-        await setWelcomeShown();
-      }
-    })();
+    // (async () => {
+    //   if (await shouldShowWelcome()) {
+    //     navigation.navigate("Welcome");
+    //     await setWelcomeShown();
+    //   }
+    // })();
     dispatch(refreshPosts());
     dispatch(fetchRecentPosts());
   }, []);
