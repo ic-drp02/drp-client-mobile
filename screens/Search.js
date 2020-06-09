@@ -14,20 +14,14 @@ import AttachmentsList from "../components/AttachmentsList";
 import api from "../util/api";
 
 export default function Search({ navigation }) {
-  const DEFAULT_SEARCH_LIMIT = 10;
-  const DEFAULT_RESULTS_SHOWN = 4;
+  const DEFAULT_RESULTS = 4;
 
   const ref = useRef(null);
   const [firstFocus, setFirstFocus] = useState(true);
   const [searchText, setSearchText] = useState(true);
   const [foundPosts, setFoundPosts] = useState([]);
+  const [foundFiles, setFoundFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const relatedFiles = [].concat
-    .apply(
-      [],
-      foundPosts.map((post) => post.files)
-    )
-    .slice(0, DEFAULT_RESULTS_SHOWN);
 
   useEffect(() => {
     return navigation.addListener("focus", () => {
@@ -43,6 +37,7 @@ export default function Search({ navigation }) {
       if (text === "") {
         // Return [] when searching for an empty strings
         setFoundPosts([]);
+        setFoundFiles([]);
         return;
       }
 
@@ -50,13 +45,15 @@ export default function Search({ navigation }) {
       setLoading(true);
 
       async function search(text) {
-        const results = await api.searchPosts(text, 0, DEFAULT_SEARCH_LIMIT);
-        if (!results.success) {
+        const postsResults = await api.searchPosts(text, 0, DEFAULT_RESULTS);
+        const fileResults = await api.searchFiles(text, 0, DEFAULT_RESULTS);
+        if (!postsResults.success || !fileResults.success) {
           return;
         }
         if (!ignoreOutdated) {
           // Update of found posts was not cancelled by more recent search
-          setFoundPosts(results.data);
+          setFoundPosts(postsResults.data);
+          setFoundFiles(fileResults.data);
         }
       }
 
@@ -107,7 +104,7 @@ export default function Search({ navigation }) {
                 navigation.navigate("SearchFiles", { searchText: searchText })
               }
             >
-              <AttachmentsList files={relatedFiles} />
+              <AttachmentsList filesWithPosts={foundFiles} />
             </SectionWithButton>
             {loading && <ProgressBar indeterminate={true} />}
           </View>

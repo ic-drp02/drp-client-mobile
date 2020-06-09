@@ -4,14 +4,18 @@ import { Card, List } from "react-native-paper";
 
 import Attachment from "./Attachment.js";
 
-export default function attachmentsList({ files }) {
+export default function AttachmentsList({ filesWithPosts }) {
   return (
     <View>
-      {files.length > 0 && (
+      {filesWithPosts.length > 0 && (
         <Card style={{ marginBottom: 20 }}>
           <List.Section>
-            {files.map((file) => (
-              <Attachment key={file.id} file={file} />
+            {filesWithPosts.map((fileWithPost) => (
+              <Attachment
+                key={fileWithPost.file.id}
+                file={fileWithPost.file}
+                description={"From " + fileWithPost.post.title}
+              />
             ))}
           </List.Section>
         </Card>

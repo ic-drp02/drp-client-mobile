@@ -5,7 +5,7 @@ import { List, Avatar, IconButton } from "react-native-paper";
 import api from "../util/api";
 import { getExtensionNoDot, downloadFile, openFile } from "../util/files.js";
 
-export default function Attachment({ file }) {
+export default function Attachment({ file, description }) {
   const extension = getExtensionNoDot(file.name).toUpperCase();
 
   function FileIcon() {
@@ -42,6 +42,7 @@ export default function Attachment({ file }) {
     <List.Item
       key={file.id}
       title={file.name}
+      description={description}
       left={FileIcon}
       right={DownloadButton}
       onPress={open}
