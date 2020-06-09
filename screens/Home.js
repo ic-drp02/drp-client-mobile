@@ -9,18 +9,10 @@ import {
 import { Appbar, Button, Title } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
+import PostsList from "../components/PostsList";
 import PostsListWithButton from "../components/PostsListWithButton";
 
-import { refreshPosts, refreshPosts, fetchRecentPosts } from "../../store";
-
-async function shouldShowWelcome() {
-  const value = await AsyncStorage.getItem("SHOW_WELCOME");
-  return value === null || value !== "0";
-}
-
-async function setWelcomeShown() {
-  await AsyncStorage.setItem("SHOW_WELCOME", "0");
-}
+import { refreshPosts, fetchRecentPosts } from "../store";
 
 function selectRecentPosts(s) {
   return s.posts
