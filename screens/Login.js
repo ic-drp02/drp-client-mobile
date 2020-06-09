@@ -14,7 +14,7 @@ export default function Login({ navigation }) {
     setInvalid(false);
     setLoading(true);
 
-    if (email !== "test@nhs.net" || password !== "password") {
+    if ((email !== "test@nhs.net" || password !== "password") && email !== "") {
       setInvalid(true);
       setLoading(false);
       return;
