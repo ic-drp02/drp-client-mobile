@@ -27,7 +27,7 @@ export default function Login({ navigation }) {
 
   return (
     <IosKeyboardAvoidingView>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="handled">
         <View style={styles.root}>
           <View style={styles.imageContainer}>
             <Image
