@@ -35,7 +35,8 @@ export default function AppNavigation() {
     return <></>;
   }
 
-  const initialRoute = loggedIn ? "Home" : "Login";
+  // const initialRoute = loggedIn ? "Home" : "Login";
+  const initialRoute = "Login";
 
   return (
     <StackNavigator.Navigator
