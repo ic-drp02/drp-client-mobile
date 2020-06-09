@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
+import {
+  View,
+  ScrollView,
+  RefreshControl,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from "react-native";
 import {
   Appbar,
   Text,
@@ -181,33 +187,37 @@ function QuestionCard({ question, onResolved, onSaved }) {
         </Button>
         <Portal>
           <Dialog visible={edit} onDismiss={() => setEdit(false)}>
-            <Dialog.Title>Edit question</Dialog.Title>
-            <ScrollView>
-              <Dialog.Content>
-                <TextInput
-                  multiline
-                  numberOfLines={5}
-                  mode="outlined"
-                  value={editContent}
-                  onChangeText={(v) => setEditContent(v)}
-                />
-              </Dialog.Content>
-            </ScrollView>
-            <Dialog.Actions>
-              <Button
-                disabled={saving}
-                loading={saving}
-                onPress={async () => {
-                  setSaving(true);
-                  await api.updateQuestion(question.id, editContent);
-                  setSaving(false);
-                  setEdit(false);
-                  onSaved && onSaved();
-                }}
-              >
-                Save
-              </Button>
-            </Dialog.Actions>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View>
+                <Dialog.Title>Edit question</Dialog.Title>
+                <ScrollView>
+                  <Dialog.Content>
+                    <TextInput
+                      multiline
+                      numberOfLines={5}
+                      mode="outlined"
+                      value={editContent}
+                      onChangeText={(v) => setEditContent(v)}
+                    />
+                  </Dialog.Content>
+                </ScrollView>
+                <Dialog.Actions>
+                  <Button
+                    disabled={saving}
+                    loading={saving}
+                    onPress={async () => {
+                      setSaving(true);
+                      await api.updateQuestion(question.id, editContent);
+                      setSaving(false);
+                      setEdit(false);
+                      onSaved && onSaved();
+                    }}
+                  >
+                    Save
+                  </Button>
+                </Dialog.Actions>
+              </View>
+            </TouchableWithoutFeedback>
           </Dialog>
         </Portal>
       </Card.Actions>
