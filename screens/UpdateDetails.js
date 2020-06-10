@@ -8,7 +8,7 @@ import {
   Dialog,
   Paragraph,
 } from "react-native-paper";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import UpdateData from "../components/UpdateData.js";
 
@@ -17,6 +17,7 @@ import { deletePost, addRecentPost } from "../store";
 export default function UpdateDetails({ route, navigation }) {
   const { postId } = route.params;
   const dispatch = useDispatch();
+  const user = useSelector((s) => s.auth.user);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
@@ -60,19 +61,21 @@ export default function UpdateDetails({ route, navigation }) {
         <View style={{ flex: 1 }}>
           <UpdateData id={postId} />
         </View>
-        <View>
-          <Button
-            mode="contained"
-            color="red"
-            style={styles.button}
-            onPress={() => setConfirmDelete(true)}
-          >
-            Delete
-          </Button>
-          <Portal>
-            <DeleteConfirmationDialog />
-          </Portal>
-        </View>
+        {user.role === "admin" && (
+          <View>
+            <Button
+              mode="contained"
+              color="red"
+              style={styles.button}
+              onPress={() => setConfirmDelete(true)}
+            >
+              Delete
+            </Button>
+            <Portal>
+              <DeleteConfirmationDialog />
+            </Portal>
+          </View>
+        )}
       </View>
     </View>
   );

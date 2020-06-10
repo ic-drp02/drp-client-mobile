@@ -4,16 +4,27 @@ export function login(email, password) {
   return async function (dispatch) {
     dispatch({ type: "LOGIN_BEGIN" });
 
-    const res = await fetch(api.baseUrl + "/auth/authenticate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+    let res;
+    try {
+      res = await fetch(api.baseUrl + "/auth/authenticate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+    } catch {
+      dispatch({
+        type: "REGISTER_ERROR",
+        error: {
+          type: "Unknown",
+          message: "An eerror occurred while communicating with the server.",
+        },
+      });
+    }
 
     const body = await res.json();
 
@@ -42,14 +53,25 @@ export function register(email, password) {
   return async function (dispatch) {
     dispatch({ type: "REGISTER_BEGIN" });
 
-    const res = await fetch(api.baseUrl + "/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+    let res;
+    try {
+      res = await fetch(api.baseUrl + "/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+    } catch {
+      dispatch({
+        type: "REGISTER_ERROR",
+        error: {
+          type: "Unknown",
+          message: "An eerror occurred while communicating with the server.",
+        },
+      });
+    }
 
     if (res.status !== 200) {
       const body = await res.json();
