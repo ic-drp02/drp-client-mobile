@@ -28,7 +28,9 @@ export default function PostSummary({ post, showAttachments }) {
   }, []);
 
   let icon;
-  if (!post.files || post.files.length === 0) {
+  if (post.is_guideline) {
+    icon = <Icon name="information-outline" size={35} />;
+  } else if (!post.files || post.files.length === 0) {
     icon = <Icon name="bell-outline" size={35} />;
   } else {
     icon = <Icon name="file-outline" size={35} />;

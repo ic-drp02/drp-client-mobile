@@ -10,6 +10,7 @@ import PostUpdate from "./PostUpdate.js";
 import Updates from "./Updates.js";
 import UpdatePosted from "./UpdatePosted.js";
 import UpdateDetails from "./UpdateDetails.js";
+import Guidelines from "./Guidelines.js";
 import Questions from "./Questions";
 import QuestionCategory from "./QuestionCategory";
 import Welcome from "./Welcome";
@@ -33,6 +34,7 @@ export default function AppNavigation() {
       <StackNavigator.Screen name="PostUpdate" component={PostUpdate} />
       <StackNavigator.Screen name="UpdatePosted" component={UpdatePosted} />
       <StackNavigator.Screen name="UpdateDetails" component={UpdateDetails} />
+      <StackNavigator.Screen name="Guidelines" component={Guidelines} />
       <StackNavigator.Screen name="Questions" component={Questions} />
       <StackNavigator.Screen
         name="QuestionCategory"
