@@ -1,24 +1,45 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, RefreshControl } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { Appbar, ProgressBar } from "react-native-paper";
+import { Appbar, List, Badge } from "react-native-paper";
 
-import PostsList from "../components/PostsList";
 import { refreshPosts } from "../store";
 
-export default function Updates({ navigation }) {
-  const posts = useSelector((s) => s.posts);
-  const guidelines = posts.filter((p) => p.is_guideline);
-  const dispatch = useDispatch();
-  const [refreshing, setRefreshing] = useState(false);
+import api from "../util/api";
 
+export default function Question({ navigation }) {
   const fullHeight = { flex: 1 };
 
-  const refresh = async () => {
+  const [refreshing, setRefreshing] = useState(true);
+  const posts = useSelector((s) => s.posts);
+  const dispatch = useDispatch();
+  const guidelines = posts.filter((p) => p.is_guideline);
+  const [tags, setTags] = useState([]);
+
+  async function refresh() {
     setRefreshing(true);
+
     await dispatch(refreshPosts());
+
+    const tagResults = await api.getTags();
+
+    if (!tagResults.success) {
+      console.warn("Fetching tags failed with status " + tagResults.status);
+      return;
+    }
+
+    const tags = tagResults.data;
+
+    for (const tag of tags) {
+      const count = guidelines.filter((g) =>
+        g.tags.map((t) => t.id).includes(tag.id)
+      ).length;
+      tag.count = count;
+    }
+
+    setTags(tags);
     setRefreshing(false);
-  };
+  }
 
   useEffect(() => {
     refresh();
@@ -28,16 +49,43 @@ export default function Updates({ navigation }) {
     <View style={fullHeight}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="All Guidelines" />
+        <Appbar.Content title="Guidelines" />
+        <Appbar.Action
+          icon="magnify"
+          onPress={() =>
+            navigation.navigate("Search", { guidelinesOnly: true })
+          }
+        />
       </Appbar.Header>
       <View style={fullHeight}>
         <ScrollView
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ flex: 1 }}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
         >
-          <PostsList posts={guidelines || []} />
+          {tags &&
+            tags.map((t) => (
+              <List.Item
+                key={t.id}
+                title={t.name}
+                right={(props) => (
+                  <View style={{ flexDirection: "row" }}>
+                    <View
+                      style={{
+                        justifyContent: "center",
+                      }}
+                    >
+                      {<Badge {...props}>{t.count}</Badge>}
+                    </View>
+                    <List.Icon {...props} icon="chevron-right" />
+                  </View>
+                )}
+                onPress={
+                  () => {} //navigation.navigate("QuestionCategory", { subject: t })
+                }
+              />
+            ))}
         </ScrollView>
       </View>
     </View>

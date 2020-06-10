@@ -7,11 +7,12 @@ import InfiniteScrollView from "../components/InfiniteScrollView.js";
 
 import api from "../util/api";
 
-export default function Search({ navigation }) {
+export default function Search({ navigation, route }) {
   const DEFAULT_SEARCH_LIMIT = 10;
   const fullHeight = { flex: 1 };
 
   const ref = useRef(null);
+  const guidelinesOnly = route.params.guidelinesOnly;
   const [firstFocus, setFirstFocus] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [foundPosts, setFoundPosts] = useState([]);
@@ -70,6 +71,7 @@ export default function Search({ navigation }) {
           searched: text,
           page: 0,
           results_per_page: fetchNumber,
+          guidelines_only: guidelinesOnly,
         });
         if (!results.success) {
           return;

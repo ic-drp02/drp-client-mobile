@@ -46,7 +46,9 @@ export default function SideBar({ navigation }) {
         <Drawer.Item
           icon="magnify"
           label="Search"
-          onPress={() => navigation.navigate("Search")}
+          onPress={() =>
+            navigation.navigate("Search", { guidelinesOnly: false })
+          }
         />
       </View>
       <DarkDivider />
