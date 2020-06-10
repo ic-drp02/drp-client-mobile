@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -16,11 +16,14 @@ import {
   withTheme,
   ProgressBar,
   Portal,
+  Switch,
+  Card,
 } from "react-native-paper";
 
 import * as DocumentPicker from "expo-document-picker";
 
 import TagPickerDialog from "../components/TagPickerDialog";
+import GuideLinePickerDialog from "../components/GuidelinePickerDialog";
 import FileRenameDialog from "../components/FileRenameDialog";
 import BigText from "../components/BigText";
 
@@ -37,6 +40,45 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
   const [renamedFile, setRenamedFile] = useState(0);
   const [progress, setProgress] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [isGuideline, setIsGuideline] = useState(false);
+  const [supersedes, setSupersedes] = useState(null);
+  const [guidelinePicker, setGuidelinePicker] = useState(false);
+
+  const handleIsGuidelineChange = () => {
+    setIsGuideline(!isGuideline);
+    if (!isGuideline) {
+      setSupersedes(null);
+    }
+  };
+
+  const handlePostPress = (post) => {
+    setSupersedes(post);
+    setGuidelinePicker(false);
+  };
+
+  useEffect(() => {
+    preFillPost();
+  }, [supersedes]);
+
+  function preFillPost() {
+    if (supersedes) {
+      if (!title) {
+        setTitle(supersedes.title);
+      }
+      if (!summary) {
+        setSummary(supersedes.summary);
+      }
+    }
+  }
+
+  function handleSupersedeChange(value) {
+    if (value) {
+      setSupersedes(true);
+      setGuidelinePicker(true);
+      return;
+    }
+    setSupersedes(null);
+  }
 
   function newFile(name, uri) {
     return {
@@ -61,13 +103,23 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
     selectDocument();
   }, [files]);
 
-  async function submitData(title, summary, content, tags, files) {
+  async function submitData(
+    title,
+    summary,
+    content,
+    isGuideline,
+    supersedes,
+    tags,
+    files
+  ) {
     setSubmitting(true);
     try {
       const res = await api.createPost({
         title,
         summary,
         content: "<p>" + content.replace(/\n/g, "<br/>") + "</p>",
+        is_guideline: isGuideline,
+        superseding: supersedes?.id,
         tags: tags.map((t) => t.name),
         files: files,
         names: files.map((f) => f.name),
@@ -88,8 +140,19 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
   }
 
   const submitPost = useCallback(
-    () => submitData(title, summary, content, tags, files),
-    [title, summary, content, tags, files, progress, submitting]
+    () =>
+      submitData(title, summary, content, isGuideline, supersedes, tags, files),
+    [
+      title,
+      summary,
+      content,
+      isGuideline,
+      supersedes,
+      tags,
+      files,
+      progress,
+      submitting,
+    ]
   );
 
   if (submitting) {
@@ -128,13 +191,17 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
               <TextInput
                 label="Title"
                 mode="outlined"
+                value={title}
                 onChangeText={(text) => setTitle(text)}
+                clearButtonMode="always"
                 style={{ margin: 8 }}
               />
               <TextInput
                 label="Summary"
                 mode="outlined"
+                value={summary}
                 onChangeText={(text) => setSummary(text)}
+                clearButtonMode="always"
                 style={{ margin: 8 }}
               />
               <TextInput
@@ -142,16 +209,13 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                 mode="outlined"
                 multiline={true}
                 numberOfLines={7}
+                value={content}
                 onChangeText={(text) => setContent(text)}
                 style={{ margin: 8 }}
               />
-              <View
-                style={{
-                  margin: 8,
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                }}
-              >
+
+              {/* Tag Picker */}
+              <View style={styles.view}>
                 {tags.map((tag) => (
                   <Chip
                     key={tag.id}
@@ -187,13 +251,9 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                   />
                 </Portal>
               </View>
-              <View
-                style={{
-                  margin: 8,
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                }}
-              >
+
+              {/* File Picker */}
+              <View style={styles.view}>
                 {files.map((file, index) => (
                   <Chip
                     key={index}
@@ -240,6 +300,78 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                   />
                 </Portal>
               </View>
+
+              {/* Guideline check */}
+              <View style={styles.viewWithSpace}>
+                <Text style={styles.guidelineText}>Is this a guideline?</Text>
+                <Switch
+                  value={isGuideline}
+                  onValueChange={handleIsGuidelineChange}
+                  color={theme.colors.primary}
+                />
+              </View>
+
+              {/* New guideline check */}
+              {isGuideline ? (
+                <View style={styles.viewWithSpace}>
+                  <Text style={styles.guidelineText}>
+                    Does this supersede an old guideline?
+                  </Text>
+                  <Switch
+                    value={supersedes ? true : false}
+                    onValueChange={(value) => handleSupersedeChange(value)}
+                    color={theme.colors.primary}
+                  />
+                </View>
+              ) : (
+                <></>
+              )}
+
+              {/* Preceding guideline picker */}
+              <Portal>
+                <GuideLinePickerDialog
+                  visible={guidelinePicker}
+                  onDismiss={() => {
+                    setSupersedes(null);
+                    setGuidelinePicker(false);
+                  }}
+                  onSelect={handlePostPress}
+                ></GuideLinePickerDialog>
+              </Portal>
+
+              {/* Preceding guideline view */}
+              {isGuideline && supersedes ? (
+                <View style={styles.view}>
+                  <Text style={styles.guidelineText}>
+                    This guideline will supersede:
+                  </Text>
+                  <Card style={styles.supersededGuideline}>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {supersedes.title}
+                    </Text>
+                    {supersedes.summary ? (
+                      <Text>{supersedes.summary}</Text>
+                    ) : (
+                      <></>
+                    )}
+                    <View style={styles.dateView}>
+                      <Chip icon="calendar-range">
+                        {"Posted on " +
+                          new Date(supersedes.created_at).toDateString()}
+                      </Chip>
+                    </View>
+                    <Button
+                      color="red"
+                      style={{ alignSelf: "flex-end" }}
+                      onPress={() => setSupersedes(null)}
+                    >
+                      Remove
+                    </Button>
+                  </Card>
+                </View>
+              ) : (
+                <></>
+              )}
               <Button
                 mode="contained"
                 onPress={() => submitPost()}
@@ -280,6 +412,32 @@ const styles = StyleSheet.create({
   button: {
     margin: 8,
     padding: 8,
+  },
+  guidelineText: {
+    alignSelf: "center",
+    textAlign: "left",
+    fontSize: 15,
+    marginLeft: 4,
+  },
+  view: {
+    margin: 8,
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  viewWithSpace: {
+    margin: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  supersededGuideline: {
+    padding: 10,
+    width: "100%",
+    marginTop: 12,
+  },
+  dateView: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginTop: 8,
   },
   center: {
     alignContent: "center",
