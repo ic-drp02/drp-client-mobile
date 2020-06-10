@@ -51,6 +51,26 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
     }
   };
 
+  const handlePostPress = (post) => {
+    setSupersedes(post);
+    setGuidelinePicker(false);
+  };
+
+  useEffect(() => {
+    preFillPost();
+  }, [supersedes]);
+
+  function preFillPost() {
+    if (supersedes) {
+      if (!title) {
+        setTitle(supersedes.title);
+      }
+      if (!summary) {
+        setSummary(supersedes.summary);
+      }
+    }
+  }
+
   function handleSupersedeChange(value) {
     if (value) {
       setSupersedes(true);
@@ -99,7 +119,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
         summary,
         content: "<p>" + content.replace(/\n/g, "<br/>") + "</p>",
         is_guideline: isGuideline,
-        superseding: supersedes?.id,
+        superseds: supersedes.id,
         tags: tags.map((t) => t.name),
         files: files,
         names: files.map((f) => f.name),
@@ -315,10 +335,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                     setSupersedes(null);
                     setGuidelinePicker(false);
                   }}
-                  onSelect={(id) => {
-                    setSupersedes(id);
-                    setGuidelinePicker(false);
-                  }}
+                  onSelect={handlePostPress}
                 ></GuideLinePickerDialog>
               </Portal>
 
