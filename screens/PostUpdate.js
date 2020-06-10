@@ -315,7 +315,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
               {isGuideline ? (
                 <View style={styles.viewWithSpace}>
                   <Text style={styles.guidelineText}>
-                    Does this supersede another guideline?
+                    Does this supersede an old guideline?
                   </Text>
                   <Switch
                     value={supersedes ? true : false}
@@ -340,19 +340,38 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
               </Portal>
 
               {/* Preceding guideline view */}
-              <View style={styles.viewWithSpace}>
-                {isGuideline && supersedes ? (
-                  <>
-                    <Text style={styles.guidelineText}>Supersedes:</Text>
-                    <Chip onClose={() => setSupersedes(null)}>
+              {isGuideline && supersedes ? (
+                <View style={styles.view}>
+                  <Text style={styles.guidelineText}>
+                    This guideline will supersede:
+                  </Text>
+                  <Card style={styles.supersededGuideline}>
+                    <Text style={{ fontWeight: "bold" }}>
                       {supersedes.title}
-                    </Chip>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </View>
-
+                    </Text>
+                    {supersedes.summary ? (
+                      <Text>{supersedes.summary}</Text>
+                    ) : (
+                      <></>
+                    )}
+                    <View style={styles.dateView}>
+                      <Chip icon="calendar-range">
+                        {"Posted on " +
+                          new Date(supersedes.created_at).toDateString()}
+                      </Chip>
+                    </View>
+                    <Button
+                      color="red"
+                      style={{ alignSelf: "flex-end" }}
+                      onPress={() => setSupersedes(null)}
+                    >
+                      Remove
+                    </Button>
+                  </Card>
+                </View>
+              ) : (
+                <></>
+              )}
               <Button
                 mode="contained"
                 onPress={() => submitPost()}
