@@ -301,12 +301,14 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                 </Portal>
               </View>
 
-              {/* Guideline check */}
+              {/* Is guideline check */}
               <View style={styles.viewWithSpace}>
                 <Text style={styles.guidelineText}>Is this a guideline?</Text>
                 <Switch
                   value={isGuideline}
-                  onValueChange={handleIsGuidelineChange}
+                  onValueChange={() => {
+                    setIsGuideline(!isGuideline);
+                  }}
                   color={theme.colors.primary}
                 />
               </View>
@@ -315,11 +317,13 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
               {isGuideline ? (
                 <View style={styles.viewWithSpace}>
                   <Text style={styles.guidelineText}>
-                    Does this supersede an old guideline?
+                    Does this supersede another guideline?
                   </Text>
                   <Switch
-                    value={supersedes ? true : false}
-                    onValueChange={(value) => handleSupersedeChange(value)}
+                    value={supersedes}
+                    onValueChange={() => {
+                      setGuidelinePicker(true);
+                    }}
                     color={theme.colors.primary}
                   />
                 </View>
@@ -332,46 +336,29 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                 <GuideLinePickerDialog
                   visible={guidelinePicker}
                   onDismiss={() => {
-                    setSupersedes(null);
                     setGuidelinePicker(false);
                   }}
-                  onSelect={handlePostPress}
+                  onSelect={(id) => {
+                    setSupersedes(id);
+                    setGuidelinePicker(false);
+                  }}
                 ></GuideLinePickerDialog>
               </Portal>
 
               {/* Preceding guideline view */}
-              {isGuideline && supersedes ? (
-                <View style={styles.view}>
-                  <Text style={styles.guidelineText}>
-                    This guideline will supersede:
-                  </Text>
-                  <Card style={styles.supersededGuideline}>
-                    <Text style={{ fontWeight: "bold" }}>
+              <View style={styles.viewWithSpace}>
+                {isGuideline && supersedes ? (
+                  <>
+                    <Text style={styles.guidelineText}>Supersedes:</Text>
+                    <Chip onClose={() => setSupersedes(null)}>
                       {supersedes.title}
-                    </Text>
-                    {supersedes.summary ? (
-                      <Text>{supersedes.summary}</Text>
-                    ) : (
-                      <></>
-                    )}
-                    <View style={styles.dateView}>
-                      <Chip icon="calendar-range">
-                        {"Posted on " +
-                          new Date(supersedes.created_at).toDateString()}
-                      </Chip>
-                    </View>
-                    <Button
-                      color="red"
-                      style={{ alignSelf: "flex-end" }}
-                      onPress={() => setSupersedes(null)}
-                    >
-                      Remove
-                    </Button>
-                  </Card>
-                </View>
-              ) : (
-                <></>
-              )}
+                    </Chip>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </View>
+
               <Button
                 mode="contained"
                 onPress={() => submitPost()}
