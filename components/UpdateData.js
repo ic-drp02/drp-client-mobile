@@ -2,7 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Linking, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 
-import { Headline, ActivityIndicator, Divider, Chip } from "react-native-paper";
+import {
+  Headline,
+  ActivityIndicator,
+  Divider,
+  Chip,
+  Text,
+} from "react-native-paper";
 
 import Attachments from "./Attachments.js";
 
@@ -44,7 +50,9 @@ export default function UpdateData(props) {
       <View style={styles.fullHeight}>
         <MainContent
           title={data.title}
+          summary={data.summary}
           content={createHtmlDocument(data.title, data.content)}
+          date={data.created_at}
         />
         <View style={{ marginTop: 10 }}>
           <TagsView tags={data.tags} />
@@ -57,11 +65,17 @@ export default function UpdateData(props) {
   );
 }
 
-function MainContent({ title, content }) {
+function MainContent({ title, summary, content, date }) {
   const ref = useRef(null);
   return (
     <View style={styles.fullHeight}>
-      <Headline style={styles.title}>{title}</Headline>
+      <Headline>{title}</Headline>
+      {summary ? <Text style={styles.summary}>{summary}</Text> : <></>}
+      <View style={styles.dateView}>
+        <Chip icon="calendar-range">
+          {"Posted on " + new Date(date).toDateString()}
+        </Chip>
+      </View>
       <Divider />
       <WebView
         ref={ref}
@@ -133,8 +147,15 @@ const styles = StyleSheet.create({
   fullHeight: {
     flex: 1,
   },
-  title: {
-    marginVertical: 8,
+  summary: {
+    color: "grey",
+    fontSize: 16,
+  },
+  dateView: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginTop: 5,
+    marginBottom: 8,
   },
   fileIcon: {
     marginRight: 10,
