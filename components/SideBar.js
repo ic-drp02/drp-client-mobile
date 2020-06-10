@@ -2,9 +2,12 @@ import React from "react";
 import { View, Image } from "react-native";
 import { Drawer, Divider } from "react-native-paper";
 
+import store from "../store";
+
 const DarkDivider = () => <Divider style={{ backgroundColor: "#bbb" }} />;
 
 export default function SideBar({ navigation }) {
+  const user = store.getState().auth.user;
   return (
     <View style={{ flex: 1 }}>
       <View style={{ height: 120, marginTop: 24, padding: 8 }}>
@@ -48,11 +51,13 @@ export default function SideBar({ navigation }) {
           label="Ask a question"
           onPress={() => navigation.navigate("Question")}
         />
-        <Drawer.Item
-          icon="pencil-outline"
-          label="Post an update"
-          onPress={() => navigation.navigate("PostUpdate")}
-        />
+        {user.role === "admin" && (
+          <Drawer.Item
+            icon="pencil-outline"
+            label="Post an update"
+            onPress={() => navigation.navigate("PostUpdate")}
+          />
+        )}
         <Drawer.Item
           icon="information-outline"
           label="About"

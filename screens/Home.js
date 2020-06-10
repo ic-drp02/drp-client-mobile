@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  RefreshControl,
-  AsyncStorage,
-} from "react-native";
+import { StyleSheet, View, ScrollView, RefreshControl } from "react-native";
 import { Appbar, Button, Title } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -23,18 +17,14 @@ function selectRecentPosts(s) {
 }
 
 export default function Home({ navigation }) {
-  const posts = useSelector((s) => s.posts);
-  const recents = useSelector(selectRecentPosts);
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
 
+  const auth = useSelector((s) => s.auth);
+  const posts = useSelector((s) => s.posts);
+  const recents = useSelector(selectRecentPosts);
+
   useEffect(() => {
-    // (async () => {
-    //   if (await shouldShowWelcome()) {
-    //     navigation.navigate("Welcome");
-    //     await setWelcomeShown();
-    //   }
-    // })();
     dispatch(refreshPosts());
     dispatch(fetchRecentPosts());
   }, []);
@@ -72,19 +62,23 @@ export default function Home({ navigation }) {
       >
         <View style={styles.buttons}>
           <Button
-            style={styles.button}
+            style={
+              auth.user.role === "admin" ? styles.button : styles.singleButton
+            }
             mode="contained"
             onPress={() => navigation.navigate("Question")}
           >
             Ask a question
           </Button>
-          <Button
-            style={styles.button}
-            mode="contained"
-            onPress={() => navigation.navigate("PostUpdate")}
-          >
-            Post an update
-          </Button>
+          {auth.user.role === "admin" && (
+            <Button
+              style={styles.button}
+              mode="contained"
+              onPress={() => navigation.navigate("PostUpdate")}
+            >
+              Post an update
+            </Button>
+          )}
         </View>
         {recents.length > 0 && <RecentlyViewed recents={recents} />}
         {posts && (
@@ -128,6 +122,11 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "48%",
+    justifyContent: "center",
+    marginVertical: 8,
+  },
+  singleButton: {
+    width: "100%",
     justifyContent: "center",
     marginVertical: 8,
   },
