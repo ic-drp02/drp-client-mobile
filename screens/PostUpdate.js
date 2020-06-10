@@ -51,26 +51,6 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
     }
   };
 
-  const handlePostPress = (post) => {
-    setSupersedes(post);
-    setGuidelinePicker(false);
-  };
-
-  useEffect(() => {
-    preFillPost();
-  }, [supersedes]);
-
-  function preFillPost() {
-    if (supersedes) {
-      if (!title) {
-        setTitle(supersedes.title);
-      }
-      if (!summary) {
-        setSummary(supersedes.summary);
-      }
-    }
-  }
-
   function handleSupersedeChange(value) {
     if (value) {
       setSupersedes(true);
@@ -301,14 +281,12 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                 </Portal>
               </View>
 
-              {/* Is guideline check */}
+              {/* Guideline check */}
               <View style={styles.viewWithSpace}>
                 <Text style={styles.guidelineText}>Is this a guideline?</Text>
                 <Switch
                   value={isGuideline}
-                  onValueChange={() => {
-                    setIsGuideline(!isGuideline);
-                  }}
+                  onValueChange={handleIsGuidelineChange}
                   color={theme.colors.primary}
                 />
               </View>
@@ -320,10 +298,8 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                     Does this supersede another guideline?
                   </Text>
                   <Switch
-                    value={supersedes}
-                    onValueChange={() => {
-                      setGuidelinePicker(true);
-                    }}
+                    value={supersedes ? true : false}
+                    onValueChange={(value) => handleSupersedeChange(value)}
                     color={theme.colors.primary}
                   />
                 </View>
@@ -336,6 +312,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                 <GuideLinePickerDialog
                   visible={guidelinePicker}
                   onDismiss={() => {
+                    setSupersedes(null);
                     setGuidelinePicker(false);
                   }}
                   onSelect={(id) => {
