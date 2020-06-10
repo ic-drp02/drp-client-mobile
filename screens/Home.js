@@ -63,7 +63,7 @@ export default function Home({ navigation }) {
         <View style={styles.buttons}>
           <Button
             style={
-              auth.user.role === "admin" ? styles.button : { width: "100%" }
+              auth.user.role === "admin" ? styles.button : styles.singleButton
             }
             mode="contained"
             onPress={() => navigation.navigate("Question")}
@@ -122,6 +122,11 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "48%",
+    justifyContent: "center",
+    marginVertical: 8,
+  },
+  singleButton: {
+    width: "100%",
     justifyContent: "center",
     marginVertical: 8,
   },
