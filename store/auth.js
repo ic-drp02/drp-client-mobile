@@ -30,7 +30,10 @@ export function login(email, password) {
         });
       }
     } else {
-      dispatch({ type: "LOGIN_SUCCESS", token: body.token });
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        user: body,
+      });
     }
   };
 }
@@ -69,7 +72,7 @@ export function register(email, password) {
 }
 
 const initialState = {
-  token: null,
+  user: null,
   error: null,
   loading: false,
   registering: false,
@@ -81,14 +84,14 @@ export default function reducer(state = initialState, action) {
     case "LOGIN_BEGIN":
       return {
         ...state,
-        token: null,
+        user: null,
         error: null,
         registering: false,
         loading: true,
       };
 
     case "LOGIN_SUCCESS":
-      return { ...state, token: action.token, loading: false };
+      return { ...state, user: action.user, loading: false };
 
     case "LOGIN_ERROR":
       return { ...state, error: action.error, loading: false };

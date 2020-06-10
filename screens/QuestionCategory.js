@@ -18,6 +18,7 @@ import {
   Dialog,
   TextInput,
 } from "react-native-paper";
+import { useSelector } from "react-redux";
 
 import { Grade } from "drp-api-js";
 import api from "../util/api";
@@ -25,6 +26,7 @@ import api from "../util/api";
 export default function Question({ route, navigation }) {
   const fullHeight = { flex: 1 };
   const { subject } = route.params;
+  const user = useSelector((s) => s.auth.user);
 
   const [refreshing, setRefreshing] = useState(true);
   const [questions, setQuestions] = useState(null);
@@ -66,23 +68,26 @@ export default function Question({ route, navigation }) {
           {questions &&
             (questions.length !== 0 ? (
               <>
-                <View style={{ flexDirection: "row-reverse" }}>
-                  <Button
-                    mode="contained"
-                    style={{ margin: 4 }}
-                    icon="check-all"
-                    disabled={resolving}
-                    loading={resolving}
-                    onPress={resolveAll}
-                  >
-                    Resolve all
-                  </Button>
-                </View>
+                {user.role === "admin" && (
+                  <View style={{ flexDirection: "row-reverse" }}>
+                    <Button
+                      mode="contained"
+                      style={{ margin: 4 }}
+                      icon="check-all"
+                      disabled={resolving}
+                      loading={resolving}
+                      onPress={resolveAll}
+                    >
+                      Resolve all
+                    </Button>
+                  </View>
+                )}
                 {questions.map((q) => (
                   <QuestionCard
                     key={q.id}
                     question={q}
                     onSaved={refresh}
+                    canResolve={user.role === "admin"}
                     onResolved={(question) =>
                       setQuestions(
                         questions.filter((q) => q.id !== question.id)
@@ -119,7 +124,7 @@ function getGrade(value) {
   }
 }
 
-function QuestionCard({ question, onResolved, onSaved }) {
+function QuestionCard({ canResolve, question, onResolved, onSaved }) {
   const theme = useTheme();
   const labelStyle = {
     fontStyle: "italic",
@@ -171,20 +176,22 @@ function QuestionCard({ question, onResolved, onSaved }) {
         >
           Edit
         </Button>
-        <Button
-          compact
-          disabled={resolving}
-          loading={resolving}
-          onPress={async () => {
-            setResolving(true);
-            const res = await api.resolveQuestion(question.id);
-            if (res.success) {
-              onResolved(question);
-            }
-          }}
-        >
-          Resolve
-        </Button>
+        {canResolve && (
+          <Button
+            compact
+            disabled={resolving}
+            loading={resolving}
+            onPress={async () => {
+              setResolving(true);
+              const res = await api.resolveQuestion(question.id);
+              if (res.success) {
+                onResolved(question);
+              }
+            }}
+          >
+            Resolve
+          </Button>
+        )}
         <Portal>
           <Dialog visible={edit} onDismiss={() => setEdit(false)}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

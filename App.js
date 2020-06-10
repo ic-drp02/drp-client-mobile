@@ -30,13 +30,6 @@ const AuthNavigator = createStackNavigator();
 export default function App() {
   const navRef = useRef();
 
-  useEffect(() => {
-    notifications.registerForPushNotifications();
-    notifications.registerNotificationHandlers((postId) => {
-      navRef.current.navigate("UpdateDetails", { postId });
-    });
-  }, []);
-
   return (
     <PaperProvider theme={theme}>
       <ReduxProvider store={store}>
@@ -61,7 +54,18 @@ export default function App() {
 
 function AuthController({ children }) {
   const auth = useSelector((s) => s.auth);
-  if (!!auth.token) {
+
+  useEffect(() => {
+    if (!!auth.user) {
+      console.log("Registering push notifications");
+      notifications.registerForPushNotifications();
+      notifications.registerNotificationHandlers((postId) => {
+        navRef.current.navigate("UpdateDetails", { postId });
+      });
+    }
+  }, [auth]);
+
+  if (!!auth.user) {
     return children;
   } else {
     return (
