@@ -86,6 +86,7 @@ export default function Question({ route, navigation }) {
                   <QuestionCard
                     key={q.id}
                     question={q}
+                    editable={user.id === q.user}
                     onSaved={refresh}
                     canResolve={user.role === "admin"}
                     onResolved={(question) =>
@@ -124,7 +125,7 @@ function getGrade(value) {
   }
 }
 
-function QuestionCard({ canResolve, question, onResolved, onSaved }) {
+function QuestionCard({ editable, canResolve, question, onResolved, onSaved }) {
   const theme = useTheme();
   const labelStyle = {
     fontStyle: "italic",
@@ -168,14 +169,16 @@ function QuestionCard({ canResolve, question, onResolved, onSaved }) {
         <Divider style={{ marginTop: 8 }} />
       </Card.Content>
       <Card.Actions>
-        <Button
-          compact
-          disabled={resolving}
-          loading={resolving}
-          onPress={() => setEdit(true)}
-        >
-          Edit
-        </Button>
+        {editable && (
+          <Button
+            compact
+            disabled={resolving}
+            loading={resolving}
+            onPress={() => setEdit(true)}
+          >
+            Edit
+          </Button>
+        )}
         {canResolve && (
           <Button
             compact
