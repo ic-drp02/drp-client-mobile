@@ -13,6 +13,7 @@ export default function Search({ navigation, route }) {
 
   const ref = useRef(null);
   const guidelinesOnly = route.params.guidelinesOnly;
+  const tag = route.params.tag;
   const [firstFocus, setFirstFocus] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [foundPosts, setFoundPosts] = useState([]);
@@ -72,6 +73,7 @@ export default function Search({ navigation, route }) {
           page: 0,
           results_per_page: fetchNumber,
           guidelines_only: guidelinesOnly,
+          tag: tag.name,
         });
         if (!results.success) {
           return;

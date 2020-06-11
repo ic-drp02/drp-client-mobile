@@ -37,7 +37,10 @@ export default function Question({ navigation }) {
       tag.count = count;
     }
 
-    setTags(tags);
+    const relevantTags = tags.filter((t) => t.count > 0);
+    relevantTags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+
+    setTags(relevantTags);
     setRefreshing(false);
   }
 
@@ -81,8 +84,8 @@ export default function Question({ navigation }) {
                     <List.Icon {...props} icon="chevron-right" />
                   </View>
                 )}
-                onPress={
-                  () => {} //navigation.navigate("QuestionCategory", { subject: t })
+                onPress={() =>
+                  navigation.navigate("GuidelinesCategory", { tag: t })
                 }
               />
             ))}
