@@ -36,6 +36,7 @@ export default function Question({ navigation }) {
             <TabBar
               {...props}
               style={{ backgroundColor: theme.colors.primary }}
+              indicatorStyle={{ backgroundColor: theme.colors.accent }}
             />
           )}
           navigationState={{ index, routes }}
