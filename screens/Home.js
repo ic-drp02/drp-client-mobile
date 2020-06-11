@@ -5,8 +5,9 @@ import {
   ScrollView,
   RefreshControl,
   Dimensions,
+  AsyncStorage,
 } from "react-native";
-import { Appbar, Button, Title, useTheme } from "react-native-paper";
+import { Appbar, Button, Title, Text, useTheme } from "react-native-paper";
 import { TabView, TabBar } from "react-native-tab-view";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -14,6 +15,7 @@ import PostsList from "../components/PostsList";
 import PostsListWithButton from "../components/PostsListWithButton";
 
 import { refreshPosts, fetchRecentPosts } from "../store";
+import { useNavigation } from "@react-navigation/native";
 
 function selectRecentPosts(s) {
   return s.posts
@@ -26,6 +28,14 @@ function selectRecentPosts(s) {
 export default function Home({ navigation }) {
   const theme = useTheme();
   const [index, setIndex] = useState(0);
+  const [pinned, setPinned] = useState(null);
+
+  useEffect(() => navigation.addListener("focus", refreshPinned), [navigation]);
+
+  async function refreshPinned() {
+    const json = await AsyncStorage.getItem("PINNED_POSTS");
+    setPinned(!!json ? JSON.parse(json) : []);
+  }
 
   return (
     <>
@@ -57,17 +67,21 @@ export default function Home({ navigation }) {
               return <Main />;
 
             case "pinned":
-              return <Pinned />;
+              return <Pinned pinnedIds={pinned} />;
           }
         }}
         initialLayout={{ width: Dimensions.get("window").width }}
-        onIndexChange={setIndex}
+        onIndexChange={(i) => {
+          setIndex(i);
+          refreshPinned();
+        }}
       />
     </>
   );
 }
 
 function Main() {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
   const auth = useSelector((s) => s.auth);
@@ -143,23 +157,36 @@ function Main() {
   );
 }
 
-function Pinned() {
+function Pinned({ pinnedIds, onRefresh }) {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
 
-  const auth = useSelector((s) => s.auth);
   const posts = useSelector((s) => s.posts);
+  const [pinned, setPinned] = useState(null);
 
   useEffect(() => {
     dispatch(refreshPosts());
-    dispatch(fetchRecentPosts());
   }, []);
 
   useEffect(() => {
     if (posts) {
       setRefreshing(false);
+      if (pinnedIds) {
+        setPinned(posts.filter((p) => pinnedIds.includes(p.id)));
+      } else {
+        setPinned([]);
+      }
     }
-  }, [posts]);
+  }, [posts, pinnedIds]);
+
+  if (pinned && pinned.length === 0) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ textAlign: "center" }}>No pinned posts</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -169,15 +196,15 @@ function Pinned() {
           refreshing={refreshing}
           onRefresh={() => {
             setRefreshing(true);
-            dispatch(refreshPosts());
+            onRefresh && onRefresh(() => setRefreshing(false));
           }}
         />
       }
     >
-      {posts && (
+      {pinned && pinned.length > 0 && (
         <View>
           <Title>Pinned updates</Title>
-          <PostsList posts={posts} />
+          <PostsList posts={pinned} />
         </View>
       )}
     </ScrollView>

@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, AsyncStorage } from "react-native";
 import {
   Appbar,
   Button,
@@ -18,11 +18,38 @@ export default function UpdateDetails({ route, navigation }) {
   const { postId } = route.params;
   const dispatch = useDispatch();
   const user = useSelector((s) => s.auth.user);
+
+  const [pinned, setPinned] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     dispatch(addRecentPost(postId));
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      const json = await AsyncStorage.getItem("PINNED_POSTS");
+      const pinned = json ? JSON.parse(json) : [];
+      setPinned(pinned.includes(postId));
+    })();
+  }, [postId]);
+
+  async function pin() {
+    let json = await AsyncStorage.getItem("PINNED_POSTS");
+    let pinned = json ? JSON.parse(json) : [];
+    pinned.push(postId);
+    json = JSON.stringify(pinned);
+    await AsyncStorage.setItem("PINNED_POSTS", json);
+    setPinned(true);
+  }
+
+  async function unpin() {
+    let json = await AsyncStorage.getItem("PINNED_POSTS");
+    let pinned = json ? JSON.parse(json) : [];
+    json = JSON.stringify(pinned.filter((p) => p !== postId));
+    await AsyncStorage.setItem("PINNED_POSTS", json);
+    setPinned(false);
+  }
 
   const del = useCallback(() => {
     dispatch(deletePost(postId)).then(() => navigation.goBack());
@@ -56,6 +83,13 @@ export default function UpdateDetails({ route, navigation }) {
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Update details" />
+        {(() => {
+          if (pinned === true) {
+            return <Appbar.Action icon="pin-off" onPress={() => unpin()} />;
+          } else if (pinned === false) {
+            return <Appbar.Action icon="pin" onPress={() => pin()} />;
+          }
+        })()}
       </Appbar.Header>
       <View style={styles.content}>
         <View style={{ flex: 1 }}>
