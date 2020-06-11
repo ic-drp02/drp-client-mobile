@@ -58,6 +58,7 @@ export default function Home({ navigation }) {
           index,
           routes: [
             { key: "home", title: "Home" },
+            { key: "recents", title: "Recents" },
             { key: "pinned", title: "Pinned" },
           ],
         }}
@@ -65,6 +66,9 @@ export default function Home({ navigation }) {
           switch (route.key) {
             case "home":
               return <Main />;
+
+            case "recents":
+              return <Recents />;
 
             case "pinned":
               return <Pinned pinnedIds={pinned} />;
@@ -85,6 +89,75 @@ function Main() {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
   const auth = useSelector((s) => s.auth);
+
+  const posts = useSelector((s) => s.posts);
+
+  useEffect(() => {
+    dispatch(refreshPosts());
+  }, []);
+
+  useEffect(() => {
+    if (posts) {
+      setRefreshing(false);
+    }
+  }, [posts]);
+
+  return (
+    <ScrollView
+      contentContainerStyle={styles.contentContainer}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            dispatch(refreshPosts());
+          }}
+        />
+      }
+    >
+      <View style={styles.buttons}>
+        <Button
+          style={
+            auth.user.role === "admin" ? styles.button : styles.singleButton
+          }
+          mode="contained"
+          onPress={() => navigation.navigate("Question")}
+        >
+          Ask a question
+        </Button>
+        {auth.user.role === "admin" && (
+          <Button
+            style={styles.button}
+            mode="contained"
+            onPress={() => navigation.navigate("PostUpdate")}
+          >
+            Post an update
+          </Button>
+        )}
+      </View>
+      {posts && (
+        <PostsListWithButton
+          title="Latest updates"
+          buttonText="View all"
+          onButtonPress={() => navigation.navigate("Updates")}
+          posts={posts}
+        />
+      )}
+      {posts && (
+        <PostsListWithButton
+          title="Most popular"
+          buttonText="More"
+          onButtonPress={() => navigation.navigate("Updates")}
+          posts={posts}
+        />
+      )}
+    </ScrollView>
+  );
+}
+
+function Recents() {
+  const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(true);
   const recents = useSelector(selectRecentPosts);
 
   const posts = useSelector((s) => s.posts);
@@ -116,43 +189,7 @@ function Main() {
         />
       }
     >
-      <View style={styles.buttons}>
-        <Button
-          style={
-            auth.user.role === "admin" ? styles.button : styles.singleButton
-          }
-          mode="contained"
-          onPress={() => navigation.navigate("Question")}
-        >
-          Ask a question
-        </Button>
-        {auth.user.role === "admin" && (
-          <Button
-            style={styles.button}
-            mode="contained"
-            onPress={() => navigation.navigate("PostUpdate")}
-          >
-            Post an update
-          </Button>
-        )}
-      </View>
       {recents.length > 0 && <RecentlyViewed recents={recents} />}
-      {posts && (
-        <PostsListWithButton
-          title="Latest updates"
-          buttonText="View all"
-          onButtonPress={() => navigation.navigate("Updates")}
-          posts={posts}
-        />
-      )}
-      {posts && (
-        <PostsListWithButton
-          title="Most popular"
-          buttonText="More"
-          onButtonPress={() => navigation.navigate("Updates")}
-          posts={posts}
-        />
-      )}
     </ScrollView>
   );
 }
