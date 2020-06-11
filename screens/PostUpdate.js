@@ -5,6 +5,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Text,
+  ScrollView,
 } from "react-native";
 
 import {
@@ -118,132 +119,137 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
         </Appbar.Header>
       </TouchableWithoutFeedback>
       <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <View style={styles.content}>
-            <TextInput
-              label="Title"
-              mode="outlined"
-              onChangeText={(text) => setTitle(text)}
-              style={{ margin: 8 }}
-            />
-            <TextInput
-              label="Summary"
-              mode="outlined"
-              onChangeText={(text) => setSummary(text)}
-              style={{ margin: 8 }}
-            />
-            <TextInput
-              label="Post text"
-              mode="outlined"
-              multiline={true}
-              numberOfLines={7}
-              onChangeText={(text) => setContent(text)}
-              style={{ margin: 8 }}
-            />
-            <View
-              style={{
-                margin: 8,
-                flexDirection: "row",
-                flexWrap: "wrap",
-              }}
-            >
-              {tags.map((tag) => (
-                <Chip
-                  key={tag.id}
-                  mode="outlined"
-                  onClose={() => setTags(tags.filter((t) => t.id !== tag.id))}
-                  style={{ margin: 4 }}
-                >
-                  {tag.name}
-                </Chip>
-              ))}
-              <Chip
-                icon="plus"
+        <ScrollView keyboardShouldPersistTaps="handled">
+          <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
+            accessible={false}
+          >
+            <View style={styles.content}>
+              <TextInput
+                label="Title"
                 mode="outlined"
-                onPress={() => setTagsDialogVisible(true)}
-                style={{ margin: 4, backgroundColor: theme.colors.primary }}
-                theme={{ colors: { text: "#fff" } }}
+                onChangeText={(text) => setTitle(text)}
+                style={{ margin: 8 }}
+              />
+              <TextInput
+                label="Summary"
+                mode="outlined"
+                onChangeText={(text) => setSummary(text)}
+                style={{ margin: 8 }}
+              />
+              <TextInput
+                label="Post text"
+                mode="outlined"
+                multiline={true}
+                numberOfLines={7}
+                onChangeText={(text) => setContent(text)}
+                style={{ margin: 8 }}
+              />
+              <View
+                style={{
+                  margin: 8,
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                }}
               >
-                Add Tag
-              </Chip>
-              <Portal>
-                <TagPickerDialog
-                  visible={tagsDialogVisible}
-                  initialSelected={tags}
-                  onDismiss={() => setTagsDialogVisible(false)}
-                  onTagSelectionChange={(tag) => {
-                    if (tag.selected) {
-                      setTags([...tags, tag]);
-                    } else {
-                      setTags(tags.filter((t) => t.id !== tag.id));
+                {tags.map((tag) => (
+                  <Chip
+                    key={tag.id}
+                    mode="outlined"
+                    onClose={() => setTags(tags.filter((t) => t.id !== tag.id))}
+                    style={{ margin: 4 }}
+                  >
+                    {tag.name}
+                  </Chip>
+                ))}
+                <Chip
+                  icon="plus"
+                  mode="outlined"
+                  onPress={() => setTagsDialogVisible(true)}
+                  style={{ margin: 4, backgroundColor: theme.colors.primary }}
+                  theme={{ colors: { text: "#fff" } }}
+                >
+                  Add Tag
+                </Chip>
+                <Portal>
+                  <TagPickerDialog
+                    visible={tagsDialogVisible}
+                    initialSelected={tags}
+                    onDismiss={() => setTagsDialogVisible(false)}
+                    onTagSelectionChange={(tag) => {
+                      if (tag.selected) {
+                        setTags([...tags, tag]);
+                      } else {
+                        setTags(tags.filter((t) => t.id !== tag.id));
+                      }
+                    }}
+                    style={{ maxHeight: "80%" }}
+                  />
+                </Portal>
+              </View>
+              <View
+                style={{
+                  margin: 8,
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                }}
+              >
+                {files.map((file, index) => (
+                  <Chip
+                    key={index}
+                    icon="pen"
+                    mode="outlined"
+                    onClose={() => setFiles(files.filter((_, i) => i != index))}
+                    onPress={() => {
+                      setRenamedFile(index);
+                      setRenameDialogVisible(true);
+                    }}
+                    style={{ margin: 4 }}
+                  >
+                    {file.name}
+                  </Chip>
+                ))}
+                <Chip
+                  icon="plus"
+                  mode="outlined"
+                  onPress={() => addDocument()}
+                  style={{ margin: 4, backgroundColor: theme.colors.primary }}
+                  theme={{ colors: { text: "#fff" } }}
+                >
+                  Add attachment
+                </Chip>
+                <Portal>
+                  <FileRenameDialog
+                    visible={renameDialogVisible}
+                    renamedFile={
+                      renameDialogVisible ? files[renamedFile].name : ""
                     }
-                  }}
-                  style={{ maxHeight: "80%" }}
-                />
-              </Portal>
-            </View>
-            <View
-              style={{
-                margin: 8,
-                flexDirection: "row",
-                flexWrap: "wrap",
-              }}
-            >
-              {files.map((file, index) => (
-                <Chip
-                  key={index}
-                  icon="pen"
-                  mode="outlined"
-                  onClose={() => setFiles(files.filter((_, i) => i != index))}
-                  onPress={() => {
-                    setRenamedFile(index);
-                    setRenameDialogVisible(true);
-                  }}
-                  style={{ margin: 4 }}
-                >
-                  {file.name}
-                </Chip>
-              ))}
-              <Chip
-                icon="plus"
-                mode="outlined"
-                onPress={() => addDocument()}
-                style={{ margin: 4, backgroundColor: theme.colors.primary }}
-                theme={{ colors: { text: "#fff" } }}
-              >
-                Add attachment
-              </Chip>
-              <Portal>
-                <FileRenameDialog
-                  visible={renameDialogVisible}
-                  renamedFile={
-                    renameDialogVisible ? files[renamedFile].name : ""
-                  }
-                  onCancel={() => setRenameDialogVisible(false)}
-                  onRenameTo={(newName) => {
-                    setFiles(
-                      files.map((f, i) => {
-                        return i !== renamedFile
-                          ? f
-                          : newFile(newName, files[renamedFile].uri);
-                      })
-                    );
+                    onCancel={() => setRenameDialogVisible(false)}
+                    onRenameTo={(newName) => {
+                      setFiles(
+                        files.map((f, i) => {
+                          return i !== renamedFile
+                            ? f
+                            : newFile(newName, files[renamedFile].uri);
+                        })
+                      );
 
-                    setRenameDialogVisible(false);
-                  }}
-                  style={{ maxHeight: "80%" }}
-                />
-              </Portal>
+                      setRenameDialogVisible(false);
+                    }}
+                    style={{ maxHeight: "80%" }}
+                  />
+                </Portal>
+              </View>
+              <Button
+                mode="contained"
+                onPress={() => submitPost()}
+                style={styles.button}
+              >
+                Post
+              </Button>
             </View>
-            <Button
-              mode="contained"
-              onPress={() => submitPost()}
-              style={styles.button}
-            >
-              Post
-            </Button>
-          </View>
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
+        </ScrollView>
       </View>
     </View>
   );

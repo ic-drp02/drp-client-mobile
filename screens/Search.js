@@ -73,7 +73,7 @@ export default function Search({ navigation, route }) {
           page: 0,
           results_per_page: fetchNumber,
           guidelines_only: guidelinesOnly,
-          tag: tag.name,
+          tag: tag ? tag.name : undefined,
         });
         if (!results.success) {
           return;

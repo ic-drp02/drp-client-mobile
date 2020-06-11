@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 
-import { Text, useTheme, Chip } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -11,6 +11,7 @@ import { timeElapsedSince } from "../util/date.js";
 import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
 import { openFile } from "../util/files.js";
 import api from "../util/api";
+import Attachments from "./Attachments.js";
 
 export default function PostSummary({ post, showAttachments }) {
   const theme = useTheme();
@@ -54,36 +55,9 @@ export default function PostSummary({ post, showAttachments }) {
               {post.summary}
             </Text>
           )}
-          {showAttachments && (
-            <View
-              style={[
-                {
-                  marginLeft: 10,
-                  marginTop: 5,
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                },
-              ]}
-            >
-              {post.files.map((file, index) => (
-                <Chip
-                  key={index}
-                  icon="file-outline"
-                  mode="outlined"
-                  onPress={() => {
-                    openFile(
-                      api.baseUrl + "/api/rawfiles/view/" + file.id,
-                      file.id,
-                      file.name
-                    );
-                  }}
-                  style={{ margin: 4 }}
-                >
-                  {file.name}
-                </Chip>
-              ))}
-            </View>
-          )}
+          <View style={styles.lmargin}>
+            {showAttachments && <Attachments files={post.files} />}
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -123,5 +97,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  attachments: {},
 });
