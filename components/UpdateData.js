@@ -4,7 +4,7 @@ import { WebView } from "react-native-webview";
 
 import { Headline, ActivityIndicator, Divider, Chip } from "react-native-paper";
 
-import AttachmentsAccordion from "./AttachmentsAccordion.js";
+import Attachments from "./Attachments.js";
 
 import api from "../util/api.js";
 
@@ -46,10 +46,12 @@ export default function UpdateData(props) {
           title={data.title}
           content={createHtmlDocument(data.title, data.content)}
         />
-        <View style={{ marginVertical: 16 }}>
+        <View style={{ marginTop: 10 }}>
           <TagsView tags={data.tags} />
         </View>
-        <AttachmentsAccordion files={data.files} />
+        <View style={{ marginBottom: 10 }}>
+          <Attachments files={data.files} />
+        </View>
       </View>
     </>
   );
