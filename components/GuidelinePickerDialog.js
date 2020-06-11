@@ -6,11 +6,11 @@ import {
   Text,
   Card,
   ProgressBar,
+  Chip,
 } from "react-native-paper";
 
 import { View, ScrollView, StyleSheet } from "react-native";
 
-import { timeElapsedSince } from "../util/date.js";
 import api from "../util/api";
 
 export default function GuidelinePickerDialog({
@@ -78,7 +78,16 @@ function GuidelinePickerDialogContent({ onSelect }) {
             {filteredPosts.map((p) => (
               <Card key={p.id} style={styles.post} onPress={() => onSelect(p)}>
                 <Text style={styles.title}>{p.title}</Text>
-                <Text>{timeElapsedSince(new Date(p.created_at))}</Text>
+                {p.summary ? (
+                  <Text style={styles.summary}>{p.summary}</Text>
+                ) : (
+                  <></>
+                )}
+                <View style={styles.dateView}>
+                  <Chip icon="calendar-range">
+                    {new Date(p.created_at).toDateString()}
+                  </Chip>
+                </View>
               </Card>
             ))}
           </ScrollView>
@@ -101,9 +110,18 @@ const styles = StyleSheet.create({
   post: {
     marginVertical: 3,
     marginHorizontal: 1,
-    padding: 6,
+    padding: 10,
   },
   title: {
     fontWeight: "bold",
+    marginVertical: 2,
+  },
+  summary: {
+    color: "grey",
+    marginVertical: 2,
+  },
+  dateView: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
 });
