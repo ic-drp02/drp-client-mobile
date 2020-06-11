@@ -31,6 +31,7 @@ export default function Question({ navigation }) {
   const dispatch = useDispatch();
   const sites = useSelector((s) => s.questions.sites);
   const subjects = useSelector((s) => s.questions.subjects);
+  const user = useSelector((s) => s.auth.user);
 
   const [site, setSite] = useState(undefined);
   const [grade, setGrade] = useState(undefined);
@@ -58,6 +59,7 @@ export default function Question({ navigation }) {
             text: query,
           },
         ],
+        user: user.id,
       })
       .then((res) => {
         setSubmitting(false);
