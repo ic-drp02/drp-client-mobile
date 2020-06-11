@@ -7,7 +7,7 @@ import InfiniteScrollView from "../components/InfiniteScrollView.js";
 
 import api from "../util/api";
 
-export default function SearchPosts({ navigation }) {
+export default function Search({ navigation }) {
   const DEFAULT_SEARCH_LIMIT = 10;
   const fullHeight = { flex: 1 };
 
@@ -66,7 +66,11 @@ export default function SearchPosts({ navigation }) {
       setLoading(true);
 
       async function search(text, fetchNumber) {
-        const results = await api.searchPosts(text, 0, fetchNumber);
+        const results = await api.searchPosts({
+          searched: text,
+          page: 0,
+          results_per_page: fetchNumber,
+        });
         if (!results.success) {
           return;
         }
