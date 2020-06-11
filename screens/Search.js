@@ -12,8 +12,8 @@ export default function Search({ navigation, route }) {
   const fullHeight = { flex: 1 };
 
   const ref = useRef(null);
-  const guidelinesOnly = route.params.guidelinesOnly;
-  const tag = route.params.tag;
+  const guidelinesOnly = route.params ? route.params.guidelinesOnly : false;
+  const tag = route.params ? route.params.tag : undefined;
   const [firstFocus, setFirstFocus] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [foundPosts, setFoundPosts] = useState([]);
