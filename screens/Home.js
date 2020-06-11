@@ -51,6 +51,7 @@ export default function Home({ navigation }) {
         renderTabBar={(props) => (
           <TabBar
             {...props}
+            indicatorStyle={{ backgroundColor: theme.colors.accent }}
             style={{ backgroundColor: theme.colors.primary }}
           />
         )}
