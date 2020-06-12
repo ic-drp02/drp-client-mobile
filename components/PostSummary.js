@@ -48,7 +48,7 @@ export default function PostSummary({ post, showAttachments }) {
         <View style={[styles.column, styles.wrap]}>
           <Text style={[styles.lmargin, styles.postTitle]}>{post.title}</Text>
           <Text style={[styles.lmargin, styles.postInfo]}>
-            {(!post.author ? "Anonymous user" : post.author) + ", " + ago}
+            {(!post.author ? "ICON Admin" : post.author) + ", " + ago}
           </Text>
           {post.summary != "" && (
             <Text style={[styles.lmargin, styles.postSummary]}>
