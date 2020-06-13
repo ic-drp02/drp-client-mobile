@@ -13,7 +13,7 @@ import {
 import api from "../util/api";
 import { showSnackbar, hideSnackbar } from "../store";
 
-export default function Updates({ navigation }) {
+export default function Account({ navigation }) {
   const fullHeight = { flex: 1 };
   const dispatch = useDispatch();
   const user = useSelector((s) => s.auth.user);
