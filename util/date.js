@@ -38,8 +38,6 @@ export function timeElapsedSince(date) {
 }
 
 export function toDateAndTimeString(date) {
-  console.log(date);
-  console.log(date.toDateAndTimeString);
   return format(date, "EEEE d. MMMM yyyy, HH:mm");
 }
 

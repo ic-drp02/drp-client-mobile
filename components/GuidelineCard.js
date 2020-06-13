@@ -11,8 +11,6 @@ export default function GuidelineCard({
   showRemove,
   onRemove,
 }) {
-  console.log(guideline);
-  console.log(guideline.created_at);
   return (
     <Card
       style={styles.guidelineCard}
