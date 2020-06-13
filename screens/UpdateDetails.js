@@ -3,7 +3,7 @@ import { StyleSheet, View, AsyncStorage } from "react-native";
 import {
   Appbar,
   Button,
-  Snackbar,
+  ActivityIndicator,
   Portal,
   Dialog,
   Paragraph,
@@ -12,18 +12,38 @@ import { useDispatch, useSelector } from "react-redux";
 
 import UpdateData from "../components/UpdateData.js";
 
+import api from "../util/api";
+
 import { deletePost, addRecentPost } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
   const { postId } = route.params;
+  const [post, setPost] = useState(null);
   const dispatch = useDispatch();
   const user = useSelector((s) => s.auth.user);
 
   const [pinned, setPinned] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  async function loadPost() {
+    try {
+      const res = await api.getPost(postId);
+      if (res.success) {
+        setPost(res.data);
+      } else {
+        console.warn("Failed to get post data with status " + res.status);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  }
+
   useEffect(() => {
     dispatch(addRecentPost(postId));
+  }, []);
+
+  useEffect(() => {
+    loadPost();
   }, []);
 
   useEffect(() => {
@@ -83,17 +103,39 @@ export default function UpdateDetails({ route, navigation }) {
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Update details" />
-        {(() => {
-          if (pinned === true) {
-            return <Appbar.Action icon="pin-off" onPress={() => unpin()} />;
-          } else if (pinned === false) {
-            return <Appbar.Action icon="pin" onPress={() => pin()} />;
-          }
-        })()}
+        {post && (post.superseded_by || post.superseding) && (
+          <Appbar.Action
+            icon="history"
+            onPress={() =>
+              navigation.navigate("GuidelineHistory", { postId: postId })
+            }
+          />
+        )}
+        {post &&
+          !post.superseded_by &&
+          (() => {
+            if (pinned === true) {
+              return <Appbar.Action icon="pin-off" onPress={() => unpin()} />;
+            } else if (pinned === false) {
+              return <Appbar.Action icon="pin" onPress={() => pin()} />;
+            }
+          })()}
       </Appbar.Header>
       <View style={styles.content}>
         <View style={{ flex: 1 }}>
-          <UpdateData id={postId} />
+          {post === null ? (
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator indeterminate size="large" />
+            </View>
+          ) : (
+            <UpdateData post={post} />
+          )}
         </View>
         {user.role === "admin" && (
           <View>

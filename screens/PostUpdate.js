@@ -17,7 +17,6 @@ import {
   ProgressBar,
   Portal,
   Switch,
-  Card,
 } from "react-native-paper";
 
 import * as DocumentPicker from "expo-document-picker";
@@ -26,6 +25,7 @@ import TagPickerDialog from "../components/TagPickerDialog";
 import GuideLinePickerDialog from "../components/GuidelinePickerDialog";
 import FileRenameDialog from "../components/FileRenameDialog";
 import BigText from "../components/BigText";
+import GuidelineCard from "../components/GuidelineCard";
 
 import api from "../util/api";
 
@@ -41,43 +41,42 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
   const [progress, setProgress] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [isGuideline, setIsGuideline] = useState(false);
-  const [supersedes, setSupersedes] = useState(null);
+  const [supersedingGuideline, setSupersedingGuideline] = useState(null);
   const [guidelinePicker, setGuidelinePicker] = useState(false);
 
   const handleIsGuidelineChange = () => {
     setIsGuideline(!isGuideline);
     if (!isGuideline) {
-      setSupersedes(null);
+      setSupersedingGuideline(null);
     }
   };
 
   const handlePostPress = (post) => {
-    setSupersedes(post);
+    setSupersedingGuideline(post);
     setGuidelinePicker(false);
   };
 
   useEffect(() => {
     preFillPost();
-  }, [supersedes]);
+  }, [supersedingGuideline]);
 
   function preFillPost() {
-    if (supersedes) {
+    if (supersedingGuideline) {
       if (!title) {
-        setTitle(supersedes.title);
+        setTitle(supersedingGuideline.title);
       }
       if (!summary) {
-        setSummary(supersedes.summary);
+        setSummary(supersedingGuideline.summary);
       }
     }
   }
 
   function handleSupersedeChange(value) {
     if (value) {
-      setSupersedes(true);
       setGuidelinePicker(true);
       return;
     }
-    setSupersedes(null);
+    setSupersedingGuideline(null);
   }
 
   function newFile(name, uri) {
@@ -108,7 +107,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
     summary,
     content,
     isGuideline,
-    supersedes,
+    supersedingGuideline,
     tags,
     files
   ) {
@@ -119,7 +118,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
         summary,
         content: "<p>" + content.replace(/\n/g, "<br/>") + "</p>",
         is_guideline: isGuideline,
-        superseding: supersedes ? supersedes.id : undefined,
+        superseding: supersedingGuideline ? supersedingGuideline.id : undefined,
         tags: tags.map((t) => t.name),
         files: files,
         names: files.map((f) => f.name),
@@ -141,13 +140,21 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
 
   const submitPost = useCallback(
     () =>
-      submitData(title, summary, content, isGuideline, supersedes, tags, files),
+      submitData(
+        title,
+        summary,
+        content,
+        isGuideline,
+        supersedingGuideline,
+        tags,
+        files
+      ),
     [
       title,
       summary,
       content,
       isGuideline,
-      supersedes,
+      supersedingGuideline,
       tags,
       files,
       progress,
@@ -318,7 +325,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                     Does this supersede an old guideline?
                   </Text>
                   <Switch
-                    value={supersedes ? true : false}
+                    value={supersedingGuideline === null ? false : true}
                     onValueChange={(value) => handleSupersedeChange(value)}
                     color={theme.colors.primary}
                   />
@@ -332,7 +339,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
                 <GuideLinePickerDialog
                   visible={guidelinePicker}
                   onDismiss={() => {
-                    setSupersedes(null);
+                    setSupersedingGuideline(null);
                     setGuidelinePicker(false);
                   }}
                   onSelect={handlePostPress}
@@ -340,34 +347,16 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
               </Portal>
 
               {/* Preceding guideline view */}
-              {isGuideline && supersedes ? (
+              {isGuideline && supersedingGuideline != null ? (
                 <View style={styles.view}>
                   <Text style={styles.guidelineText}>
                     This guideline will supersede:
                   </Text>
-                  <Card style={styles.supersededGuideline}>
-                    <Text style={{ fontWeight: "bold" }}>
-                      {supersedes.title}
-                    </Text>
-                    {supersedes.summary ? (
-                      <Text>{supersedes.summary}</Text>
-                    ) : (
-                      <></>
-                    )}
-                    <View style={styles.dateView}>
-                      <Chip icon="calendar-range">
-                        {"Posted on " +
-                          new Date(supersedes.created_at).toDateString()}
-                      </Chip>
-                    </View>
-                    <Button
-                      color="red"
-                      style={{ alignSelf: "flex-end" }}
-                      onPress={() => setSupersedes(null)}
-                    >
-                      Remove
-                    </Button>
-                  </Card>
+                  <GuidelineCard
+                    guideline={supersedingGuideline}
+                    showRemove={true}
+                    onRemove={() => setSupersedingGuideline(null)}
+                  />
                 </View>
               ) : (
                 <></>
@@ -428,16 +417,6 @@ const styles = StyleSheet.create({
     margin: 8,
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  supersededGuideline: {
-    padding: 10,
-    width: "100%",
-    marginTop: 12,
-  },
-  dateView: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginTop: 8,
   },
   center: {
     alignContent: "center",
