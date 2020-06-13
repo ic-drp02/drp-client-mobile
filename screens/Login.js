@@ -71,7 +71,14 @@ export default function Login() {
 
   return (
     <IosKeyboardAvoidingView>
-      <ScrollView keyboardShouldPersistTaps="handled">
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          flexGrow: 1,
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
         <View style={styles.root}>
           <View style={styles.imageContainer}>
             <Image
@@ -165,12 +172,9 @@ export default function Login() {
 const styles = StyleSheet.create({
   root: {
     padding: 16,
-    flex: 1,
   },
   imageContainer: {
     height: 200,
-    marginTop: 24,
-    padding: 8,
   },
   image: {
     flex: 1,
