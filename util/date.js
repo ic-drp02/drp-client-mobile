@@ -4,6 +4,7 @@ import {
   differenceInDays,
   differenceInMonths,
   differenceInYears,
+  format,
 } from "date-fns";
 
 export function timeElapsedSince(date) {
@@ -34,4 +35,14 @@ export function timeElapsedSince(date) {
   }
 
   return diffYears.toString() + "y ago";
+}
+
+export function toDateAndTimeString(date) {
+  console.log(date);
+  console.log(date.toDateAndTimeString);
+  return format(date, "EEEE d. MMMM yyyy, HH:mm");
+}
+
+export function toDateString(date) {
+  return format(date, "EEEE d. MMMM yyyy");
 }

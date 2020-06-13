@@ -1,64 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { View, Linking, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 
-import {
-  Headline,
-  ActivityIndicator,
-  Divider,
-  Chip,
-  Text,
-} from "react-native-paper";
+import { Headline, Divider, Chip, Text } from "react-native-paper";
 
 import Attachments from "./Attachments.js";
 
-import api from "../util/api.js";
+import { toDateAndTimeString } from "../util/date";
 
 export default function UpdateData(props) {
-  const [data, setData] = useState(undefined);
-  const id = props.id;
-
-  async function loadPost() {
-    try {
-      const res = await api.getPost(id);
-      if (res.success) {
-        setData(res.data);
-      } else {
-        console.warn("Failed to get post data with status " + res.status);
-      }
-    } catch (error) {
-      console.warn(error);
-    }
-  }
-
-  useEffect(() => {
-    if (data === undefined) {
-      loadPost();
-    }
-  }, [data]);
-
-  if (data === undefined) {
-    return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator indeterminate size="large" />
-      </View>
-    );
-  }
+  const post = props.post;
 
   return (
     <>
       <View style={styles.fullHeight}>
         <MainContent
-          title={data.title}
-          summary={data.summary}
-          content={createHtmlDocument(data.title, data.content)}
-          date={data.created_at}
+          title={post.title}
+          summary={post.summary}
+          content={createHtmlDocument(post.title, post.content)}
+          date={post.created_at}
         />
         <View style={{ marginTop: 10 }}>
-          <TagsView tags={data.tags} />
+          <TagsView tags={post.tags} />
         </View>
         <View style={{ marginBottom: 10 }}>
-          <Attachments files={data.files} />
+          <Attachments files={post.files} />
         </View>
       </View>
     </>
@@ -73,7 +39,7 @@ function MainContent({ title, summary, content, date }) {
       {summary ? <Text style={styles.summary}>{summary}</Text> : <></>}
       <View style={styles.dateView}>
         <Chip icon="calendar-range">
-          {"Posted on " + new Date(date).toDateString()}
+          {"Posted on " + toDateAndTimeString(new Date(date))}
         </Chip>
       </View>
       <Divider />

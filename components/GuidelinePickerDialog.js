@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  Button,
-  TextInput,
-  Text,
-  Card,
-  ProgressBar,
-  Chip,
-} from "react-native-paper";
+import { Dialog, Button, TextInput, ProgressBar } from "react-native-paper";
+
+import GuidelineCard from "./GuidelineCard";
 
 import { View, ScrollView, StyleSheet } from "react-native";
 
@@ -75,20 +69,12 @@ function GuidelinePickerDialogContent({ onSelect }) {
       <Dialog.ScrollArea style={styles.noHorizontalPadding}>
         <View style={styles.fullHeight}>
           <ScrollView>
-            {filteredPosts.map((p) => (
-              <Card key={p.id} style={styles.post} onPress={() => onSelect(p)}>
-                <Text style={styles.title}>{p.title}</Text>
-                {p.summary ? (
-                  <Text style={styles.summary}>{p.summary}</Text>
-                ) : (
-                  <></>
-                )}
-                <View style={styles.dateView}>
-                  <Chip icon="calendar-range">
-                    {new Date(p.created_at).toDateString()}
-                  </Chip>
-                </View>
-              </Card>
+            {filteredPosts.map((g) => (
+              <GuidelineCard
+                key={g.id}
+                guideline={g}
+                onCardPress={() => onSelect(g)}
+              />
             ))}
           </ScrollView>
         </View>
@@ -106,22 +92,5 @@ const styles = StyleSheet.create({
   },
   fullHeight: {
     flex: 1,
-  },
-  post: {
-    marginVertical: 3,
-    marginHorizontal: 1,
-    padding: 10,
-  },
-  title: {
-    fontWeight: "bold",
-    marginVertical: 2,
-  },
-  summary: {
-    color: "grey",
-    marginVertical: 2,
-  },
-  dateView: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
   },
 });
