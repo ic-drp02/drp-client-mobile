@@ -14,7 +14,7 @@ import Guidelines from "./Guidelines.js";
 import GuidelinesCategory from "./GuidelinesCategory.js";
 import Questions from "./Questions";
 import QuestionCategory from "./QuestionCategory";
-import Welcome from "./Welcome";
+import Account from "./Account";
 
 const StackNavigator = createStackNavigator();
 
@@ -45,7 +45,7 @@ export default function AppNavigation() {
         name="QuestionCategory"
         component={QuestionCategory}
       />
-      <StackNavigator.Screen name="Welcome" component={Welcome} />
+      <StackNavigator.Screen name="Account" component={Account} />
     </StackNavigator.Navigator>
   );
 }
