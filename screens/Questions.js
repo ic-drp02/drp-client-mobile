@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, RefreshControl, Dimensions } from "react-native";
-import { Appbar, List, Badge, Text, FAB, useTheme } from "react-native-paper";
+import {
+  Appbar,
+  List,
+  Badge,
+  Text,
+  FAB,
+  useTheme,
+  Portal,
+  Dialog,
+  Button,
+} from "react-native-paper";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 
 import QuestionCard from "../components/QuestionCard";
@@ -118,6 +128,7 @@ function UserQuestions() {
 
   const [refreshing, setRefreshing] = useState(true);
   const [questions, setQuestions] = useState(null);
+  const [deleteQuestion, setDeleteQuestion] = useState(null);
 
   async function refresh() {
     setRefreshing(true);
@@ -148,8 +159,10 @@ function UserQuestions() {
                   key={q.id}
                   question={q}
                   editable={user.id === q.user}
+                  deletable={user.id === q.user}
                   onSaved={refresh}
                   canResolve={false}
+                  onDelete={() => setDeleteQuestion(q)}
                 />
               ))}
             </>
@@ -165,6 +178,33 @@ function UserQuestions() {
             </View>
           ))}
       </ScrollView>
+      <Portal>
+        <Dialog
+          visible={deleteQuestion !== null}
+          onDismiss={() => setDeleteQuestion(null)}
+        >
+          <Dialog.Title>Confirm</Dialog.Title>
+          <Dialog.Content>
+            <Text>Are you sure you want to delete this question?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button compact onPress={() => setDeleteQuestion(null)}>
+              Cancel
+            </Button>
+            <Button
+              compact
+              color="red"
+              onPress={async () => {
+                await api.deleteQuestion(deleteQuestion.id);
+                setDeleteQuestion(null);
+                refresh();
+              }}
+            >
+              Delete
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       <FAB
         style={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
         icon="plus"
