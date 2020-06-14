@@ -54,6 +54,10 @@ export default function Login() {
           "You must register with an nhs.net or imperial.ac.uk email.";
         break;
 
+      case "ShortPassword":
+        errorMessage = "Password must contain at least 8 characters.";
+        break;
+
       case "InvalidCredentials":
         errorMessage = "The email address or password is incorrect.";
         break;
