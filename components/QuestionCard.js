@@ -22,10 +22,12 @@ import api from "../util/api";
 
 export default function QuestionCard({
   editable,
+  deletable,
   canResolve,
   question,
   onResolved,
   onSaved,
+  onDelete,
 }) {
   const theme = useTheme();
   const labelStyle = {
@@ -78,6 +80,11 @@ export default function QuestionCard({
             onPress={() => setEdit(true)}
           >
             Edit
+          </Button>
+        )}
+        {deletable && (
+          <Button compact color="red" onPress={onDelete}>
+            Delete
           </Button>
         )}
         {canResolve && (
