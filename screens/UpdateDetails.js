@@ -11,13 +11,14 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 
 import UpdateData from "../components/UpdateData.js";
+import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
 
 import api from "../util/api";
 
 import { deletePost, addRecentPost } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
-  const { postId } = route.params;
+  const { postId, onDelete } = route.params;
   const [post, setPost] = useState(null);
   const dispatch = useDispatch();
   const user = useSelector((s) => s.auth.user);
@@ -75,28 +76,14 @@ export default function UpdateDetails({ route, navigation }) {
     dispatch(deletePost(postId)).then(() => navigation.goBack());
   }, [postId]);
 
-  function DeleteConfirmationDialog() {
-    return (
-      <Dialog visible={confirmDelete} onDismiss={() => setConfirmDelete(false)}>
-        <Dialog.Title>Delete post</Dialog.Title>
-        <Dialog.Content>
-          <Paragraph>Are you sure you want to delete this post?</Paragraph>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button
-            color="red"
-            onPress={() => {
-              setConfirmDelete(false);
-              del();
-            }}
-          >
-            Delete
-          </Button>
-          <Button onPress={() => setConfirmDelete(false)}>Cancel</Button>
-        </Dialog.Actions>
-      </Dialog>
-    );
-  }
+  const hasMoreRevisions = post?.superseded_by || post?.superseding;
+  const confirmDeleteText = `Are you sure you want to delete this ${
+    post?.is_guideline ? "guideline" : "post"
+  }${hasMoreRevisions ? " revision" : ""}?${
+    hasMoreRevisions
+      ? " If you want to delete all revisions of this guideline, you can do so from the history page."
+      : ""
+  }`;
 
   return (
     <View style={{ flex: 1 }}>
@@ -137,7 +124,7 @@ export default function UpdateDetails({ route, navigation }) {
             <UpdateData post={post} />
           )}
         </View>
-        {user.role === "admin" && (
+        {post && user.role === "admin" && (
           <View>
             <Button
               mode="contained"
@@ -148,7 +135,16 @@ export default function UpdateDetails({ route, navigation }) {
               Delete
             </Button>
             <Portal>
-              <DeleteConfirmationDialog />
+              <DeleteConfirmationDialog
+                title={`Delete ${post.is_guideline ? "guideline" : "post"}`}
+                text={confirmDeleteText}
+                visible={confirmDelete}
+                onDelete={() => {
+                  setConfirmDelete(false);
+                  del();
+                }}
+                onCancel={() => setConfirmDelete(false)}
+              />
             </Portal>
           </View>
         )}
