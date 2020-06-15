@@ -1,13 +1,6 @@
-import React, { useCallback, useContext, useState, useEffect } from "react";
-import { ScrollView, StyleSheet, View, AsyncStorage } from "react-native";
-import {
-  Appbar,
-  Button,
-  ActivityIndicator,
-  Portal,
-  Dialog,
-  Paragraph,
-} from "react-native-paper";
+import React, { useCallback, useState, useEffect } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Appbar, Button, ActivityIndicator, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
 import GuidelineCard from "../components/GuidelineCard.js";
