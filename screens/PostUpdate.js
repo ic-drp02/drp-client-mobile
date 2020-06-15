@@ -118,7 +118,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
         summary,
         content: "<p>" + content.replace(/\n/g, "<br/>") + "</p>",
         is_guideline: isGuideline,
-        superseding: supersedingGuideline ? supersedingGuideline.id : undefined,
+        updates: supersedingGuideline ? supersedingGuideline.id : undefined,
         tags: tags.map((t) => t.name),
         files: files,
         names: files.map((f) => f.name),

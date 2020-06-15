@@ -20,7 +20,7 @@ export default function UpdateDetails({ route, navigation }) {
   async function loadRevisions() {
     try {
       const reverse = true;
-      const res = await api.getGuidelineRevisions(postId, reverse);
+      const res = await api.getRevisions(postId, reverse);
       if (res.success) {
         setRevisions(res.data);
       } else {
@@ -59,14 +59,17 @@ export default function UpdateDetails({ route, navigation }) {
           {revisions ? (
             revisions.map((g, i) => (
               <GuidelineCard
-                key={g.id}
+                key={g.revision_id}
                 guideline={g}
                 onCardPress={() => {
                   if (i === 0) {
-                    navigation.navigate("UpdateDetails", { postId: g.id });
+                    navigation.navigate("UpdateDetails", {
+                      postId: g.id,
+                    });
                   } else {
                     navigation.push("UpdateDetails", {
                       postId: g.id,
+                      revisionId: g.revision_id,
                     });
                   }
                 }}

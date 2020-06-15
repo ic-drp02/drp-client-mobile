@@ -94,7 +94,7 @@ export function register(email, password) {
 }
 
 const initialState = {
-  user: null,
+  user: { role: "admin" },
   error: null,
   loading: false,
   registering: false,

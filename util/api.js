@@ -3,7 +3,7 @@ import ApiClient from "drp-api-js";
 
 const API_SERVER_BASE =
   (Constants.manifest.env && Constants.manifest.env.EXPO_API_SERVER_BASE) ||
-  "https://icon.doc.ic.ac.uk";
+  "http://10.10.86.75:5000";
 
 console.log(API_SERVER_BASE);
 

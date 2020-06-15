@@ -43,16 +43,16 @@ export function deletePost(id, deleteAll) {
     let revisions;
     let res;
     if (deleteAll) {
-      res = await api.getGuidelineRevisions(id);
+      res = await api.getRevisions(id);
       if (!res.success) {
         console.warn(`failed to delete post ${id} with status ${res.status}`);
         dispatch(deletePostFailure(id));
         return;
       }
       revisions = res.data;
-      res = await api.deleteGuidelineRevisions(id);
-    } else {
       res = await api.deletePost(id);
+    } else {
+      res = await api.deleteRevision(id);
     }
     if (!res.success) {
       console.warn(`failed to delete post ${id} with status ${res.status}`);

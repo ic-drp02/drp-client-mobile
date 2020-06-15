@@ -18,8 +18,9 @@ import api from "../util/api";
 import { deletePost, addRecentPost } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
-  const { postId, onDelete } = route.params;
+  const { postId, revisionId } = route.params;
   const [post, setPost] = useState(null);
+  const [revisions, setRevisions] = useState(null);
   const dispatch = useDispatch();
   const user = useSelector((s) => s.auth.user);
 
@@ -28,9 +29,19 @@ export default function UpdateDetails({ route, navigation }) {
 
   async function loadPost() {
     try {
-      const res = await api.getPost(postId);
+      const reversed = true;
+      const res = await api.getRevisions(postId, reversed);
       if (res.success) {
-        setPost(res.data);
+        if (revisionId !== undefined) {
+          const matching = res.data.filter((p) => p.revision_id === revisionId);
+          if (matching.length === 0) {
+            console.warn("The requested revision does not appear to exist");
+          }
+          setPost(matching[0]);
+        } else {
+          setPost(res.data[0]);
+        }
+        setRevisions(res.data);
       } else {
         console.warn("Failed to get post data with status " + res.status);
       }
@@ -73,10 +84,10 @@ export default function UpdateDetails({ route, navigation }) {
   }
 
   const del = useCallback(() => {
-    dispatch(deletePost(postId)).then(() => navigation.goBack());
-  }, [postId]);
+    dispatch(deletePost(post.revision_id)).then(() => navigation.goBack());
+  }, [post]);
 
-  const hasMoreRevisions = post?.superseded_by || post?.superseding;
+  const hasMoreRevisions = revisions ? revisions.length > 1 : false;
   const confirmDeleteText = `Are you sure you want to delete this ${
     post?.is_guideline ? "guideline" : "post"
   }${hasMoreRevisions ? " revision" : ""}?${
@@ -90,7 +101,7 @@ export default function UpdateDetails({ route, navigation }) {
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Update details" />
-        {post && (post.superseded_by || post.superseding) && (
+        {post && hasMoreRevisions && (
           <Appbar.Action
             icon="history"
             onPress={() =>
@@ -99,7 +110,7 @@ export default function UpdateDetails({ route, navigation }) {
           />
         )}
         {post &&
-          !post.superseded_by &&
+          post.is_current &&
           (() => {
             if (pinned === true) {
               return <Appbar.Action icon="pin-off" onPress={() => unpin()} />;
