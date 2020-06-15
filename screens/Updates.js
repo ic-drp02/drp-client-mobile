@@ -24,7 +24,6 @@ export default function Updates({ navigation }) {
     );
     setPosts([...posts, ...res.data]);
     setPage(page + 1);
-    console.log("Loaded: " + (page + 1));
     setRefreshing(false);
   }
 
