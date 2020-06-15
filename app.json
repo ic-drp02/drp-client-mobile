@@ -5,7 +5,7 @@
     "platforms": ["ios", "android", "web"],
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/icon_logo.png",
+    "icon": "./assets/icon_logo_opaque.png",
     "splash": {
       "image": "./assets/icon_full.png",
       "resizeMode": "contain",
@@ -16,7 +16,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "uk.ac.imperial.IconGuidelines"
     },
     "android": {
       "package": "com.ic_drp02.icon_guidelines",
