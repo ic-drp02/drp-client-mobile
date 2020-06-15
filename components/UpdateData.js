@@ -10,6 +10,7 @@ import { toDateAndTimeString } from "../util/date";
 
 export default function UpdateData(props) {
   const post = props.post;
+  const old = props.old;
 
   return (
     <>

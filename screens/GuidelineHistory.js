@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import GuidelineCard from "../components/GuidelineCard.js";
 import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
+import { LABEL_TYPES } from "../components/Label";
 
 import api from "../util/api";
 
@@ -73,6 +74,7 @@ export default function UpdateDetails({ route, navigation }) {
                     });
                   }
                 }}
+                labelType={i === 0 ? LABEL_TYPES.NEW : LABEL_TYPES.OLD}
               />
             ))
           ) : (

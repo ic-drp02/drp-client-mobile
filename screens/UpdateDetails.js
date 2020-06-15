@@ -21,6 +21,7 @@ export default function UpdateDetails({ route, navigation }) {
   const { postId, revisionId } = route.params;
   const [post, setPost] = useState(null);
   const [revisions, setRevisions] = useState(null);
+  const [old, setOld] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((s) => s.auth.user);
 
@@ -36,6 +37,9 @@ export default function UpdateDetails({ route, navigation }) {
           const matching = res.data.filter((p) => p.revision_id === revisionId);
           if (matching.length === 0) {
             console.warn("The requested revision does not appear to exist");
+          }
+          if (matching[0] !== res.data[0]) {
+            setOld(true);
           }
           setPost(matching[0]);
         } else {
@@ -132,7 +136,7 @@ export default function UpdateDetails({ route, navigation }) {
               <ActivityIndicator indeterminate size="large" />
             </View>
           ) : (
-            <UpdateData post={post} />
+            <UpdateData post={post} old={old} />
           )}
         </View>
         {post && user.role === "admin" && (
