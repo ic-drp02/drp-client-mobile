@@ -1,23 +1,40 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { Appbar, ProgressBar } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { View, RefreshControl, FlatList } from "react-native";
+import { Appbar } from "react-native-paper";
 
-import PostsList from "../components/PostsList";
-import { refreshPosts } from "../store";
+import PostSummary from "../components/PostSummary";
+import api from "../util/api";
+
+const POSTS_PER_PAGE = 10;
 
 export default function Updates({ navigation }) {
-  const posts = useSelector((s) => s.posts);
-  const dispatch = useDispatch();
+  const [page, setPage] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [posts, setPosts] = useState();
 
   const fullHeight = { flex: 1 };
 
-  const refresh = async () => {
+  async function loadMore() {
     setRefreshing(true);
-    await dispatch(refreshPosts());
+    const res = await api.getPosts(
+      undefined,
+      undefined,
+      POSTS_PER_PAGE,
+      page + 1
+    );
+    setPosts([...posts, ...res.data]);
+    setPage(page + 1);
+    console.log("Loaded: " + (page + 1));
     setRefreshing(false);
-  };
+  }
+
+  async function refresh() {
+    setRefreshing(true);
+    const res = await api.getPosts(undefined, undefined, POSTS_PER_PAGE, 0);
+    setPage(0);
+    setPosts(res.data);
+    setRefreshing(false);
+  }
 
   useEffect(() => {
     refresh();
@@ -30,14 +47,16 @@ export default function Updates({ navigation }) {
         <Appbar.Content title="All Updates" />
       </Appbar.Header>
       <View style={fullHeight}>
-        <ScrollView
+        <FlatList
+          data={posts || []}
+          renderItem={({ item }) => <PostSummary post={item} />}
+          keyExtractor={(post) => post.id.toString()}
           contentContainerStyle={{ padding: 16 }}
+          onEndReached={loadMore}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
-        >
-          <PostsList posts={posts || []} />
-        </ScrollView>
+        />
       </View>
     </View>
   );
