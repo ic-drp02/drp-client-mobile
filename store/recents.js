@@ -4,6 +4,7 @@ export function fetchRecentPosts() {
   return async function (dispatch) {
     const posts = await recents.getRecentPosts();
     dispatch({ type: "FETCH_RECENT_POSTS", posts });
+    return posts;
   };
 }
 

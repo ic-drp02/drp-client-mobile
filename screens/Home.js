@@ -14,8 +14,9 @@ import { useSelector, useDispatch } from "react-redux";
 import PostsList from "../components/PostsList";
 import PostsListWithButton from "../components/PostsListWithButton";
 
-import { refreshPosts, fetchRecentPosts } from "../store";
+import { fetchRecentPosts } from "../store";
 import { useNavigation } from "@react-navigation/native";
+import api from "../util/api";
 
 function selectRecentPosts(s) {
   return s.posts
@@ -72,7 +73,7 @@ export default function Home({ navigation }) {
               return <Recents />;
 
             case "pinned":
-              return <Pinned pinnedIds={pinned} />;
+              return <Pinned pinnedIds={pinned} onRefresh={refreshPinned} />;
           }
         }}
         initialLayout={{ width: Dimensions.get("window").width }}
@@ -87,21 +88,21 @@ export default function Home({ navigation }) {
 
 function Main() {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const [refreshing, setRefreshing] = useState(true);
   const auth = useSelector((s) => s.auth);
 
-  const posts = useSelector((s) => s.posts);
+  const [refreshing, setRefreshing] = useState(true);
+  const [posts, setPosts] = useState(null);
+
+  async function refreshPosts() {
+    setRefreshing(true);
+    const res = await api.getPosts(undefined, undefined, 3, 0);
+    setPosts(res.data);
+    setRefreshing(false);
+  }
 
   useEffect(() => {
-    dispatch(refreshPosts());
+    refreshPosts();
   }, []);
-
-  useEffect(() => {
-    if (posts) {
-      setRefreshing(false);
-    }
-  }, [posts]);
 
   return (
     <ScrollView
@@ -109,10 +110,7 @@ function Main() {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            dispatch(refreshPosts());
-          }}
+          onRefresh={() => refreshPosts()}
         />
       }
     >
@@ -159,20 +157,25 @@ function Main() {
 function Recents() {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
-  const recents = useSelector(selectRecentPosts);
+  const recentIds = useSelector((s) => s.recents.posts);
+  const [recents, setRecents] = useState(null);
 
-  const posts = useSelector((s) => s.posts);
+  async function refreshRecents() {
+    setRefreshing(true);
+    const posts = await Promise.all(
+      recentIds.map((id) => api.getPost(id).then((res) => res.data))
+    );
+    setRecents(posts.filter((p) => !!p));
+    setRefreshing(false);
+  }
 
   useEffect(() => {
-    dispatch(refreshPosts());
+    refreshRecents();
+  }, [recentIds]);
+
+  useEffect(() => {
     dispatch(fetchRecentPosts());
   }, []);
-
-  useEffect(() => {
-    if (posts) {
-      setRefreshing(false);
-    }
-  }, [posts]);
 
   return (
     <ScrollView
@@ -180,43 +183,32 @@ function Recents() {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            Promise.all([
-              dispatch(refreshPosts()),
-              dispatch(fetchRecentPosts()),
-            ]);
-          }}
+          onRefresh={() => refreshRecents()}
         />
       }
     >
-      {recents.length > 0 && <RecentlyViewed recents={recents} />}
+      {recents && recents.length > 0 && <RecentlyViewed recents={recents} />}
     </ScrollView>
   );
 }
 
 function Pinned({ pinnedIds, onRefresh }) {
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
-
-  const posts = useSelector((s) => s.posts);
   const [pinned, setPinned] = useState(null);
 
   useEffect(() => {
-    dispatch(refreshPosts());
-  }, []);
-
-  useEffect(() => {
-    if (posts) {
-      setRefreshing(false);
+    (async () => {
       if (pinnedIds) {
-        setPinned(posts.filter((p) => pinnedIds.includes(p.id)));
+        const posts = await Promise.all(
+          pinnedIds.map((id) => api.getPost(id).then((res) => res.data))
+        );
+        setPinned(posts);
       } else {
         setPinned([]);
       }
-    }
-  }, [posts, pinnedIds]);
+      setRefreshing(false);
+    })();
+  }, [pinnedIds]);
 
   if (pinned && pinned.length === 0) {
     return (
@@ -234,7 +226,7 @@ function Pinned({ pinnedIds, onRefresh }) {
           refreshing={refreshing}
           onRefresh={() => {
             setRefreshing(true);
-            onRefresh && onRefresh(() => setRefreshing(false));
+            onRefresh && onRefresh();
           }}
         />
       }
