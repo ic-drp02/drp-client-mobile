@@ -69,16 +69,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
-  },
-  label: {
-    marginLeft: 10,
-  },
-  old: {
-    color: "white",
-    backgroundColor: "red",
-  },
-  new: {
-    color: "white",
-    backgroundColor: "green",
-  },
+  }
 });
