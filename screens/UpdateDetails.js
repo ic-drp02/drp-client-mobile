@@ -1,13 +1,6 @@
-import React, { useCallback, useContext, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { StyleSheet, View, AsyncStorage } from "react-native";
-import {
-  Appbar,
-  Button,
-  ActivityIndicator,
-  Portal,
-  Dialog,
-  Paragraph,
-} from "react-native-paper";
+import { Appbar, Button, ActivityIndicator, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
 import UpdateData from "../components/UpdateData.js";
@@ -33,6 +26,7 @@ export default function UpdateDetails({ route, navigation }) {
       const reversed = true;
       const res = await api.getRevisions(postId, reversed);
       if (res.success) {
+        let p;
         if (revisionId !== undefined) {
           const matching = res.data.filter((p) => p.revision_id === revisionId);
           if (matching.length === 0) {
@@ -41,11 +35,15 @@ export default function UpdateDetails({ route, navigation }) {
           if (matching[0] !== res.data[0]) {
             setOld(true);
           }
-          setPost(matching[0]);
+          p = matching[0];
         } else {
-          setPost(res.data[0]);
+          p = res.data[0];
         }
+        setPost(p);
         setRevisions(res.data);
+        if (revisionId === undefined) {
+          refreshSaved(postId, p.revision_id);
+        }
       } else {
         console.warn("Failed to get post data with status " + res.status);
       }
@@ -55,10 +53,6 @@ export default function UpdateDetails({ route, navigation }) {
   }
 
   useEffect(() => {
-    dispatch(addRecentPost(postId));
-  }, []);
-
-  useEffect(() => {
     loadPost();
   }, []);
 
@@ -66,14 +60,14 @@ export default function UpdateDetails({ route, navigation }) {
     (async () => {
       const json = await AsyncStorage.getItem("PINNED_POSTS");
       const pinned = json ? JSON.parse(json) : [];
-      setPinned(pinned.includes(postId));
+      setPinned(pinned.map((p) => p.postId).includes(postId));
     })();
   }, [postId]);
 
   async function pin() {
     let json = await AsyncStorage.getItem("PINNED_POSTS");
     let pinned = json ? JSON.parse(json) : [];
-    pinned.push(postId);
+    pinned.push({ postId: postId, revisionId: post.revision_id });
     json = JSON.stringify(pinned);
     await AsyncStorage.setItem("PINNED_POSTS", json);
     setPinned(true);
@@ -82,9 +76,21 @@ export default function UpdateDetails({ route, navigation }) {
   async function unpin() {
     let json = await AsyncStorage.getItem("PINNED_POSTS");
     let pinned = json ? JSON.parse(json) : [];
-    json = JSON.stringify(pinned.filter((p) => p !== postId));
+    json = JSON.stringify(pinned.filter((p) => p.postId !== postId));
     await AsyncStorage.setItem("PINNED_POSTS", json);
     setPinned(false);
+  }
+
+  async function refreshSaved(postId, revisionId) {
+    dispatch(addRecentPost(postId, revisionId));
+    let json = await AsyncStorage.getItem("PINNED_POSTS");
+    let pinned = json ? JSON.parse(json) : [];
+    if (pinned.map((p) => p.postId).includes(postId)) {
+      pinned = pinned.filter((p) => p.postId !== postId);
+      pinned.push({ postId: postId, revisionId: revisionId });
+      json = JSON.stringify(pinned);
+      await AsyncStorage.setItem("PINNED_POSTS", json);
+    }
   }
 
   const del = useCallback(() => {
@@ -147,7 +153,7 @@ export default function UpdateDetails({ route, navigation }) {
               style={styles.button}
               onPress={() => setConfirmDelete(true)}
             >
-              Delete
+              Delete{hasMoreRevisions ? " revision" : ""}
             </Button>
             <Portal>
               <DeleteConfirmationDialog

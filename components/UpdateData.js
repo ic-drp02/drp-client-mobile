@@ -5,6 +5,7 @@ import { WebView } from "react-native-webview";
 import { Headline, Divider, Chip, Text } from "react-native-paper";
 
 import Attachments from "./Attachments.js";
+import Label, { LABEL_TYPES } from "./Label";
 
 import { toDateAndTimeString } from "../util/date";
 
@@ -20,6 +21,7 @@ export default function UpdateData(props) {
           summary={post.summary}
           content={createHtmlDocument(post.title, post.content)}
           date={post.created_at}
+          old={old}
         />
         <View style={{ marginTop: 10 }}>
           <TagsView tags={post.tags} />
@@ -32,11 +34,16 @@ export default function UpdateData(props) {
   );
 }
 
-function MainContent({ title, summary, content, date }) {
+function MainContent({ title, summary, content, date, old }) {
   const ref = useRef(null);
   return (
     <View style={styles.fullHeight}>
-      <Headline>{title}</Headline>
+      <View style={styles.view}>
+        <Headline>{title}</Headline>
+        {old && (
+          <Label labelType={LABEL_TYPES.OLD} style={{ marginLeft: 10 }} />
+        )}
+      </View>
       {summary ? <Text style={styles.summary}>{summary}</Text> : <></>}
       <View style={styles.dateView}>
         <Chip icon="calendar-range">
@@ -126,5 +133,10 @@ const styles = StyleSheet.create({
   },
   fileIcon: {
     marginRight: 10,
+  },
+  view: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
   },
 });

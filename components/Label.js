@@ -5,7 +5,7 @@ import { View } from "react-native";
 
 export const LABEL_TYPES = Object.freeze({
   OLD: { text: "Old", color: "red", textColor: "white" },
-  NEW: { text: "New", color: "green", textColor: "white" },
+  CURRENT: { text: "Current", color: "green", textColor: "white" },
   UPDATED: { text: "Updated", color: "#2f80ed", textColor: "white" },
 });
 

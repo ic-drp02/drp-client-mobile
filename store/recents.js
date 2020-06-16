@@ -7,9 +7,9 @@ export function fetchRecentPosts() {
   };
 }
 
-export function addRecentPost(id) {
+export function addRecentPost(pId, rId) {
   return async function (dispatch) {
-    const posts = await recents.pushRecentPost(id);
+    const posts = await recents.pushRecentPost(pId, rId);
     dispatch({ type: "ADD_RECENT_POST", posts });
   };
 }

@@ -74,7 +74,7 @@ export default function UpdateDetails({ route, navigation }) {
                     });
                   }
                 }}
-                labelType={i === 0 ? LABEL_TYPES.NEW : LABEL_TYPES.OLD}
+                labelType={i === 0 ? LABEL_TYPES.CURRENT : LABEL_TYPES.OLD}
               />
             ))
           ) : (
