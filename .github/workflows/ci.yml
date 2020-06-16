@@ -119,3 +119,17 @@ jobs:
         with:
           name: icon-guidelines-${{ github.sha }}.ipa
           path: ./icon-guidelines-${{ github.sha }}.ipa
+
+      - name: Setup expo cli
+        uses: expo/expo-github-action@v5
+        with:
+          expo-version: 3.x
+          expo-username: ${{ secrets.EXPO_USERNAME }}
+          expo-password: ${{ secrets.EXPO_PASSWORD }}
+
+      - name: Upload to TestFlight
+        env:
+          EXPO_APPLE_ID: ${{ secrets.IOS_APPLE_ID }}
+          EXPO_APPLE_ID_PASSWORD: ${{ secrets.IOS_APPLE_ID_PASSWORD }}
+        run: |
+          expo upload:ios --app-name ICON --path ./icon-guidelines-$GITHUB_SHA.ipa
