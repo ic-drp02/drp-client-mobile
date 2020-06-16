@@ -131,6 +131,6 @@ jobs:
         env:
           EXPO_APPLE_ID: ${{ secrets.IOS_APPLE_ID }}
           EXPO_APPLE_ID_PASSWORD: ${{ secrets.IOS_APPLE_ID_PASSWORD }}
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
+          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
         run: |
           expo upload:ios --app-name ICON --path ./icon-guidelines-$GITHUB_SHA.ipa
