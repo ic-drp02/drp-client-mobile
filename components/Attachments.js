@@ -28,9 +28,9 @@ export default function Attachments({ files }) {
               file.name
             );
           }}
-          style={{ margin: 4 }}
+          style={{ margin: 4, width: "97%" }}
         >
-          {file.name.length < 40 ? file.name : `${file.name.slice(0, 40)}...`}
+          {file.name}
         </Chip>
       ))}
     </View>
