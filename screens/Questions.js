@@ -91,7 +91,7 @@ function AllQuestions() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ flex: 1 }}
+      style={{ flex: 1 }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={refresh} />
       }
