@@ -68,7 +68,51 @@ jobs:
           turtle setup:android
           echo $ANDROID_KEYSTORE > ./drp-client-mobile.jks.base64
           base64 --decode ./drp-client-mobile.jks.base64 > drp-client-mobile.jks
-          turtle build:android --keystore-path ./drp-client-mobile.jks --keystore-alias ${{ secrets.ANDROID_KEYSTORE_ALIAS }} --type apk --output ./drp-client-mobile-$GITHUB_SHA.apk
+          turtle build:android --keystore-path ./drp-client-mobile.jks --keystore-alias ${{ secrets.ANDROID_KEYSTORE_ALIAS }} --type apk --output ./icon-guidelines-$GITHUB_SHA.apk
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: drp-client-mobile-${{ github.sha }}.apk
+          path: ./drp-client-mobile-${{ github.sha }}.apk
+
+  build_standalone_ios:
+    runs-on: macos-latest
+    needs: [test, deploy_expo]
+    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup turtle cli
+        run: |
+          echo "::add-path::$HOME/.npm-global/bin"
+          npm config set prefix $HOME/.npm-global
+          npm install -g turtle-cli
+
+      - name: Import signing certificates
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.IOS_DEV_P12 }}
+          p12-password: ${{ secrets.IOS_DIST_P12_PASSWORD }}
+
+      - name: Build ios archive
+        env:
+          IOS_DEV_P12: ${{ secrets.IOS_DEV_P12 }}
+          IOS_PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
+          EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
+          EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+          EXPO_IOS_DIST_P12_PASSWORD: ${{ secrets.IOS_DIST_P12_PASSWORD }}
+        run: |
+          turtle setup:ios
+          echo $IOS_DEV_P12 > ./ios_development.p12.base64
+          base64 --decode ./ios_development.p12.base64 > ios_development.p12
+          echo $IOS_PROVISIONING_PROFILE > ./IconGuidelines.mobileprovision.base64
+          base64 --decode ./IconGuidelines.mobileprovision.base64 > IconGuidelines.mobileprovision
+          turtle build:ios --team-id 8SMHUAL32W --dist-p12-path ./ios_development.p12 --provisioning-profile-path ./IconGuidelines.mobileprovision --type archive --output ./icon-guidelines-$GITHUB_SHA.ipa
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
