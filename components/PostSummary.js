@@ -9,11 +9,10 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { timeElapsedSince } from "../util/date.js";
 import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
-import { openFile } from "../util/files.js";
-import api from "../util/api";
 import Attachments from "./Attachments.js";
+import Label, { LABEL_TYPES } from "./Label";
 
-export default function PostSummary({ post, showAttachments }) {
+export default function PostSummary({ post, showAttachments, markOld }) {
   const theme = useTheme();
   const navigation = useNavigation();
   const date = new Date(post.created_at);
@@ -46,7 +45,15 @@ export default function PostSummary({ post, showAttachments }) {
       <View style={[styles.row, styles.margin]}>
         <View style={styles.iconView}>{icon}</View>
         <View style={[styles.column, styles.wrap]}>
-          <Text style={[styles.lmargin, styles.postTitle]}>{post.title}</Text>
+          <View style={styles.view}>
+            <Text style={[styles.lmargin, styles.postTitle]}>{post.title}</Text>
+            {markOld && post.old === true && (
+              <Label
+                style={{ marginLeft: 10 }}
+                labelType={LABEL_TYPES.UPDATED}
+              />
+            )}
+          </View>
           <Text style={[styles.lmargin, styles.postInfo]}>
             {(!post.author ? "ICON Admin" : post.author) + ", " + ago}
           </Text>
@@ -96,5 +103,10 @@ const styles = StyleSheet.create({
   postTitle: {
     fontSize: 16,
     fontWeight: "bold",
+  },
+  view: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
   },
 });

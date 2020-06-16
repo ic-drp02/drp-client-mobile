@@ -13,7 +13,7 @@
     "@react-navigation/native": "^5.5.0",
     "@react-navigation/stack": "^5.4.1",
     "date-fns": "^2.14.0",
-    "drp-api-js": "github:ic-drp02/drp-api-js#master",
+    "drp-api-js": "github:ic-drp02/drp-api-js#guidelines-enhancements",
     "expo": "~37.0.3",
     "expo-constants": "^9.0.0",
     "expo-document-picker": "~8.1.0",

@@ -1,24 +1,20 @@
-import React, { useCallback, useContext, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { StyleSheet, View, AsyncStorage } from "react-native";
-import {
-  Appbar,
-  Button,
-  ActivityIndicator,
-  Portal,
-  Dialog,
-  Paragraph,
-} from "react-native-paper";
+import { Appbar, Button, ActivityIndicator, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
 import UpdateData from "../components/UpdateData.js";
+import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
 
 import api from "../util/api";
 
 import { deletePost, addRecentPost } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
-  const { postId } = route.params;
+  const { postId, revisionId } = route.params;
   const [post, setPost] = useState(null);
+  const [revisions, setRevisions] = useState(null);
+  const [old, setOld] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((s) => s.auth.user);
 
@@ -27,9 +23,27 @@ export default function UpdateDetails({ route, navigation }) {
 
   async function loadPost() {
     try {
-      const res = await api.getPost(postId);
+      const reversed = true;
+      const res = await api.getRevisions(postId, reversed);
       if (res.success) {
-        setPost(res.data);
+        let p;
+        if (revisionId !== undefined) {
+          const matching = res.data.filter((p) => p.revision_id === revisionId);
+          if (matching.length === 0) {
+            console.warn("The requested revision does not appear to exist");
+          }
+          if (matching[0] !== res.data[0]) {
+            setOld(true);
+          }
+          p = matching[0];
+        } else {
+          p = res.data[0];
+        }
+        setPost(p);
+        setRevisions(res.data);
+        if (revisionId === undefined) {
+          refreshSaved(postId, p.revision_id);
+        }
       } else {
         console.warn("Failed to get post data with status " + res.status);
       }
@@ -39,10 +53,6 @@ export default function UpdateDetails({ route, navigation }) {
   }
 
   useEffect(() => {
-    dispatch(addRecentPost(postId));
-  }, []);
-
-  useEffect(() => {
     loadPost();
   }, []);
 
@@ -50,14 +60,14 @@ export default function UpdateDetails({ route, navigation }) {
     (async () => {
       const json = await AsyncStorage.getItem("PINNED_POSTS");
       const pinned = json ? JSON.parse(json) : [];
-      setPinned(pinned.includes(postId));
+      setPinned(pinned.map((p) => p.postId).includes(postId));
     })();
   }, [postId]);
 
   async function pin() {
     let json = await AsyncStorage.getItem("PINNED_POSTS");
     let pinned = json ? JSON.parse(json) : [];
-    pinned.push(postId);
+    pinned.push({ postId: postId, revisionId: post.revision_id });
     json = JSON.stringify(pinned);
     await AsyncStorage.setItem("PINNED_POSTS", json);
     setPinned(true);
@@ -66,44 +76,42 @@ export default function UpdateDetails({ route, navigation }) {
   async function unpin() {
     let json = await AsyncStorage.getItem("PINNED_POSTS");
     let pinned = json ? JSON.parse(json) : [];
-    json = JSON.stringify(pinned.filter((p) => p !== postId));
+    json = JSON.stringify(pinned.filter((p) => p.postId !== postId));
     await AsyncStorage.setItem("PINNED_POSTS", json);
     setPinned(false);
   }
 
-  const del = useCallback(() => {
-    dispatch(deletePost(postId)).then(() => navigation.goBack());
-  }, [postId]);
-
-  function DeleteConfirmationDialog() {
-    return (
-      <Dialog visible={confirmDelete} onDismiss={() => setConfirmDelete(false)}>
-        <Dialog.Title>Delete post</Dialog.Title>
-        <Dialog.Content>
-          <Paragraph>Are you sure you want to delete this post?</Paragraph>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button
-            color="red"
-            onPress={() => {
-              setConfirmDelete(false);
-              del();
-            }}
-          >
-            Delete
-          </Button>
-          <Button onPress={() => setConfirmDelete(false)}>Cancel</Button>
-        </Dialog.Actions>
-      </Dialog>
-    );
+  async function refreshSaved(postId, revisionId) {
+    dispatch(addRecentPost(postId, revisionId));
+    let json = await AsyncStorage.getItem("PINNED_POSTS");
+    let pinned = json ? JSON.parse(json) : [];
+    if (pinned.map((p) => p.postId).includes(postId)) {
+      pinned = pinned.filter((p) => p.postId !== postId);
+      pinned.push({ postId: postId, revisionId: revisionId });
+      json = JSON.stringify(pinned);
+      await AsyncStorage.setItem("PINNED_POSTS", json);
+    }
   }
+
+  const del = useCallback(() => {
+    dispatch(deletePost(post.revision_id)).then(() => navigation.goBack());
+  }, [post]);
+
+  const hasMoreRevisions = revisions ? revisions.length > 1 : false;
+  const confirmDeleteText = `Are you sure you want to delete this ${
+    post?.is_guideline ? "guideline" : "post"
+  }${hasMoreRevisions ? " revision" : ""}?${
+    hasMoreRevisions
+      ? " If you want to delete all revisions of this guideline, you can do so from the history page."
+      : ""
+  }`;
 
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Update details" />
-        {post && (post.superseded_by || post.superseding) && (
+        {post && hasMoreRevisions && (
           <Appbar.Action
             icon="history"
             onPress={() =>
@@ -112,7 +120,7 @@ export default function UpdateDetails({ route, navigation }) {
           />
         )}
         {post &&
-          !post.superseded_by &&
+          post.is_current &&
           (() => {
             if (pinned === true) {
               return <Appbar.Action icon="pin-off" onPress={() => unpin()} />;
@@ -134,10 +142,10 @@ export default function UpdateDetails({ route, navigation }) {
               <ActivityIndicator indeterminate size="large" />
             </View>
           ) : (
-            <UpdateData post={post} />
+            <UpdateData post={post} old={old} />
           )}
         </View>
-        {user.role === "admin" && (
+        {post && user.role === "admin" && (
           <View>
             <Button
               mode="contained"
@@ -145,10 +153,19 @@ export default function UpdateDetails({ route, navigation }) {
               style={styles.button}
               onPress={() => setConfirmDelete(true)}
             >
-              Delete
+              Delete{hasMoreRevisions ? " revision" : ""}
             </Button>
             <Portal>
-              <DeleteConfirmationDialog />
+              <DeleteConfirmationDialog
+                title={`Delete ${post.is_guideline ? "guideline" : "post"}`}
+                text={confirmDeleteText}
+                visible={confirmDelete}
+                onDelete={() => {
+                  setConfirmDelete(false);
+                  del();
+                }}
+                onCancel={() => setConfirmDelete(false)}
+              />
             </Portal>
           </View>
         )}

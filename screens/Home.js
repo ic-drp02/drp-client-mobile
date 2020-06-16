@@ -7,7 +7,14 @@ import {
   Dimensions,
   AsyncStorage,
 } from "react-native";
-import { Appbar, Button, Title, Text, useTheme } from "react-native-paper";
+import {
+  Appbar,
+  Button,
+  Title,
+  Text,
+  useTheme,
+  Badge,
+} from "react-native-paper";
 import { TabView, TabBar } from "react-native-tab-view";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -18,23 +25,54 @@ import { refreshPosts, fetchRecentPosts } from "../store";
 import { useNavigation } from "@react-navigation/native";
 
 function selectRecentPosts(s) {
+  const recents = s.recents.posts;
+  const postIdToRevId = buildPidToRidMap(recents);
   return s.posts
-    ? s.recents.posts
-        .map((id) => s.posts.find((p) => p.id === id))
-        .filter((p) => !!p)
+    ? s.posts
+        .filter((p) => getPids(recents).includes(p.id))
+        .map((p) => {
+          return {
+            ...p,
+            old: postIdToRevId[p.id.toString()] < p.revision_id,
+          };
+        })
     : [];
+}
+
+function buildPidToRidMap(ids) {
+  const postIdToRevId = {};
+  ids.forEach(
+    ({ postId, revisionId }) => (postIdToRevId[postId.toString()] = revisionId)
+  );
+  return postIdToRevId;
+}
+
+function getPids(ids) {
+  return ids.map((p) => p.postId);
 }
 
 export default function Home({ navigation }) {
   const theme = useTheme();
   const [index, setIndex] = useState(0);
-  const [pinned, setPinned] = useState(null);
+  const [pinnedIds, setPinnedIds] = useState(null);
+  const [updatedPinned, setUpdatedPinned] = useState(0);
+  const [updatedRecents, setUpdatedRecents] = useState(0);
 
   useEffect(() => navigation.addListener("focus", refreshPinned), [navigation]);
 
   async function refreshPinned() {
     const json = await AsyncStorage.getItem("PINNED_POSTS");
-    setPinned(!!json ? JSON.parse(json) : []);
+    setPinnedIds(!!json ? JSON.parse(json) : []);
+  }
+
+  function TabLabel({ route, focused, color }) {
+    let text = route.title.toUpperCase();
+    if (route.title === "Pinned" && updatedPinned > 0) {
+      text += ` (${updatedPinned})`;
+    } else if (route.title === "Recents" && updatedRecents > 0) {
+      text += ` (${updatedRecents})`;
+    }
+    return <Text style={{ color }}>{text}</Text>;
   }
 
   return (
@@ -53,6 +91,11 @@ export default function Home({ navigation }) {
             {...props}
             indicatorStyle={{ backgroundColor: theme.colors.accent }}
             style={{ backgroundColor: theme.colors.primary }}
+            renderLabel={({ route, focused, color }) => (
+              <Text style={{ color }}>
+                <TabLabel route={route} focused={focused} color={color} />
+              </Text>
+            )}
           />
         )}
         navigationState={{
@@ -69,10 +112,19 @@ export default function Home({ navigation }) {
               return <Main />;
 
             case "recents":
-              return <Recents />;
+              return (
+                <Recents
+                  onUpdatedChange={(updated) => setUpdatedRecents(updated)}
+                />
+              );
 
             case "pinned":
-              return <Pinned pinnedIds={pinned} />;
+              return (
+                <Pinned
+                  pinnedIds={pinnedIds}
+                  onUpdatedChange={(updated) => setUpdatedPinned(updated)}
+                />
+              );
           }
         }}
         initialLayout={{ width: Dimensions.get("window").width }}
@@ -156,7 +208,7 @@ function Main() {
   );
 }
 
-function Recents() {
+function Recents({ onUpdatedChange }) {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
   const recents = useSelector(selectRecentPosts);
@@ -173,6 +225,10 @@ function Recents() {
       setRefreshing(false);
     }
   }, [posts]);
+
+  useEffect(() => {
+    onUpdatedChange(recents.filter((p) => p.old).length);
+  }, [recents]);
 
   return (
     <ScrollView
@@ -195,7 +251,7 @@ function Recents() {
   );
 }
 
-function Pinned({ pinnedIds, onRefresh }) {
+function Pinned({ pinnedIds, onRefresh, onUpdatedChange }) {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
@@ -211,7 +267,19 @@ function Pinned({ pinnedIds, onRefresh }) {
     if (posts) {
       setRefreshing(false);
       if (pinnedIds) {
-        setPinned(posts.filter((p) => pinnedIds.includes(p.id)));
+        const postIdToRevId = buildPidToRidMap(pinnedIds);
+        const ps = posts
+          .filter((p) => getPids(pinnedIds).includes(p.id))
+          .map((p) => {
+            return {
+              ...p,
+              old: postIdToRevId[p.id.toString()] < p.revision_id,
+            };
+          });
+        setPinned(ps);
+        if (onUpdatedChange !== undefined) {
+          onUpdatedChange(ps.filter((p) => p.old).length);
+        }
       } else {
         setPinned([]);
       }
@@ -242,7 +310,7 @@ function Pinned({ pinnedIds, onRefresh }) {
       {pinned && pinned.length > 0 && (
         <View>
           <Title>Pinned updates</Title>
-          <PostsList posts={pinned} />
+          <PostsList posts={pinned} markOld={true} />
         </View>
       )}
     </ScrollView>
@@ -253,7 +321,7 @@ function RecentlyViewed({ recents, ...props }) {
   return (
     <View {...props}>
       <Title>Recently viewed</Title>
-      {recents && <PostsList posts={recents} limit={3} />}
+      {recents && <PostsList posts={recents} markOld={true} />}
     </View>
   );
 }
