@@ -138,29 +138,31 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
     }
   }
 
-  const submitPost = useCallback(
-    () =>
-      submitData(
-        title,
-        summary,
-        content,
-        isGuideline,
-        supersedingGuideline,
-        tags,
-        files
-      ),
-    [
+  const submitPost = useCallback(() => {
+    if (isGuideline && tags.length === 0) {
+      alert("A guideline must be assigned at least one tag");
+      return;
+    }
+    submitData(
       title,
       summary,
       content,
       isGuideline,
       supersedingGuideline,
       tags,
-      files,
-      progress,
-      submitting,
-    ]
-  );
+      files
+    );
+  }, [
+    title,
+    summary,
+    content,
+    isGuideline,
+    supersedingGuideline,
+    tags,
+    files,
+    progress,
+    submitting,
+  ]);
 
   if (submitting) {
     return (
