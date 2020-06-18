@@ -17,8 +17,11 @@ import {
   TextInput,
 } from "react-native-paper";
 
+import Label, { LABEL_TYPES } from "./Label";
+
 import { Grade } from "drp-api-js";
 import api from "../util/api";
+import PostSummary from "./PostSummary";
 
 export default function QuestionCard({
   editable,
@@ -43,7 +46,18 @@ export default function QuestionCard({
   return (
     <Card style={{ margin: 4 }}>
       <Card.Content>
+        <View style={{ flexDirection: "row" }}>
+          {question.resolved && <Label labelType={LABEL_TYPES.RESOLVED} />}
+        </View>
         <Paragraph>{question.text}</Paragraph>
+        {question.resolved_by && (
+          <View>
+            <Divider style={{ marginVertical: 8 }} />
+            <Text>Resolved by:</Text>
+            <PostSummary post={question.resolved_by} />
+          </View>
+        )}
+
         <Divider style={{ marginVertical: 8 }} />
         <View style={{ flexDirection: "row" }}>
           <View>
