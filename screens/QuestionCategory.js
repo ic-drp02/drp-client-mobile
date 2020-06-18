@@ -19,15 +19,15 @@ export default function Question({ route, navigation }) {
   async function refresh() {
     setRefreshing(true);
     const res = await api.getQuestions();
-    setQuestions(
-      res.data.filter((q) => q.subject.id === subject.id && !q.resolved)
-    );
+    setQuestions(res.data.filter((q) => q.subject.id === subject.id));
     setRefreshing(false);
   }
 
   async function resolveAll() {
     setResolving(true);
-    await Promise.all(questions.map((q) => api.resolveQuestion(q.id)));
+    await Promise.all(
+      questions.filter((q) => !q.resolved).map((q) => api.resolveQuestion(q.id))
+    );
     setResolving(false);
     setQuestions([]);
   }
@@ -72,7 +72,7 @@ export default function Question({ route, navigation }) {
                     question={q}
                     editable={user.id === q.user}
                     onSaved={refresh}
-                    canResolve={user.role === "admin"}
+                    canResolve={!q.resolved && user.role === "admin"}
                     onResolved={(question) =>
                       setQuestions(
                         questions.filter((q) => q.id !== question.id)
