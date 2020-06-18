@@ -23,8 +23,18 @@ export async function registerForPushNotifications() {
       return;
     }
 
-    const token = await Notifications.getExpoPushTokenAsync();
-    api.registerForNotifications(token);
+    const token = encodeURIComponent(
+      await Notifications.getExpoPushTokenAsync()
+    );
+
+    await fetch(
+      api.baseUrl +
+        "/api/notifications/register?user=" +
+        store.getState().auth.user.id +
+        "&token=" +
+        token,
+      { method: "POST" }
+    );
   } else {
     console.log("Must use physical device for push notifications");
   }
@@ -50,7 +60,9 @@ export function registerNotificationHandlers(onSelect) {
   // Refresh posts if notification received when app is open.
   Notifications.addListener(async (n) => {
     if (AppState.currentState === "active") {
-      await Notifications.dismissAllNotificationsAsync();
+      if (!n.data.resolves) {
+        await Notifications.dismissNotificationAsync(n.notificationId);
+      }
       store.dispatch(refreshPosts());
     }
 
