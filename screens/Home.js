@@ -7,37 +7,15 @@ import {
   Dimensions,
   AsyncStorage,
 } from "react-native";
-import {
-  Appbar,
-  Button,
-  Title,
-  Text,
-  useTheme,
-  Badge,
-} from "react-native-paper";
+import { Appbar, Button, Title, Text, useTheme } from "react-native-paper";
 import { TabView, TabBar } from "react-native-tab-view";
 import { useSelector, useDispatch } from "react-redux";
 
 import PostsList from "../components/PostsList";
 import PostsListWithButton from "../components/PostsListWithButton";
 
-import { refreshPosts, fetchRecentPosts } from "../store";
+import { refreshPosts } from "../store";
 import { useNavigation } from "@react-navigation/native";
-
-function selectRecentPosts(s) {
-  const recents = s.recents.posts;
-  const postIdToRevId = buildPidToRidMap(recents);
-  return s.posts
-    ? s.posts
-        .filter((p) => getPids(recents).includes(p.id))
-        .map((p) => {
-          return {
-            ...p,
-            old: postIdToRevId[p.id.toString()] < p.revision_id,
-          };
-        })
-    : [];
-}
 
 function buildPidToRidMap(ids) {
   const postIdToRevId = {};
@@ -53,19 +31,21 @@ function getPids(ids) {
 
 export default function Home({ navigation }) {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const [index, setIndex] = useState(0);
   const [pinnedIds, setPinnedIds] = useState(null);
   const [updatedPinned, setUpdatedPinned] = useState(0);
-  const [updatedRecents, setUpdatedRecents] = useState(0);
+  const [updatedRecents] = useState(0);
 
   useEffect(() => navigation.addListener("focus", refreshPinned), [navigation]);
 
   async function refreshPinned() {
+    await dispatch(refreshPosts());
     const json = await AsyncStorage.getItem("PINNED_POSTS");
     setPinnedIds(!!json ? JSON.parse(json) : []);
   }
 
-  function TabLabel({ route, focused, color }) {
+  function TabLabel({ route, color }) {
     let text = route.title.toUpperCase();
     if (route.title === "Pinned" && updatedPinned > 0) {
       text += ` (${updatedPinned})`;
@@ -102,7 +82,6 @@ export default function Home({ navigation }) {
           index,
           routes: [
             { key: "home", title: "Home" },
-            { key: "recents", title: "Recents" },
             { key: "pinned", title: "Pinned" },
           ],
         }}
@@ -111,18 +90,12 @@ export default function Home({ navigation }) {
             case "home":
               return <Main />;
 
-            case "recents":
-              return (
-                <Recents
-                  onUpdatedChange={(updated) => setUpdatedRecents(updated)}
-                />
-              );
-
             case "pinned":
               return (
                 <Pinned
                   pinnedIds={pinnedIds}
                   onUpdatedChange={(updated) => setUpdatedPinned(updated)}
+                  onRefresh={refreshPinned}
                 />
               );
           }
@@ -208,51 +181,7 @@ function Main() {
   );
 }
 
-function Recents({ onUpdatedChange }) {
-  const dispatch = useDispatch();
-  const [refreshing, setRefreshing] = useState(true);
-  const recents = useSelector(selectRecentPosts);
-
-  const posts = useSelector((s) => s.posts);
-
-  useEffect(() => {
-    dispatch(refreshPosts());
-    dispatch(fetchRecentPosts());
-  }, []);
-
-  useEffect(() => {
-    if (posts) {
-      setRefreshing(false);
-    }
-  }, [posts]);
-
-  useEffect(() => {
-    onUpdatedChange(recents.filter((p) => p.old).length);
-  }, [recents]);
-
-  return (
-    <ScrollView
-      contentContainerStyle={styles.contentContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            Promise.all([
-              dispatch(refreshPosts()),
-              dispatch(fetchRecentPosts()),
-            ]);
-          }}
-        />
-      }
-    >
-      {recents.length > 0 && <RecentlyViewed recents={recents} />}
-    </ScrollView>
-  );
-}
-
 function Pinned({ pinnedIds, onRefresh, onUpdatedChange }) {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
 
@@ -314,15 +243,6 @@ function Pinned({ pinnedIds, onRefresh, onUpdatedChange }) {
         </View>
       )}
     </ScrollView>
-  );
-}
-
-function RecentlyViewed({ recents, ...props }) {
-  return (
-    <View {...props}>
-      <Title>Recently viewed</Title>
-      {recents && <PostsList posts={recents} markOld={true} />}
-    </View>
   );
 }
 
