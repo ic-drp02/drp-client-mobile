@@ -186,7 +186,7 @@ function Pinned({ pinnedIds, onRefresh, onUpdatedChange }) {
 
   useEffect(() => {
     (async () => {
-      if (pinnedIds) {
+      if (pinnedIds && pinnedIds.length > 0) {
         const res = await api.getMultiplePosts(pinnedIds.map((v) => v.postId));
         if (!res.success) {
           console.warn(
