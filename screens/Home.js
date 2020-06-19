@@ -199,10 +199,13 @@ function Pinned({ pinnedIds, onRefresh }) {
   useEffect(() => {
     (async () => {
       if (pinnedIds) {
-        const posts = await Promise.all(
-          pinnedIds.map((id) => api.getPost(id).then((res) => res.data))
-        );
-        setPinned(posts);
+        const res = await api.getMultiplePosts(pinnedIds);
+        if (!res.success) {
+          console.warn(
+            "failed to fetch pinned posts with status " + res.status
+          );
+        }
+        setPinned(res.data);
       } else {
         setPinned([]);
       }
