@@ -187,7 +187,7 @@ function Pinned({ pinnedIds, onRefresh, onUpdatedChange }) {
   useEffect(() => {
     (async () => {
       if (pinnedIds) {
-        const res = await api.getMultiplePosts(pinnedIds);
+        const res = await api.getMultiplePosts(pinnedIds.map((v) => v.postId));
         if (!res.success) {
           console.warn(
             "failed to fetch pinned posts with status " + res.status
