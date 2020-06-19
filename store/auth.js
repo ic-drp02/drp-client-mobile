@@ -1,5 +1,7 @@
 import api from "../util/api";
 
+import * as SecureStore from "expo-secure-store";
+
 const LOGIN_BEGIN = "LOGIN_BEGIN";
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGIN_ERROR = "LOGIN_ERROR";
@@ -25,7 +27,7 @@ export function login(email, password) {
       });
     } catch {
       dispatch({
-        type: REGISTER_ERROR,
+        type: LOGIN_ERROR,
         error: {
           type: "Unknown",
           message: "An eerror occurred while communicating with the server.",
@@ -48,6 +50,8 @@ export function login(email, password) {
         });
       }
     } else {
+      await SecureStore.setItemAsync("CREDENTIALS_EMAIL", email);
+      await SecureStore.setItemAsync("CREDENTIALS_PASSWORD", password);
       dispatch({
         type: LOGIN_SUCCESS,
         user: body,
