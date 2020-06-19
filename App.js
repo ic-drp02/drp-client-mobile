@@ -34,7 +34,7 @@ export default function App() {
     <PaperProvider theme={theme}>
       <ReduxProvider store={store}>
         <NavigationContainer ref={navRef}>
-          <AuthController>
+          <AuthController navRef={navRef}>
             <DrawerNavigator.Navigator
               initialRouteName="AppNavigation"
               drawerContent={SideBar}
@@ -52,7 +52,7 @@ export default function App() {
   );
 }
 
-function AuthController({ children }) {
+function AuthController({ children, navRef }) {
   const auth = useSelector((s) => s.auth);
 
   useEffect(() => {

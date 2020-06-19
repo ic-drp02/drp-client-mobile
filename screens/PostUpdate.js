@@ -118,7 +118,7 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
         summary,
         content: "<p>" + content.replace(/\n/g, "<br/>") + "</p>",
         is_guideline: isGuideline,
-        superseding: supersedingGuideline ? supersedingGuideline.id : undefined,
+        updates: supersedingGuideline ? supersedingGuideline.id : undefined,
         tags: tags.map((t) => t.name),
         files: files,
         names: files.map((f) => f.name),
@@ -138,29 +138,31 @@ export default withTheme(function PostUpdate({ navigation, theme }) {
     }
   }
 
-  const submitPost = useCallback(
-    () =>
-      submitData(
-        title,
-        summary,
-        content,
-        isGuideline,
-        supersedingGuideline,
-        tags,
-        files
-      ),
-    [
+  const submitPost = useCallback(() => {
+    if (isGuideline && tags.length === 0) {
+      alert("A guideline must be assigned at least one tag");
+      return;
+    }
+    submitData(
       title,
       summary,
       content,
       isGuideline,
       supersedingGuideline,
       tags,
-      files,
-      progress,
-      submitting,
-    ]
-  );
+      files
+    );
+  }, [
+    title,
+    summary,
+    content,
+    isGuideline,
+    supersedingGuideline,
+    tags,
+    files,
+    progress,
+    submitting,
+  ]);
 
   if (submitting) {
     return (

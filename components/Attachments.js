@@ -28,7 +28,7 @@ export default function Attachments({ files }) {
               file.name
             );
           }}
-          style={{ margin: 4 }}
+          style={{ margin: 4, width: "97%" }}
         >
           {file.name}
         </Chip>

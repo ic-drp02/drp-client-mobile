@@ -75,9 +75,7 @@ function AllQuestions() {
     const subjects = sRes.data;
 
     for (const subject of subjects) {
-      const count = qRes.data.filter(
-        (q) => q.subject.id === subject.id && !q.resolved
-      ).length;
+      const count = qRes.data.filter((q) => q.subject.id === subject.id).length;
       subject.count = count;
     }
 
@@ -91,7 +89,7 @@ function AllQuestions() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ flex: 1 }}
+      style={{ flex: 1 }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={refresh} />
       }

@@ -10,15 +10,16 @@ export async function getRecentPosts() {
   }
 }
 
-export async function pushRecentPost(id) {
+export async function pushRecentPost(pId, rId) {
   let recents = await getRecentPosts();
+  let recentPids = recents.map((p) => p.postId);
 
-  const existing = recents.indexOf(id);
+  const existing = recentPids.indexOf(pId);
   if (existing > -1) {
     recents.splice(existing, 1);
   }
 
-  recents.unshift(id);
+  recents.unshift({ postId: pId, revisionId: rId });
   recents = recents.slice(0, Math.min(recents.length, 10));
 
   await saveRecents(recents);
@@ -28,6 +29,7 @@ export async function pushRecentPost(id) {
 
 export async function removeRecentPost(id) {
   const recents = await getRecentPosts();
+  let recentPids = recents.map((p) => p.postId);
   const index = recents.indexOf(id);
   if (index > -1) {
     recents.splice(index, 1);

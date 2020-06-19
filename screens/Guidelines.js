@@ -37,10 +37,10 @@ export default function Question({ navigation }) {
       tag.count = count;
     }
 
-    const relevantTags = tags.filter((t) => t.count > 0);
-    relevantTags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+    //const relevantTags = tags.filter((t) => t.count > 0);
+    tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
 
-    setTags(relevantTags);
+    setTags(tags);
     setRefreshing(false);
   }
 
@@ -62,7 +62,7 @@ export default function Question({ navigation }) {
       </Appbar.Header>
       <View style={fullHeight}>
         <ScrollView
-          contentContainerStyle={{ flex: 1 }}
+          style={fullHeight}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }

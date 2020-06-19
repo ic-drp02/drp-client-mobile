@@ -36,11 +36,24 @@ function deletePostFailure(id) {
   return { type: "DELETE_POST_FAILURE", id };
 }
 
-export function deletePost(id) {
+export function deletePost(id, deleteAll) {
   return async function (dispatch) {
     dispatch(deletePostBegin(id));
 
-    const res = await api.deletePost(id);
+    let revisions;
+    let res;
+    if (deleteAll) {
+      res = await api.getRevisions(id);
+      if (!res.success) {
+        console.warn(`failed to delete post ${id} with status ${res.status}`);
+        dispatch(deletePostFailure(id));
+        return;
+      }
+      revisions = res.data;
+      res = await api.deletePost(id);
+    } else {
+      res = await api.deleteRevision(id);
+    }
     if (!res.success) {
       console.warn(`failed to delete post ${id} with status ${res.status}`);
       dispatch(deletePostFailure(id));
@@ -54,8 +67,15 @@ export function deletePost(id) {
       })
     );
 
-    dispatch(deletePostSuccess(id));
-    dispatch(removeRecentPost(id));
+    if (deleteAll) {
+      revisions.forEach((r) => {
+        dispatch(deletePostSuccess(r.id));
+        dispatch(removeRecentPost(r.id));
+      });
+    } else {
+      dispatch(deletePostSuccess(id));
+      dispatch(removeRecentPost(id));
+    }
   };
 }
 
