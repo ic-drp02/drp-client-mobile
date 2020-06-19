@@ -180,20 +180,36 @@ function Main() {
 }
 
 function Pinned({ pinnedIds, onRefresh, onUpdatedChange }) {
-  const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(true);
   const [pinned, setPinned] = useState(null);
 
   useEffect(() => {
     (async () => {
       if (pinnedIds && pinnedIds.length > 0) {
-        const res = await api.getMultiplePosts(pinnedIds.map((v) => v.postId));
+        const res = await api.getMultiplePosts(getPids(pinnedIds));
         if (!res.success) {
           console.warn(
             "failed to fetch pinned posts with status " + res.status
           );
         }
-        setPinned(res.data);
+        const fetchedPinned = res.data;
+        /* Build a map mapping post IDs to IDs of revision that was last viewed
+           by the user */
+        const postIdToRevId = buildPidToRidMap(pinnedIds);
+        /* Set old flag to true on all posts that have a revision that is
+           newer than the last viewed revision */
+        const ps = fetchedPinned.map((p) => {
+          return {
+            ...p,
+            old: postIdToRevId[p.id.toString()] < p.revision_id,
+          };
+        });
+        console.log(ps);
+        setPinned(ps);
+        // Propagate the number of updated pinned posts to the parent
+        if (onUpdatedChange !== undefined) {
+          onUpdatedChange(ps.filter((p) => p.old).length);
+        }
       } else {
         setPinned([]);
       }
