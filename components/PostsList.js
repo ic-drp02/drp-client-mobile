@@ -2,7 +2,7 @@ import React from "react";
 
 import PostSummary from "./PostSummary";
 
-export default function PostsList({ posts, limit, showAttachments, markOld }) {
+export default function PostsList({ posts, limit, showAttachments }) {
   return posts
     .slice(0, Math.min(posts.length, limit || posts.length))
     .map((post) => (
@@ -10,7 +10,6 @@ export default function PostsList({ posts, limit, showAttachments, markOld }) {
         key={post.id}
         post={post}
         showAttachments={showAttachments}
-        markOld={markOld}
       />
     ));
 }

@@ -7,43 +7,57 @@ import UpdateData from "../components/UpdateData.js";
 import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
 
 import api from "../util/api";
+import {
+  addFavouriteId,
+  removeFavouriteId,
+  updateFavouriteId,
+  isFavourite,
+} from "../util/favourites";
 
-import { deletePost, addRecentPost } from "../store";
+import { deletePost } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
+  const dispatch = useDispatch();
+
+  const user = useSelector((s) => s.auth.user);
+
   const { postId, revisionId } = route.params;
+
   const [post, setPost] = useState(null);
   const [revisions, setRevisions] = useState(null);
   const [old, setOld] = useState(false);
-  const dispatch = useDispatch();
-  const user = useSelector((s) => s.auth.user);
-
-  const [pinned, setPinned] = useState(null);
+  const [favourite, setFavourite] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   async function loadPost() {
     try {
+      // Request revisions in order from newest to oldest
       const reversed = true;
       const res = await api.getRevisions(postId, reversed);
       if (res.success) {
         let p;
         if (revisionId !== undefined) {
+          // A revision was specified
           const matching = res.data.filter((p) => p.revision_id === revisionId);
           if (matching.length === 0) {
             console.warn("The requested revision does not appear to exist");
+            return;
           }
           if (matching[0] !== res.data[0]) {
+            // The specified revision does not match the newest revision, mark as old
             setOld(true);
           }
+          // The requested revision is the first element in the matching list
           p = matching[0];
         } else {
+          // No revision was specified - show details for the most recent one
           p = res.data[0];
         }
         setPost(p);
         setRevisions(res.data);
-        if (revisionId === undefined) {
-          refreshSaved(postId, p.revision_id);
-        }
+
+        // Refresh viewed favourite post revision
+        await updateFavouriteId(p.id, p.revision_id);
       } else {
         console.warn("Failed to get post data with status " + res.status);
       }
@@ -52,46 +66,25 @@ export default function UpdateDetails({ route, navigation }) {
     }
   }
 
+  async function addFavourite() {
+    await addFavouriteId(post.id, post.revision_id);
+    setFavourite(true);
+  }
+
+  async function removeFavourite() {
+    await removeFavouriteId(post.id);
+    setFavourite(false);
+  }
+
   useEffect(() => {
     loadPost();
   }, []);
 
   useEffect(() => {
     (async () => {
-      const json = await AsyncStorage.getItem("PINNED_POSTS");
-      const pinned = json ? JSON.parse(json) : [];
-      setPinned(pinned.map((p) => p.postId).includes(postId));
+      setFavourite(await isFavourite(postId));
     })();
   }, [postId]);
-
-  async function pin() {
-    let json = await AsyncStorage.getItem("PINNED_POSTS");
-    let pinned = json ? JSON.parse(json) : [];
-    pinned.push({ postId: postId, revisionId: post.revision_id });
-    json = JSON.stringify(pinned);
-    await AsyncStorage.setItem("PINNED_POSTS", json);
-    setPinned(true);
-  }
-
-  async function unpin() {
-    let json = await AsyncStorage.getItem("PINNED_POSTS");
-    let pinned = json ? JSON.parse(json) : [];
-    json = JSON.stringify(pinned.filter((p) => p.postId !== postId));
-    await AsyncStorage.setItem("PINNED_POSTS", json);
-    setPinned(false);
-  }
-
-  async function refreshSaved(postId, revisionId) {
-    dispatch(addRecentPost(postId, revisionId));
-    let json = await AsyncStorage.getItem("PINNED_POSTS");
-    let pinned = json ? JSON.parse(json) : [];
-    if (pinned.map((p) => p.postId).includes(postId)) {
-      pinned = pinned.filter((p) => p.postId !== postId);
-      pinned.push({ postId: postId, revisionId: revisionId });
-      json = JSON.stringify(pinned);
-      await AsyncStorage.setItem("PINNED_POSTS", json);
-    }
-  }
 
   const del = useCallback(() => {
     dispatch(deletePost(post.revision_id)).then(() => navigation.goBack());
@@ -122,10 +115,17 @@ export default function UpdateDetails({ route, navigation }) {
         {post &&
           post.is_current &&
           (() => {
-            if (pinned === true) {
-              return <Appbar.Action icon="pin-off" onPress={() => unpin()} />;
-            } else if (pinned === false) {
-              return <Appbar.Action icon="pin" onPress={() => pin()} />;
+            if (favourite === true) {
+              return (
+                <Appbar.Action
+                  icon="star-off"
+                  onPress={() => removeFavourite()}
+                />
+              );
+            } else if (favourite === false) {
+              return (
+                <Appbar.Action icon="star" onPress={() => addFavourite()} />
+              );
             }
           })()}
       </Appbar.Header>

@@ -1,3 +1,6 @@
+const SHOW_SNACKBAR = "SHOW_SNACKBAR";
+const HIDE_SNACKBAR = "HIDE_SNACKBAR";
+
 const initialState = {
   visible: false,
   message: null,
@@ -6,16 +9,16 @@ const initialState = {
 };
 
 export function showSnackbar(message, duration, action) {
-  return { type: "SHOW_SNACKBAR", message, duration, action };
+  return { type: SHOW_SNACKBAR, message, duration, action };
 }
 
 export function hideSnackbar() {
-  return { type: "HIDE_SNACKBAR" };
+  return { type: HIDE_SNACKBAR };
 }
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case "SHOW_SNACKBAR":
+    case SHOW_SNACKBAR:
       return {
         visible: true,
         message: action.message,
@@ -23,7 +26,7 @@ export default function reducer(state = initialState, action) {
         action: action.action,
       };
 
-    case "HIDE_SNACKBAR":
+    case HIDE_SNACKBAR:
       return { ...state.snackbar, visible: false };
 
     default:
