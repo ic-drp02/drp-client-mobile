@@ -1,8 +1,15 @@
 import api from "../util/api";
 
+const LOGIN_BEGIN = "LOGIN_BEGIN";
+const LOGIN_SUCCESS = "LOGIN_SUCCESS";
+const LOGIN_ERROR = "LOGIN_ERROR";
+const REGISTER_BEGIN = "REGISTER_BEGIN";
+const REGISTER_SUCCESS = "REGISTER_SUCCESS";
+const REGISTER_ERROR = "REGISTER_ERROR";
+
 export function login(email, password) {
   return async function (dispatch) {
-    dispatch({ type: "LOGIN_BEGIN" });
+    dispatch({ type: LOGIN_BEGIN });
 
     let res;
     try {
@@ -18,7 +25,7 @@ export function login(email, password) {
       });
     } catch {
       dispatch({
-        type: "REGISTER_ERROR",
+        type: REGISTER_ERROR,
         error: {
           type: "Unknown",
           message: "An eerror occurred while communicating with the server.",
@@ -30,10 +37,10 @@ export function login(email, password) {
 
     if (res.status !== 200) {
       if (!!body.type) {
-        dispatch({ type: "LOGIN_ERROR", error: body });
+        dispatch({ type: LOGIN_ERROR, error: body });
       } else {
         dispatch({
-          type: "LOGIN_ERROR",
+          type: LOGIN_ERROR,
           error: {
             type: "Unknown",
             message: "An error occurred while trying to log in.",
@@ -42,7 +49,7 @@ export function login(email, password) {
       }
     } else {
       dispatch({
-        type: "LOGIN_SUCCESS",
+        type: LOGIN_SUCCESS,
         user: body,
       });
     }
@@ -51,7 +58,7 @@ export function login(email, password) {
 
 export function register(email, password) {
   return async function (dispatch) {
-    dispatch({ type: "REGISTER_BEGIN" });
+    dispatch({ type: REGISTER_BEGIN });
 
     let res;
     try {
@@ -65,7 +72,7 @@ export function register(email, password) {
       });
     } catch {
       dispatch({
-        type: "REGISTER_ERROR",
+        type: REGISTER_ERROR,
         error: {
           type: "Unknown",
           message: "An eerror occurred while communicating with the server.",
@@ -76,11 +83,11 @@ export function register(email, password) {
     if (res.status !== 200) {
       const body = await res.json();
       if (!!body.type) {
-        dispatch({ type: "REGISTER_ERROR", error: body });
+        dispatch({ type: REGISTER_ERROR, error: body });
       } else {
         console.warn("Registration error: " + body.message);
         dispatch({
-          type: "REGISTER_ERROR",
+          type: REGISTER_ERROR,
           error: {
             type: "Unknown",
             message: "An error occurred while creating your account.",
@@ -88,7 +95,7 @@ export function register(email, password) {
         });
       }
     } else {
-      dispatch({ type: "REGISTER_SUCCESS" });
+      dispatch({ type: REGISTER_SUCCESS });
     }
   };
 }
@@ -103,7 +110,7 @@ const initialState = {
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case "LOGIN_BEGIN":
+    case LOGIN_BEGIN:
       return {
         ...state,
         user: null,
@@ -112,19 +119,19 @@ export default function reducer(state = initialState, action) {
         loading: true,
       };
 
-    case "LOGIN_SUCCESS":
+    case LOGIN_SUCCESS:
       return { ...state, user: action.user, loading: false };
 
-    case "LOGIN_ERROR":
+    case LOGIN_ERROR:
       return { ...state, error: action.error, loading: false };
 
-    case "REGISTER_BEGIN":
+    case REGISTER_BEGIN:
       return { ...state, registering: true, registered: false, error: null };
 
-    case "REGISTER_SUCCESS":
+    case REGISTER_SUCCESS:
       return { ...state, registering: false, registered: true };
 
-    case "REGISTER_ERROR":
+    case REGISTER_ERROR:
       return { ...state, error: action.error, registering: false };
 
     default:

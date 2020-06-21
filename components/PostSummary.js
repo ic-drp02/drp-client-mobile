@@ -12,7 +12,7 @@ import { COLOR_TEXT_SECONDARY, COLOR_ICON_BACKGROUND } from "../util/colors.js";
 import Attachments from "./Attachments.js";
 import Label, { LABEL_TYPES } from "./Label";
 
-export default function PostSummary({ post, showAttachments, markOld }) {
+export default function PostSummary({ post, showAttachments }) {
   const theme = useTheme();
   const navigation = useNavigation();
   const date = new Date(post.created_at);
@@ -47,7 +47,7 @@ export default function PostSummary({ post, showAttachments, markOld }) {
         <View style={[styles.column, styles.wrap]}>
           <View style={styles.view}>
             <Text style={[styles.lmargin, styles.postTitle]}>{post.title}</Text>
-            {markOld && post.old === true && (
+            {post.updated === true && (
               <Label
                 style={{ marginLeft: 10 }}
                 labelType={LABEL_TYPES.UPDATED}

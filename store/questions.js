@@ -1,16 +1,21 @@
 import api from "../util/api";
 
+const FETCH_SITES_BEGIN = "FETCH_SITES_BEGIN";
+const FETCH_SITES_SUCCESS = "FETCH_SITES_SUCCESS";
+const FETCH_SUBJECTS_BEGIN = "FETCH_SUBJECTS_BEGIN";
+const FETCH_SUBJECTS_SUCCESS = "FETCH_SUBJECTS_SUCCESS";
+
 const initialState = {
   sites: [],
   subjects: [],
 };
 
 function fetchSitesBegin() {
-  return { type: "FETCH_SITES_BEGIN" };
+  return { type: FETCH_SITES_BEGIN };
 }
 
 function fetchSitesSuccess(sites) {
-  return { type: "FETCH_SITES_SUCCESS", sites };
+  return { type: FETCH_SITES_SUCCESS, sites };
 }
 
 export function fetchSites() {
@@ -27,11 +32,11 @@ export function fetchSites() {
 }
 
 function fetchSubjectsBegin() {
-  return { type: "FETCH_SUBJECTS_BEGIN" };
+  return { type: FETCH_SUBJECTS_BEGIN };
 }
 
 function fetchSubjectsSuccess(subjects) {
-  return { type: "FETCH_SUBJECTS_SUCCESS", subjects };
+  return { type: FETCH_SUBJECTS_SUCCESS, subjects };
 }
 
 export function fetchSubjects() {
@@ -49,10 +54,10 @@ export function fetchSubjects() {
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case "FETCH_SITES_SUCCESS":
+    case FETCH_SITES_SUCCESS:
       return { ...state, sites: action.sites };
 
-    case "FETCH_SUBJECTS_SUCCESS":
+    case FETCH_SUBJECTS_SUCCESS:
       return { ...state, subjects: action.subjects };
 
     default:

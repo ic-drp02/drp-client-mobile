@@ -5,7 +5,6 @@ import {
   ScrollView,
   RefreshControl,
   Dimensions,
-  AsyncStorage,
 } from "react-native";
 import { Appbar, Button, Title, Text, useTheme } from "react-native-paper";
 import { TabView, TabBar } from "react-native-tab-view";
@@ -17,40 +16,24 @@ import PostsListWithButton from "../components/PostsListWithButton";
 import { refreshPosts } from "../store";
 import { useNavigation } from "@react-navigation/native";
 
-function buildPidToRidMap(ids) {
-  const postIdToRevId = {};
-  ids.forEach(
-    ({ postId, revisionId }) => (postIdToRevId[postId.toString()] = revisionId)
-  );
-  return postIdToRevId;
-}
-
-function getPids(ids) {
-  return ids.map((p) => p.postId);
-}
-
 export default function Home({ navigation }) {
   const theme = useTheme();
   const dispatch = useDispatch();
+
+  const favourites = useSelector((s) => s.posts.favourites);
+  const updatedFavourites = favourites.filter((f) => f.updated).length;
+
   const [index, setIndex] = useState(0);
-  const [pinnedIds, setPinnedIds] = useState(null);
-  const [updatedPinned, setUpdatedPinned] = useState(0);
-  const [updatedRecents] = useState(0);
 
-  useEffect(() => navigation.addListener("focus", refreshPinned), [navigation]);
-
-  async function refreshPinned() {
-    await dispatch(refreshPosts());
-    const json = await AsyncStorage.getItem("PINNED_POSTS");
-    setPinnedIds(!!json ? JSON.parse(json) : []);
-  }
+  useEffect(
+    () => navigation.addListener("focus", () => dispatch(refreshPosts())),
+    [navigation]
+  );
 
   function TabLabel({ route, color }) {
     let text = route.title.toUpperCase();
-    if (route.title === "Pinned" && updatedPinned > 0) {
-      text += ` (${updatedPinned})`;
-    } else if (route.title === "Recents" && updatedRecents > 0) {
-      text += ` (${updatedRecents})`;
+    if (route.title === "Favourites" && updatedFavourites > 0) {
+      text += ` (${updatedFavourites})`;
     }
     return <Text style={{ color }}>{text}</Text>;
   }
@@ -82,7 +65,7 @@ export default function Home({ navigation }) {
           index,
           routes: [
             { key: "home", title: "Home" },
-            { key: "pinned", title: "Pinned" },
+            { key: "favourites", title: "Favourites" },
           ],
         }}
         renderScene={({ route }) => {
@@ -90,20 +73,13 @@ export default function Home({ navigation }) {
             case "home":
               return <Main />;
 
-            case "pinned":
-              return (
-                <Pinned
-                  pinnedIds={pinnedIds}
-                  onUpdatedChange={(updated) => setUpdatedPinned(updated)}
-                  onRefresh={refreshPinned}
-                />
-              );
+            case "favourites":
+              return <Favourites />;
           }
         }}
         initialLayout={{ width: Dimensions.get("window").width }}
         onIndexChange={(i) => {
           setIndex(i);
-          refreshPinned();
         }}
       />
     </>
@@ -113,14 +89,11 @@ export default function Home({ navigation }) {
 function Main() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [refreshing, setRefreshing] = useState(true);
+
   const auth = useSelector((s) => s.auth);
+  const posts = useSelector((s) => s.posts.latest);
 
-  const posts = useSelector((s) => s.posts);
-
-  useEffect(() => {
-    dispatch(refreshPosts());
-  }, []);
+  const [refreshing, setRefreshing] = useState(true);
 
   useEffect(() => {
     if (posts) {
@@ -163,7 +136,7 @@ function Main() {
       </View>
       {posts && (
         <PostsListWithButton
-          title="Latest updates"
+          title="Latest"
           buttonText="View all"
           onButtonPress={() => navigation.navigate("Updates")}
           posts={posts}
@@ -181,44 +154,23 @@ function Main() {
   );
 }
 
-function Pinned({ pinnedIds, onRefresh, onUpdatedChange }) {
+function Favourites() {
   const dispatch = useDispatch();
+
+  const favourites = useSelector((s) => s.posts.favourites);
+
   const [refreshing, setRefreshing] = useState(true);
 
-  const posts = useSelector((s) => s.posts);
-  const [pinned, setPinned] = useState(null);
-
   useEffect(() => {
-    dispatch(refreshPosts());
-  }, []);
-
-  useEffect(() => {
-    if (posts) {
+    if (favourites) {
       setRefreshing(false);
-      if (pinnedIds) {
-        const postIdToRevId = buildPidToRidMap(pinnedIds);
-        const ps = posts
-          .filter((p) => getPids(pinnedIds).includes(p.id))
-          .map((p) => {
-            return {
-              ...p,
-              old: postIdToRevId[p.id.toString()] < p.revision_id,
-            };
-          });
-        setPinned(ps);
-        if (onUpdatedChange !== undefined) {
-          onUpdatedChange(ps.filter((p) => p.old).length);
-        }
-      } else {
-        setPinned([]);
-      }
     }
-  }, [posts, pinnedIds]);
+  }, [favourites]);
 
-  if (pinned && pinned.length === 0) {
+  if (favourites && favourites.length === 0) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Text style={{ textAlign: "center" }}>No pinned posts</Text>
+        <Text style={{ textAlign: "center" }}>No favourite posts</Text>
       </View>
     );
   }
@@ -231,15 +183,15 @@ function Pinned({ pinnedIds, onRefresh, onUpdatedChange }) {
           refreshing={refreshing}
           onRefresh={() => {
             setRefreshing(true);
-            onRefresh && onRefresh(() => setRefreshing(false));
+            dispatch(refreshPosts());
           }}
         />
       }
     >
-      {pinned && pinned.length > 0 && (
+      {favourites && favourites.length > 0 && (
         <View>
-          <Title>Pinned updates</Title>
-          <PostsList posts={pinned} markOld={true} />
+          <Title>Favourites</Title>
+          <PostsList posts={favourites} />
         </View>
       )}
     </ScrollView>
