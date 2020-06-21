@@ -49,6 +49,19 @@ export default function UpdateDetails({ route, navigation }) {
     dispatch(deletePost(postId, true)).then(() => navigation.pop(2));
   }, [postId]);
 
+  function onPressGuideline(g, i) {
+    if (i === 0) {
+      navigation.navigate("UpdateDetails", {
+        postId: g.id,
+      });
+    } else {
+      navigation.push("UpdateDetails", {
+        postId: g.id,
+        revisionId: g.revision_id,
+      });
+    }
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header>
@@ -62,29 +75,12 @@ export default function UpdateDetails({ route, navigation }) {
               <GuidelineCard
                 key={g.revision_id}
                 guideline={g}
-                onCardPress={() => {
-                  if (i === 0) {
-                    navigation.navigate("UpdateDetails", {
-                      postId: g.id,
-                    });
-                  } else {
-                    navigation.push("UpdateDetails", {
-                      postId: g.id,
-                      revisionId: g.revision_id,
-                    });
-                  }
-                }}
+                onCardPress={() => onPressGuideline(g, i)}
                 labelType={i === 0 ? LABEL_TYPES.CURRENT : LABEL_TYPES.OLD}
               />
             ))
           ) : (
-            <View
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+            <View style={styles.loadingView}>
               <ActivityIndicator indeterminate size="large" />
             </View>
           )}
@@ -125,5 +121,10 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
     flex: 1,
+  },
+  loadingView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

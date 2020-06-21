@@ -24,16 +24,11 @@ export default function Account({ navigation }) {
   const [saving, setSaving] = useState(false);
 
   async function fetchUserInfo() {
-    const res = await fetch(api.baseUrl + `/api/users/${user.id}`, {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
-
-    if (res.status !== 200) {
+    const res = await api.getUser(user.id);
+    if (!res.success) {
       console.warn("request failed with status " + res.status);
     } else {
-      setInfo(await res.json());
+      setInfo(res.data);
     }
   }
 
@@ -52,18 +47,8 @@ export default function Account({ navigation }) {
 
     setSaving(true);
 
-    const res = await fetch(api.baseUrl + `/api/users/${user.id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        password: newPassword,
-      }),
-    });
-
-    if (res.status !== 200) {
+    const res = await api.updateUser(user.id, { password: newPassword });
+    if (!res.success) {
       console.warn("request failed with status " + res.status);
     } else {
       dispatch(
