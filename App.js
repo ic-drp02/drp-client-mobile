@@ -1,5 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import { Provider as ReduxProvider, useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Provider as ReduxProvider,
+  useSelector,
+  useDispatch,
+} from "react-redux";
+
+import { AppLoading } from "expo";
+import * as SecureStore from "expo-secure-store";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -12,7 +19,7 @@ import AppSnackbar from "./components/AppSnackbar";
 import AppNavigation from "./screens/AppNavigation";
 import Login from "./screens/Login";
 
-import store from "./store";
+import store, { login } from "./store";
 import * as notifications from "./util/notifications.js";
 
 const theme = {
@@ -53,7 +60,22 @@ export default function App() {
 }
 
 function AuthController({ children, navRef }) {
+  const dispatch = useDispatch();
   const auth = useSelector((s) => s.auth);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const email = await SecureStore.getItemAsync("CREDENTIALS_EMAIL");
+      const password = await SecureStore.getItemAsync("CREDENTIALS_PASSWORD");
+
+      if (email && password) {
+        await dispatch(login(email, password));
+      }
+
+      setLoaded(true);
+    })();
+  }, []);
 
   useEffect(() => {
     if (!!auth.user) {
@@ -64,6 +86,10 @@ function AuthController({ children, navRef }) {
       });
     }
   }, [auth]);
+
+  if (!loaded) {
+    return <AppLoading />;
+  }
 
   if (!!auth.user) {
     return children;

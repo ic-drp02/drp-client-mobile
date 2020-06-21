@@ -11,7 +11,7 @@ import {
 } from "react-native-paper";
 
 import api from "../util/api";
-import { showSnackbar, hideSnackbar } from "../store";
+import { showSnackbar, hideSnackbar, logout } from "../store";
 
 export default function Account({ navigation }) {
   const fullHeight = { flex: 1 };
@@ -127,6 +127,9 @@ export default function Account({ navigation }) {
             onPress={savePassword}
           >
             Save
+          </Button>
+          <Button mode="contained" onPress={() => dispatch(logout())}>
+            Sign out
           </Button>
         </ScrollView>
       </View>
