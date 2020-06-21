@@ -65,7 +65,7 @@ export default function Home({ navigation }) {
           index,
           routes: [
             { key: "home", title: "Home" },
-            { key: "pinned", title: "Favourites" },
+            { key: "favourites", title: "Favourites" },
           ],
         }}
         renderScene={({ route }) => {
@@ -73,8 +73,8 @@ export default function Home({ navigation }) {
             case "home":
               return <Main />;
 
-            case "pinned":
-              return <Pinned />;
+            case "favourites":
+              return <Favourites />;
           }
         }}
         initialLayout={{ width: Dimensions.get("window").width }}
@@ -154,7 +154,7 @@ function Main() {
   );
 }
 
-function Pinned() {
+function Favourites() {
   const dispatch = useDispatch();
 
   const favourites = useSelector((s) => s.posts.favourites);

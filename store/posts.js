@@ -43,7 +43,7 @@ export function refreshPosts() {
     const favouritesRes = await api.getMultiplePosts(getPids(favouriteIds));
     if (!favouritesRes.success) {
       console.warn(
-        "failed to get pinned posts with status " + favouritesRes.status
+        "failed to get favourite posts with status " + favouritesRes.status
       );
     }
     let favourites = favouritesRes.data;
