@@ -8,6 +8,7 @@ const LOGIN_ERROR = "LOGIN_ERROR";
 const REGISTER_BEGIN = "REGISTER_BEGIN";
 const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 const REGISTER_ERROR = "REGISTER_ERROR";
+const LOGOUT = "LOGOUT";
 
 export function login(email, password) {
   return async function (dispatch) {
@@ -30,7 +31,7 @@ export function login(email, password) {
         type: LOGIN_ERROR,
         error: {
           type: "Unknown",
-          message: "An eerror occurred while communicating with the server.",
+          message: "An error occurred while communicating with the server.",
         },
       });
     }
@@ -104,6 +105,15 @@ export function register(email, password) {
   };
 }
 
+export function logout() {
+  return async function (dispatch) {
+    dispatch({ type: LOGOUT });
+
+    await SecureStore.deleteItemAsync("CREDENTIALS_EMAIL");
+    await SecureStore.deleteItemAsync("CREDENTIALS_PASSWORD");
+  };
+}
+
 const initialState = {
   user: null,
   error: null,
@@ -137,6 +147,9 @@ export default function reducer(state = initialState, action) {
 
     case REGISTER_ERROR:
       return { ...state, error: action.error, registering: false };
+
+    case LOGOUT:
+      return { ...state, user: null };
 
     default:
       return state;
