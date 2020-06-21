@@ -124,7 +124,10 @@ export default function UpdateDetails({ route, navigation }) {
               );
             } else if (favourite === false) {
               return (
-                <Appbar.Action icon="star" onPress={() => addFavourite()} />
+                <Appbar.Action
+                  icon="star-outline"
+                  onPress={() => addFavourite()}
+                />
               );
             }
           })()}
