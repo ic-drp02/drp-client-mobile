@@ -11,18 +11,14 @@ import {
 import {
   Appbar,
   Button,
-  TextInput,
   withTheme,
   ProgressBar,
   Portal,
-  Switch,
-  useTheme,
 } from "react-native-paper";
 
 import TagsView from "./components/TagsView";
 import FilesView from "./components/FilesView";
 import GuideLinePickerDialog from "./components/GuidelinePickerDialog";
-import GuidelineCard from "../../components/GuidelineCard";
 import BigText from "../../components/BigText";
 
 import api from "../../util/api";
@@ -30,7 +26,7 @@ import { NormalTextInput, LargeTextInput } from "./components/TextInputs";
 import SwitchView from "./components/SwitchView";
 import SupersededGuideline from "./components/SupersededGuideline";
 
-export default withTheme(function PostUpdate({ navigation, theme }) {
+export default withTheme(function PostUpdate({ navigation }) {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
