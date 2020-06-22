@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { View, Image, StyleSheet, Linking } from "react-native";
+import { View, Image, ScrollView, StyleSheet, Linking } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+
 import {
   Button,
   Text,
@@ -7,13 +9,12 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
-import { ScrollView } from "react-native-gesture-handler";
-import { useDispatch, useSelector } from "react-redux";
 
-import IosKeyboardAvoidingView from "../components/IosKeyboardAvoidingView.js";
+import IosKeyboardAvoidingView from "../../components/IosKeyboardAvoidingView.js";
 
-import * as auth from "../store/auth";
-import api from "../util/api.js";
+import * as auth from "../../store/auth";
+import api from "../../util/api.js";
+import mapErrorToReadableMessage from "./utils.js";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -40,53 +41,19 @@ export default function Login() {
 
   let errorMessage;
   if (!!error) {
-    switch (error.type) {
-      case "InvalidEmail":
-        errorMessage = "You must enter a valid email address.";
-        break;
-
-      case "Registered":
-        errorMessage = "This email has already been registered.";
-        break;
-
-      case "UnauthorisedDomain":
-        errorMessage =
-          "You must register with an nhs.net or imperial.ac.uk email.";
-        break;
-
-      case "ShortPassword":
-        errorMessage = "Password must contain at least 8 characters.";
-        break;
-
-      case "InvalidCredentials":
-        errorMessage = "The email address or password is incorrect.";
-        break;
-
-      case "Unconfirmed":
-        errorMessage =
-          "Account has not been confirmed. Check your email for a confirmation link.";
-        break;
-
-      case "Unknown":
-        errorMessage = error.message;
-        break;
-    }
+    errorMessage = mapErrorToReadableMessage(error);
   }
 
   return (
     <IosKeyboardAvoidingView>
       <ScrollView
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          flexGrow: 1,
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
+        contentContainerStyle={styles.contentContainer}
       >
-        <View style={styles.root}>
+        <View style={styles.content}>
           <View style={styles.imageContainer}>
             <Image
-              source={require("../assets/icon_full.png")}
+              source={require("../../assets/icon_full.png")}
               style={styles.image}
               resizeMode="contain"
             />
@@ -174,7 +141,12 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  root: {
+  contentContainer: {
+    flexGrow: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+  content: {
     padding: 16,
   },
   imageContainer: {

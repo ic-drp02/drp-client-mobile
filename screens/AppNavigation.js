@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 
 import { createStackNavigator } from "@react-navigation/stack";
 
-import Home from "./Home.js";
+import Home from "./Home";
 import Search from "./Search.js";
 import Question from "./Question.js";
 import QuestionSubmitted from "./QuestionSubmitted.js";
-import PostUpdate from "./PostUpdate.js";
+import PostUpdate from "./PostUpdate";
 import Updates from "./Updates.js";
 import UpdatePosted from "./UpdatePosted.js";
 import UpdateDetails from "./UpdateDetails.js";

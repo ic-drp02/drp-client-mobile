@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Button, TextInput, ProgressBar } from "react-native-paper";
 
-import GuidelineCard from "./GuidelineCard";
+import GuidelineCard from "../../../components/GuidelineCard";
 
 import { View, ScrollView, StyleSheet } from "react-native";
 
-import api from "../util/api";
+import api from "../../../util/api";
 
 export default function GuidelinePickerDialog({
   visible,

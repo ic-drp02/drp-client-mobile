@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native-paper";
 
-import api from "../util/api";
+import api from "../../../util/api";
 
 /**
  * Returns `tags` with the `selected` property set to true on each item if the

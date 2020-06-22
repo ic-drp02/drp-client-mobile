@@ -14,33 +14,11 @@ export function login(email, password) {
   return async function (dispatch) {
     dispatch({ type: LOGIN_BEGIN });
 
-    let res;
-    try {
-      res = await fetch(api.baseUrl + "/auth/authenticate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-    } catch {
-      dispatch({
-        type: LOGIN_ERROR,
-        error: {
-          type: "Unknown",
-          message: "An error occurred while communicating with the server.",
-        },
-      });
-    }
+    const res = await api.authenticate(email, password);
 
-    const body = await res.json();
-
-    if (res.status !== 200) {
-      if (!!body.type) {
-        dispatch({ type: LOGIN_ERROR, error: body });
+    if (!res.success) {
+      if (!!res.error) {
+        dispatch({ type: LOGIN_ERROR, error: res.error });
       } else {
         dispatch({
           type: LOGIN_ERROR,
@@ -55,7 +33,7 @@ export function login(email, password) {
       await SecureStore.setItemAsync("CREDENTIALS_PASSWORD", password);
       dispatch({
         type: LOGIN_SUCCESS,
-        user: body,
+        user: res.data,
       });
     }
   };
