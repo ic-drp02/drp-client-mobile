@@ -25,6 +25,7 @@ import api from "../../util/api";
 import { NormalTextInput, LargeTextInput } from "./components/TextInputs";
 import SwitchView from "./components/SwitchView";
 import SupersededGuideline from "./components/SupersededGuideline";
+import RichTextEditor from "./components/RichTextEditor";
 
 export default withTheme(function PostUpdate({ navigation }) {
   const [title, setTitle] = useState("");
@@ -180,7 +181,7 @@ export default withTheme(function PostUpdate({ navigation }) {
                 onChange={setSummary}
               />
 
-              <LargeTextInput
+              <RichTextEditor
                 label="Content"
                 value={content}
                 onChange={setContent}
