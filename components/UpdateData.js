@@ -4,7 +4,7 @@ import { WebView } from "react-native-webview";
 
 import { Headline, Divider, Chip, Text } from "react-native-paper";
 
-import Attachments from "./Attachments.js";
+import AttachmentCards from "./AttachmentCards.js";
 import Label, { LABEL_TYPES } from "./Label";
 
 import { toDateAndTimeString } from "../util/date";
@@ -50,7 +50,7 @@ function MainContent({ title, summary, content, date, old, files }) {
       </View>
       <Divider />
       <View>
-        <Attachments files={files} />
+        <AttachmentCards files={files} />
       </View>
 
       <WebView
