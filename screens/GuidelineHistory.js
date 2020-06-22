@@ -4,7 +4,7 @@ import { Appbar, Button, ActivityIndicator, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
 import GuidelineCard from "../components/GuidelineCard.js";
-import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
+import DangerConfirmationDialog from "../components/DangerConfirmationDialog";
 import { LABEL_TYPES } from "../components/Label";
 
 import api from "../util/api";
@@ -97,13 +97,14 @@ export default function UpdateDetails({ route, navigation }) {
               Delete all
             </Button>
             <Portal>
-              <DeleteConfirmationDialog
+              <DangerConfirmationDialog
                 title={"Delete revisions"}
                 text={
                   "Are you sure you want to delete all revisions of this guideline?"
                 }
+                dangerActionText="Delete"
                 visible={confirmDelete}
-                onDelete={() => {
+                onDangerConfirm={() => {
                   setConfirmDelete(false);
                   del();
                 }}

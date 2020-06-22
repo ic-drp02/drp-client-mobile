@@ -4,7 +4,9 @@ import {
   getFavouriteIds,
   saveFavouriteIds,
   buildPostIdToRevIdMap,
-} from "../util/favourites";
+  saveOfflineFavourites,
+} from "../util/favourites.js";
+import { SETTINGS_OPTIONS } from "../util/settings.js";
 
 import { showSnackbar, hideSnackbar } from "./snackbar";
 
@@ -27,8 +29,10 @@ function refreshPostsSuccess(latest, favourites) {
 }
 
 export function refreshPosts() {
-  return async function (dispatch) {
+  return async function (dispatch, getState) {
     dispatch(refreshPostsBegin());
+
+    const settings = getState().settings.settings;
 
     // Fetch 3 newest post to show in the latest updates
     // TODO: This call is horrific, change API to use object instead
@@ -64,6 +68,10 @@ export function refreshPosts() {
         updated: map[f.id.toString()] < f.revision_id,
       };
     });
+
+    if (settings[SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE]) {
+      await saveOfflineFavourites(favourites);
+    }
 
     dispatch(refreshPostsSuccess(latest, favourites));
   };

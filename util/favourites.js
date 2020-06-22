@@ -1,6 +1,7 @@
 import { AsyncStorage } from "react-native";
 
-const FAVOURITE_POSTS = "FAVOURITE_POSTS";
+const FAVOURITE_IDS = "FAVOURITE_IDS";
+const OFFLINE_FAVOURITE_POSTS = "OFFLINE_FAVOURITE_POSTS";
 
 /**
  * Returns a map mapping post IDs of favourite posts to revision IDs of last viewed revisions.
@@ -48,7 +49,13 @@ export async function isFavourite(id) {
  * Retrieves the list of favourites.
  */
 export async function getFavouriteIds() {
-  const json = await AsyncStorage.getItem(FAVOURITE_POSTS);
+  let json;
+  try {
+    json = await AsyncStorage.getItem(FAVOURITE_IDS);
+  } catch (error) {
+    console.warn(`Error retrieving favourite posts IDs ${error}`);
+    return [];
+  }
   return json ? JSON.parse(json) : [];
 }
 
@@ -60,7 +67,11 @@ export async function getFavouriteIds() {
  */
 export async function saveFavouriteIds(favourites) {
   const json = JSON.stringify(favourites);
-  await AsyncStorage.setItem(FAVOURITE_POSTS, json);
+  try {
+    await AsyncStorage.setItem(FAVOURITE_IDS, json);
+  } catch (error) {
+    console.warn(`Error saving favourite posts IDs ${error}`);
+  }
 }
 
 /**
@@ -98,5 +109,43 @@ export async function updateFavouriteId(postId, revisionId) {
     favourites = favourites.filter((p) => p.postId !== postId);
     favourites.push({ postId: postId, revisionId: revisionId });
     await saveFavouriteIds(favourites);
+  }
+}
+
+/**
+ * Saves the list of favourite posts to AsyncStorage for offline usage.
+ * @param {[Object]} favourites - List of favourites
+ */
+export async function saveOfflineFavourites(favourites) {
+  const json = JSON.stringify(favourites);
+  try {
+    await AsyncStorage.setItem(OFFLINE_FAVOURITE_POSTS, json);
+  } catch (error) {
+    console.warn(`Error saving favourite posts ${error}`);
+  }
+}
+
+/**
+ * Retrieves the list of posts saved in AsyncStorage for offline usage.
+ */
+export async function getOfflineFavourites() {
+  let json;
+  try {
+    json = await AsyncStorage.getItem(OFFLINE_FAVOURITE_POSTS);
+  } catch (error) {
+    console.warn(`Error retrieveing favourite posts ${error}`);
+    return null;
+  }
+  return json ? JSON.parse(json) : null;
+}
+
+/**
+ * Erases all favourite posts saved for offline usage.
+ */
+export async function eraseOfflineFavourites() {
+  try {
+    AsyncStorage.removeItem(OFFLINE_FAVOURITE_POSTS);
+  } catch (error) {
+    console.warn(`Error erasing favourite posts ${error}`);
   }
 }

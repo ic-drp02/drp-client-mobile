@@ -66,6 +66,11 @@ export default function SideBar({ navigation }) {
           />
         )}
         <Drawer.Item
+          icon="settings-outline"
+          label="Settings"
+          onPress={() => navigation.navigate("Settings")}
+        />
+        <Drawer.Item
           icon="account-outline"
           label="Account"
           onPress={() => navigation.navigate("Account")}
