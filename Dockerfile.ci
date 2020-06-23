@@ -1,4 +1,0 @@
-FROM node:14
-
-# Install expo cli
-RUN npm install -g expo-cli
