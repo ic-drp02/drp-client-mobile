@@ -6,6 +6,8 @@ import { Button } from "react-native-paper";
 
 import PostsListWithButton from "../../../components/PostsListWithButton";
 
+import { refreshPosts } from "../../../store";
+
 export default function Main() {
   const navigation = useNavigation();
   const dispatch = useDispatch();

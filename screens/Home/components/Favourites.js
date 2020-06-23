@@ -5,6 +5,8 @@ import { Text, Title } from "react-native-paper";
 
 import PostsList from "../../../components/PostsList";
 
+import { refreshPosts } from "../../../store";
+
 export default function Favourites() {
   const dispatch = useDispatch();
   const favourites = useSelector((s) => s.posts.favourites);
