@@ -18,7 +18,7 @@ import LabeledCheckbox from "../components/LabeledCheckbox.js";
 import DangerConfirmationDialog from "../components/DangerConfirmationDialog.js";
 
 import store, { updateSettings } from "../store";
-import { SETTINGS_OPTIONS } from "../util/settings.js";
+import { SETTINGS_OPTIONS } from "../util/settingsOptions.js";
 import {
   getHumanReadableFreeDiskStorage,
   getHumanReadableAppOccupiedStorage,
@@ -29,6 +29,7 @@ export default function Settings({ navigation }) {
 
   const dispatch = useDispatch();
   const settings = useSelector((s) => s.settings.settings);
+  const settingsLoading = useSelector((s) => s.settings.loading);
   const storeFavouriteChecked =
     settings[SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE];
   const storeFilesChecked = settings[SETTINGS_OPTIONS.STORE_FILES];
@@ -49,8 +50,47 @@ export default function Settings({ navigation }) {
     checkDiskStorage();
   }, [storeFilesChecked]);
 
-  function saveSettingsValue(key, value) {
-    dispatch(updateSettings({ [key]: value }));
+  function setStoreFavourite(value) {
+    if (value) {
+      dispatch(
+        updateSettings({
+          [SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE]: true,
+        })
+      );
+    } else {
+      dispatch(
+        updateSettings({
+          [SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE]: false,
+          [SETTINGS_OPTIONS.STORE_FILES]: false,
+          [SETTINGS_OPTIONS.DOWNLOAD_FILES_EXPENSIVE]: false,
+        })
+      );
+    }
+  }
+
+  function setStoreFiles(value) {
+    if (value) {
+      dispatch(
+        updateSettings({
+          [SETTINGS_OPTIONS.STORE_FILES]: true,
+        })
+      );
+    } else {
+      dispatch(
+        updateSettings({
+          [SETTINGS_OPTIONS.STORE_FILES]: false,
+          [SETTINGS_OPTIONS.DOWNLOAD_FILES_EXPENSIVE]: false,
+        })
+      );
+    }
+  }
+
+  function setDownloadExpensive(value) {
+    dispatch(
+      updateSettings({
+        [SETTINGS_OPTIONS.DOWNLOAD_FILES_EXPENSIVE]: value,
+      })
+    );
   }
 
   return (
@@ -71,15 +111,13 @@ export default function Settings({ navigation }) {
           <LabeledCheckbox
             label="Store favourites offline"
             checked={storeFavouriteChecked}
+            disabled={settingsLoading}
             onPress={() => {
               if (storeFavouriteChecked) {
                 setConfirmOfflineFavourite(true);
                 return;
               }
-              saveSettingsValue(
-                SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE,
-                true
-              );
+              setStoreFavourite(true);
             }}
           />
           <View>
@@ -95,10 +133,7 @@ export default function Settings({ navigation }) {
                 visible={confirmOfflineFavourite}
                 onDangerConfirm={() => {
                   setConfirmOfflineFavourite(false);
-                  saveSettingsValue(
-                    SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE,
-                    false
-                  );
+                  setStoreFavourite(false);
                 }}
                 onCancel={() => setConfirmOfflineFavourite(false)}
               />
@@ -109,13 +144,13 @@ export default function Settings({ navigation }) {
           <LabeledCheckbox
             label="Store files attached to favourites"
             checked={storeFilesChecked}
-            disabled={!storeFavouriteChecked}
+            disabled={settingsLoading || !storeFavouriteChecked}
             onPress={() => {
               if (storeFilesChecked) {
                 setConfirmOfflineFiles(true);
                 return;
               }
-              saveSettingsValue(SETTINGS_OPTIONS.STORE_FILES, true);
+              setStoreFiles(true);
             }}
           />
           <View>
@@ -131,7 +166,7 @@ export default function Settings({ navigation }) {
                 visible={confirmOfflineFiles}
                 onDangerConfirm={() => {
                   setConfirmOfflineFiles(false);
-                  saveSettingsValue(SETTINGS_OPTIONS.STORE_FILES, false);
+                  setStoreFiles(false);
                 }}
                 onCancel={() => setConfirmOfflineFiles(false)}
               />
@@ -141,13 +176,8 @@ export default function Settings({ navigation }) {
           <LabeledCheckbox
             label="Download files on expensive connections"
             checked={downloadExpensiveChecked}
-            disabled={!storeFavouriteChecked || !storeFilesChecked}
-            onPress={() =>
-              saveSettingsValue(
-                SETTINGS_OPTIONS.DOWNLOAD_FILES_EXPENSIVE,
-                !downloadExpensiveChecked
-              )
-            }
+            disabled={settingsLoading || !storeFilesChecked}
+            onPress={() => setDownloadExpensive(!downloadExpensiveChecked)}
           />
         </ScrollView>
       </View>

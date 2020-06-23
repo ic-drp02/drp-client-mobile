@@ -6,7 +6,7 @@ import {
   buildPostIdToRevIdMap,
   saveOfflineFavourites,
 } from "../util/favourites.js";
-import { SETTINGS_OPTIONS } from "../util/settings.js";
+import { SETTINGS_OPTIONS } from "../util/settingsOptions.js";
 
 import { showSnackbar, hideSnackbar } from "./snackbar";
 

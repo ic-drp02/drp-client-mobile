@@ -1,56 +1,62 @@
 import { AsyncStorage } from "react-native";
 
-import { eraseOfflineFavourites } from "./favourites.js";
+import { eraseOfflineFavourites, saveOfflineFavourites } from "./favourites.js";
 import {
   createInternalDownloadFolder,
   deleteInternalDownloadFolder,
 } from "./files.js";
+import { SETTINGS_OPTIONS, DEFAULT_VALUES } from "./settingsOptions.js";
+import { refreshPosts } from "../store/posts.js";
 
 const SETTINGS = "SETTINGS";
 
-export const SETTINGS_OPTIONS = Object.freeze({
-  STORE_FAVOURITES_OFFLINE: "STORE_FAVOURITES_OFFLINE",
-  STORE_FILES: "STORE_FILES",
-  DOWNLOAD_FILES_EXPENSIVE: "DOWNLOAD_FILES_EXPENSIVE",
-});
-
-export const DEFAULT_VALUES = Object.freeze({
-  STORE_FAVOURITES_OFFLINE: false,
-  STORE_FILES: false,
-  DOWNLOAD_FILES_EXPENSIVE: false,
-});
-
-export const ON_SETTINGS_CHANGE = Object.freeze({
+/*
+ * Object storing functions to be called when a particular
+   settings option is changed
+ * These functions may be called in an arbitrary order
+   when multiple settings are changed at once
+ * The functions are called after the updates to the store
+   and to the AsyncStorage have been completed
+ * Note that while these functions are running, all changes
+   to settings are blocked, so they should return
+   in a reasonably short time
+ */
+const ON_SETTINGS_CHANGE = Object.freeze({
   STORE_FAVOURITES_OFFLINE: onStoreFavouritesOfflineChange,
   STORE_FILES: onStoreFilesChange,
 });
 
-function onStoreFavouritesOfflineChange(newValue) {
-  if (!newValue) {
+async function onStoreFavouritesOfflineChange(newValue, getState) {
+  if (newValue) {
+    // Save all favourite posts on enabling
+    await saveOfflineFavourites(getState().posts.favourites);
+  } else {
     // Erase all offline favourites on disabling
-    eraseOfflineFavourites();
+    await eraseOfflineFavourites();
   }
 }
 
-function onStoreFilesChange(newValue) {
+async function onStoreFilesChange(newValue) {
   if (newValue) {
     // Create downloads folder on enabling
-    createInternalDownloadFolder();
+    await createInternalDownloadFolder();
   } else {
     // Delete downloads folder on disabling
-    deleteInternalDownloadFolder();
+    await deleteInternalDownloadFolder();
   }
 }
 
 /**
  * Initializes and returns all settings. Should be called before using the setting system.
- * @returns {Object|null} - The initialized settings on success, null on failure
+ * @returns {Object|null} - The object encapsulating settings on success, null on failure
  */
 export async function initSettingsStorage() {
   const settings = await getSettingsStorage();
   if (!settings) {
     return null;
   }
+
+  const changedSettings = {};
 
   // Preload settings with the default values for unset options
   for (let [key, _] of Object.entries(SETTINGS_OPTIONS)) {
@@ -63,10 +69,7 @@ export async function initSettingsStorage() {
         );
       }
       settings[key] = value;
-      const onChange = ON_SETTINGS_CHANGE[key];
-      if (onChange) {
-        onChange(value);
-      }
+      changedSettings[key] = value;
     }
   }
 
@@ -77,7 +80,10 @@ export async function initSettingsStorage() {
     }
   }
 
-  return await saveSettingsStorage(settings);
+  return {
+    settings: await saveSettingsStorage(settings),
+    changedSettings: changedSettings,
+  };
 }
 
 /**
@@ -113,10 +119,6 @@ export async function updateSettingsStorage(newSettings) {
     }
     const value = newSettings[key];
     settings[key] = value;
-    const onChange = ON_SETTINGS_CHANGE[key];
-    if (onChange) {
-      onChange(value);
-    }
   }
   return await saveSettingsStorage(settings);
 }
@@ -135,4 +137,19 @@ async function saveSettingsStorage(settings) {
     return null;
   }
   return settings;
+}
+
+/**
+ * Calls all onChange functions relevant to the settings change
+ * @param {Object} newSettings - The object mapping options to new settings
+ * @param {function} getState - Function allowing access to Redux state
+ * @param {function} dispatch - The Redux store dispatch
+ */
+export async function processCallbacks(newSettings, getState, dispatch) {
+  for (let [key, value] of Object.entries(newSettings)) {
+    const onChange = ON_SETTINGS_CHANGE[key];
+    if (onChange) {
+      await onChange(value, getState, dispatch);
+    }
+  }
 }

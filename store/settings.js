@@ -1,32 +1,44 @@
 import {
   initSettingsStorage,
   updateSettingsStorage,
-  DEFAULT_VALUES,
+  processCallbacks,
 } from "../util/settings.js";
+import { DEFAULT_VALUES } from "../util/settingsOptions.js";
 
 import { showSnackbar, hideSnackbar } from "./snackbar";
 
+const INIT_SETTINGS_BEGIN = "INIT_SETTINGS_BEGIN";
+const INIT_SETTINGS_COMMIT = "INIT_SETTINGS_COMMIT";
 const INIT_SETTINGS_DONE = "INIT_SETTINGS_DONE";
 const UPDATE_SETTINGS_BEGIN = "UPDATE_SETTINGS_BEGIN";
-const UPDATE_SETTINGS_FAILURE = "UPDATE_SETTINGS_FAILURE";
-const UPDATE_SETTINGS_SUCCESS = "UPDATE_SETTINGS_SUCCESS";
+const UPDATE_SETTINGS_COMMIT = "UPDATE_SETTINGS_COMMIT";
+const UPDATE_SETTINGS_DONE = "UPDATE_SETTINGS_DONE";
 
 const initialState = {
   settings: null,
   loading: true,
 };
 
-function initSettingsDone(settings) {
-  return { type: INIT_SETTINGS_DONE, settings };
+function initSettingsBegin() {
+  return { type: INIT_SETTINGS_BEGIN };
+}
+
+function initSettingsCommit(settings) {
+  return { type: INIT_SETTINGS_COMMIT, settings };
+}
+
+function initSettingsDone() {
+  return { type: INIT_SETTINGS_DONE };
 }
 
 /**
  * Initializes the settings storage.
  */
 export function initSettings() {
-  return async function (dispatch) {
-    const settings = await initSettingsStorage();
-    if (!settings) {
+  return async function (dispatch, getState) {
+    dispatch(initSettingsBegin());
+    const initializedSettings = await initSettingsStorage();
+    if (!initializedSettings) {
       dispatch(
         showSnackbar(
           "Failed to initialize settings, default values will be applied!",
@@ -37,24 +49,33 @@ export function initSettings() {
           }
         )
       );
-      dispatch(initSettingsDone(DEFAULT_VALUES));
+      dispatch(initSettingsCommit(DEFAULT_VALUES));
       return;
     }
 
-    dispatch(initSettingsDone(settings));
+    dispatch(initSettingsCommit(initializedSettings.settings));
+
+    // Process settings callbacks
+    await processCallbacks(
+      initializedSettings.changedSettings,
+      getState,
+      dispatch
+    );
+
+    dispatch(initSettingsDone());
   };
 }
 
-function updateSettingsBegin(settings) {
-  return { type: UPDATE_SETTINGS_BEGIN, settings };
+function updateSettingsBegin() {
+  return { type: UPDATE_SETTINGS_BEGIN };
 }
 
-function updateSettingsFailure() {
-  return { type: UPDATE_SETTINGS_FAILURE };
+function updateSettingsCommit(settings) {
+  return { type: UPDATE_SETTINGS_COMMIT, settings };
 }
 
-function updateSettingsSuccess(settings) {
-  return { type: UPDATE_SETTINGS_SUCCESS, settings };
+function updateSettingsDone() {
+  return { type: UPDATE_SETTINGS_DONE };
 }
 
 /**
@@ -62,8 +83,18 @@ function updateSettingsSuccess(settings) {
  * @param {Object} newSettings - The object mapping options to new settings.
  */
 export function updateSettings(settings) {
-  return async function (dispatch) {
-    dispatch(updateSettingsBegin(settings));
+  return async function (dispatch, getState) {
+    if (getState().settings.loading) {
+      console.warn(
+        "A potential race condition on updating settings was detected and " +
+          "the offending update request was blocked. Please fix " +
+          "the code so that it does not attempt to perform further " +
+          "settings updates while the previous update is pending. " +
+          "The loading flag from the store may be helpful."
+      );
+      return;
+    }
+    dispatch(updateSettingsBegin());
 
     const newSettings = await updateSettingsStorage(settings);
 
@@ -74,37 +105,39 @@ export function updateSettings(settings) {
           onPress: () => dispatch(hideSnackbar()),
         })
       );
-      dispatch(updateSettingsFailure());
+      dispatch(updateSettingsDone());
       return;
     }
 
-    dispatch(updateSettingsSuccess(newSettings));
+    dispatch(updateSettingsCommit(newSettings));
+
+    // Process settings callbacks
+    await processCallbacks(settings, getState, dispatch);
+
+    dispatch(updateSettingsDone());
   };
 }
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case INIT_SETTINGS_DONE:
-      return {
-        settings: action.settings,
-        loading: false,
-      };
-
+    case INIT_SETTINGS_BEGIN:
     case UPDATE_SETTINGS_BEGIN:
       return {
         ...state,
         loading: true,
       };
 
-    case UPDATE_SETTINGS_FAILURE:
+    case INIT_SETTINGS_COMMIT:
+    case UPDATE_SETTINGS_COMMIT:
       return {
         ...state,
-        loading: false,
+        settings: action.settings,
       };
 
-    case UPDATE_SETTINGS_SUCCESS:
+    case INIT_SETTINGS_DONE:
+    case UPDATE_SETTINGS_DONE:
       return {
-        settings: action.settings,
+        ...state,
         loading: false,
       };
 
