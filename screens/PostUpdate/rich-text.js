@@ -1,72 +1,112 @@
-const token = (type, source, start, end) => ({
+export const NodeType = {
+  Plain: "PLAIN",
+  Bold: "BOLD",
+  Italic: "ITALIC",
+  Underline: "UNDERLINE",
+  Strikethrough: "STRIKETHROUGH",
+};
+
+const DELIMITER_MAP = {
+  "*": matchBold,
+  _: matchItalic,
+  "+": matchUnderline,
+  "~": matchStrikethrough,
+};
+
+const Node = (type, value, children) => ({
   type,
-  source,
-  range: {
-    start,
-    end,
-  },
-  value: source.substring(start, end + 1),
+  value,
+  children: children || [],
 });
 
-function parseWhitespace(str, state) {
-  let start = state.pos++;
-  while (state.pos < str.length && /\s/.test(str[state.pos])) {
-    state.pos++;
-  }
-  return token("ws", str, start, state.pos - 1);
-}
+const defineNode = (type) => (value, children) => Node(type, value, children);
 
-function parseFrom(str, state, char, tokenType) {
-  let start = state.pos++;
-  while (
-    state.pos < str.length &&
-    /\S/.test(str[state.pos]) &&
-    str[state.pos] !== char
-  ) {
-    state.pos++;
-  }
-  if (str[state.pos] === char) {
-    return token(tokenType, str, start, state.pos++);
-  } else {
-    return token("text", str, start, state.pos - 1);
-  }
-}
+const Plain = defineNode(NodeType.Plain);
+const Bold = defineNode(NodeType.Bold);
+const Italic = defineNode(NodeType.Italic);
+const Underline = defineNode(NodeType.Underline);
+const Strikethrough = defineNode(NodeType.Strikethrough);
 
-function parseText(str, state) {
-  const start = state.pos++;
-  while (state.pos < str.length && /\S/.test(str[state.pos])) {
-    state.pos++;
+function matchPlain(source) {
+  if (source.length === 0) {
+    return false;
   }
-  return token("text", str, start, state.pos - 1);
-}
 
-export function parse(str) {
-  const tokens = [];
-  const state = { pos: 0 };
-
-  while (state.pos < str.length) {
-    if (/\s/.test(str[state.pos])) {
-      const token = parseWhitespace(str, state);
-      tokens.push(token);
-    } else {
-      if (str[state.pos] === "_") {
-        const token = parseFrom(str, state, "_", "em");
-        tokens.push(token);
-      } else if (str[state.pos] === "*") {
-        const token = parseFrom(str, state, "*", "strong");
-        tokens.push(token);
-      } else if (str[state.pos] === "~") {
-        const token = parseFrom(str, state, "~", "s");
-        tokens.push(token);
-      } else if (str[state.pos] === "+") {
-        const token = parseFrom(str, state, "+", "u");
-        tokens.push(token);
-      } else {
-        const token = parseText(str, state);
-        tokens.push(token);
-      }
+  for (let i = 1; i < source.length; i++) {
+    if (
+      Object.keys(DELIMITER_MAP).includes(source[i]) &&
+      /\s/.test(source[i - 1])
+    ) {
+      return {
+        node: Plain(source.slice(0, i)),
+        pos: i,
+      };
     }
   }
 
-  return tokens;
+  return {
+    node: Plain(source),
+    pos: source.length,
+  };
+}
+
+function matchDelimited(source, regex, nodeConstructor) {
+  const match = source.match(regex);
+  if (match) {
+    return {
+      node: nodeConstructor(source.slice(0, match[0].length), parse(match[1])),
+      pos: match[0].length,
+    };
+  }
+  return false;
+}
+
+function matchBold(source) {
+  return matchDelimited(source, /\*(.*?)\*(?=$|\W)/, Bold);
+}
+
+function matchItalic(source) {
+  return matchDelimited(source, /_(.*?)_(?=$|\W)/, Italic);
+}
+
+function matchUnderline(source) {
+  return matchDelimited(source, /\+(.*?)\+(?=$|\W)/, Underline);
+}
+
+function matchStrikethrough(source) {
+  return matchDelimited(source, /~(.*?)~(?=$|\W)/, Strikethrough);
+}
+
+export function parse(source) {
+  const nodes = [];
+  let pos = 0;
+  while (pos < source.length) {
+    const slice = source.slice(pos);
+
+    switch (source[pos]) {
+      case "*":
+      case "_":
+      case "+":
+      case "~": {
+        const result = DELIMITER_MAP[source[pos]](slice);
+        if (result) {
+          nodes.push(result.node);
+          pos += result.pos;
+          break;
+        }
+      }
+
+      default: {
+        const result = matchPlain(slice);
+
+        if (!result) {
+          throw `failed to match anything: ${slice}`;
+        }
+
+        nodes.push(result.node);
+        pos += result.pos;
+      }
+    }
+  }
+  return nodes;
 }

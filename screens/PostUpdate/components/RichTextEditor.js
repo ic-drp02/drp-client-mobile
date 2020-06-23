@@ -2,56 +2,83 @@ import React, { useState } from "react";
 import { TextInput as NativeTextInput, View } from "react-native";
 import { TextInput, Text, ToggleButton } from "react-native-paper";
 
-import * as richtext from "../rich-text";
+import { NodeType, parse as parseRichText } from "../rich-text";
 
-function renderToken(token, key) {
-  switch (token.type) {
-    case "text":
-    case "ws":
-      return <Text key={key}>{token.value}</Text>;
+function Delimiter({ value }) {
+  return <Text style={{ color: "lightgrey" }}>{value}</Text>;
+}
 
-    case "em":
+function DelimitedNode({ node, delimiter, style }) {
+  return (
+    <Text>
+      <Delimiter value={delimiter} />
+      {node.children.map((node, i) => renderNode(node, i, style))}
+      <Delimiter value={delimiter} />
+    </Text>
+  );
+}
+
+function renderNode(node, key, parentStyle) {
+  switch (node.type) {
+    case NodeType.Plain:
       return (
-        <Text key={key}>
-          <Text style={{ color: "lightgrey" }}>_</Text>
-          <Text key={key} style={{ fontStyle: "italic" }}>
-            {token.value.slice(1, token.value.length - 1)}
-          </Text>
-          <Text style={{ color: "lightgrey" }}>_</Text>
+        <Text key={key} style={parentStyle}>
+          {node.value}
         </Text>
       );
 
-    case "strong":
+    case NodeType.Bold:
       return (
-        <Text key={key}>
-          <Text style={{ color: "lightgrey" }}>*</Text>
-          <Text key={key} style={{ fontWeight: "bold" }}>
-            {token.value.slice(1, token.value.length - 1)}
-          </Text>
-          <Text style={{ color: "lightgrey" }}>*</Text>
-        </Text>
+        <DelimitedNode
+          key={key}
+          node={node}
+          delimiter="*"
+          style={{ ...parentStyle, fontWeight: "bold" }}
+        />
       );
 
-    case "u":
+    case NodeType.Italic:
       return (
-        <Text key={key}>
-          <Text style={{ color: "lightgrey" }}>+</Text>
-          <Text key={key} style={{ textDecorationLine: "underline" }}>
-            {token.value.slice(1, token.value.length - 1)}
-          </Text>
-          <Text style={{ color: "lightgrey" }}>+</Text>
-        </Text>
+        <DelimitedNode
+          key={key}
+          node={node}
+          delimiter="_"
+          style={{ ...parentStyle, fontStyle: "italic" }}
+        />
       );
 
-    case "s":
+    case NodeType.Underline:
       return (
-        <Text key={key}>
-          <Text style={{ color: "lightgrey" }}>~</Text>
-          <Text key={key} style={{ textDecorationLine: "line-through" }}>
-            {token.value.slice(1, token.value.length - 1)}
-          </Text>
-          <Text style={{ color: "lightgrey" }}>~</Text>
-        </Text>
+        <DelimitedNode
+          key={key}
+          node={node}
+          delimiter="+"
+          style={{
+            ...parentStyle,
+            textDecorationLine:
+              parentStyle.textDecorationLine === "line-through" ||
+              parentStyle.textDecorationLine === "underline line-through"
+                ? "underline line-through"
+                : "underline",
+          }}
+        />
+      );
+
+    case NodeType.Strikethrough:
+      return (
+        <DelimitedNode
+          key={key}
+          node={node}
+          delimiter="~"
+          style={{
+            ...parentStyle,
+            textDecorationLine:
+              parentStyle.textDecorationLine === "underline" ||
+              parentStyle.textDecorationLine === "underline line-through"
+                ? "underline line-through"
+                : "line-through",
+          }}
+        />
       );
   }
 }
@@ -81,10 +108,10 @@ export default function RichTextEditor({ label, value, onChange }) {
         onChangeText={onChange}
         onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
         render={({ value, ...props }) => {
-          const tokens = richtext.parse(value);
+          const ast = parseRichText(value);
           return (
             <NativeTextInput {...props}>
-              {tokens.map(renderToken)}
+              {ast.map((node, i) => renderNode(node, i, {}))}
             </NativeTextInput>
           );
         }}
