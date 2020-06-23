@@ -27,38 +27,33 @@ import SupersededGuideline from "./components/SupersededGuideline";
 import RichTextEditor from "./components/RichTextEditor";
 
 import api from "../../util/api";
-import * as richtext from "./rich-text";
+import { NodeType, parse as parseRichText } from "./rich-text";
+
+function richTextNodeToHtml(node) {
+  switch (node.type) {
+    case NodeType.Plain:
+      return node.value;
+
+    case NodeType.Bold:
+      return (
+        "<strong>" +
+        node.children.map(richTextNodeToHtml).join("") +
+        "</strong>"
+      );
+
+    case NodeType.Italic:
+      return "<em>" + node.children.map(richTextNodeToHtml).join("") + "</em>";
+
+    case NodeType.Underline:
+      return "<u>" + node.children.map(richTextNodeToHtml).join("") + "</u>";
+
+    case NodeType.Strikethrough:
+      return "<s>" + node.children.map(richTextNodeToHtml).join("") + "</s>";
+  }
+}
 
 function richTextToHtml(text) {
-  const html = richtext
-    .parse(text)
-    .map((token) => {
-      switch (token.type) {
-        case "text":
-        case "ws":
-          return token.value;
-
-        case "em":
-          return (
-            "<em>" + token.value.slice(1, token.value.length - 1) + "</em>"
-          );
-
-        case "strong":
-          return (
-            "<strong>" +
-            token.value.slice(1, token.value.length - 1) +
-            "</strong>"
-          );
-
-        case "u":
-          return "<u>" + token.value.slice(1, token.value.length - 1) + "</u>";
-
-        case "s":
-          return "<s>" + token.value.slice(1, token.value.length - 1) + "</s>";
-      }
-    })
-    .join("");
-
+  const html = parseRichText(text).map(richTextNodeToHtml).join("");
   return "<p>" + html.replace(/\n/g, "<br/>") + "</p>";
 }
 
