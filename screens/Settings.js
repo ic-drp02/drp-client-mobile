@@ -12,7 +12,9 @@ import {
   Button,
   Snackbar,
   Portal,
+  ProgressBar,
 } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import LabeledCheckbox from "../components/LabeledCheckbox.js";
 import DangerConfirmationDialog from "../components/DangerConfirmationDialog.js";
@@ -30,6 +32,10 @@ export default function Settings({ navigation }) {
   const dispatch = useDispatch();
   const settings = useSelector((s) => s.settings.settings);
   const settingsLoading = useSelector((s) => s.settings.loading);
+  const toDownload = useSelector((s) => s.downloads.toDownload).length;
+  const currentDownloadProgress = useSelector(
+    (s) => s.downloads.currentDownloadProgress
+  );
   const storeFavouriteChecked =
     settings[SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE];
   const storeFilesChecked = settings[SETTINGS_OPTIONS.STORE_FILES];
@@ -48,7 +54,7 @@ export default function Settings({ navigation }) {
 
   useEffect(() => {
     checkDiskStorage();
-  }, [storeFilesChecked]);
+  }, [storeFilesChecked, toDownload]);
 
   function setStoreFavourite(value) {
     if (value) {
@@ -179,6 +185,15 @@ export default function Settings({ navigation }) {
             disabled={settingsLoading || !storeFilesChecked}
             onPress={() => setDownloadExpensive(!downloadExpensiveChecked)}
           />
+          <Subheading style={styles.subheading}>Status</Subheading>
+
+          <Text style={{ marginBottom: 10 }}>
+            {toDownload === 0
+              ? "Nothing to download"
+              : `Downloading ${toDownload} files...`}
+          </Text>
+
+          {toDownload > 0 && <ProgressBar progress={currentDownloadProgress} />}
         </ScrollView>
       </View>
     </View>
@@ -206,5 +221,10 @@ const styles = StyleSheet.create({
   },
   subheading: {
     marginTop: 10,
+  },
+  downloadInfo: {
+    flexDirection: "row",
+    alignContent: "center",
+    marginBottom: 10,
   },
 });

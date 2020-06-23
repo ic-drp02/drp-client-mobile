@@ -6,7 +6,7 @@ import {
   deleteInternalDownloadFolder,
 } from "./files.js";
 import { SETTINGS_OPTIONS, DEFAULT_VALUES } from "./settingsOptions.js";
-import { refreshPosts } from "../store/posts.js";
+import { refreshDownloads } from "../store/downloads.js";
 
 const SETTINGS = "SETTINGS";
 
@@ -36,10 +36,13 @@ async function onStoreFavouritesOfflineChange(newValue, getState) {
   }
 }
 
-async function onStoreFilesChange(newValue) {
+async function onStoreFilesChange(newValue, getState, dispatch) {
   if (newValue) {
-    // Create downloads folder on enabling
+    // Create downloads folder
     await createInternalDownloadFolder();
+
+    // Refresh files
+    dispatch(refreshDownloads());
   } else {
     // Delete downloads folder on disabling
     await deleteInternalDownloadFolder();

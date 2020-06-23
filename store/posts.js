@@ -9,6 +9,7 @@ import {
 import { SETTINGS_OPTIONS } from "../util/settingsOptions.js";
 
 import { showSnackbar, hideSnackbar } from "./snackbar";
+import { refreshDownloads } from "./downloads";
 
 const REFRESH_POSTS_BEGIN = "REFRESH_POSTS_BEGIN";
 const REFRESH_POSTS_SUCCESS = "REFRESH_POSTS_SUCCESS";
@@ -69,11 +70,17 @@ export function refreshPosts() {
       };
     });
 
+    // Save the favourites if required by settings
     if (settings[SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE]) {
       await saveOfflineFavourites(favourites);
     }
 
     dispatch(refreshPostsSuccess(latest, favourites));
+
+    // Refresh the downloaded files if required by settings
+    if (settings[SETTINGS_OPTIONS.STORE_FILES]) {
+      dispatch(refreshDownloads());
+    }
   };
 }
 
