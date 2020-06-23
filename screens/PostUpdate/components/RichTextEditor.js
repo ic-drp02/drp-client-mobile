@@ -2,7 +2,7 @@ import React from "react";
 import { TextInput as NativeTextInput } from "react-native";
 import { TextInput, Text } from "react-native-paper";
 
-import * as richtext from "./rich-text";
+import * as richtext from "../rich-text";
 
 function renderToken(token, key) {
   switch (token.type) {

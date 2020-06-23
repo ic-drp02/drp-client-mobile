@@ -21,11 +21,39 @@ import FilesView from "./components/FilesView";
 import GuideLinePickerDialog from "./components/GuidelinePickerDialog";
 import BigText from "../../components/BigText";
 
-import api from "../../util/api";
 import { NormalTextInput, LargeTextInput } from "./components/TextInputs";
 import SwitchView from "./components/SwitchView";
 import SupersededGuideline from "./components/SupersededGuideline";
 import RichTextEditor from "./components/RichTextEditor";
+
+import api from "../../util/api";
+import * as richtext from "./rich-text";
+
+function richTextToHtml(text) {
+  const html = richtext
+    .parse(text)
+    .map((token) => {
+      switch (token.type) {
+        case "text":
+          return token.value;
+
+        case "em":
+          return (
+            "<em>" + token.value.slice(1, token.value.length - 1) + "</em>"
+          );
+
+        case "strong":
+          return (
+            "<strong>" +
+            token.value.slice(1, token.value.length - 1) +
+            "</strong>"
+          );
+      }
+    })
+    .join("");
+
+  return "<p>" + html.replace(/\n/g, "<br/>") + "</p>";
+}
 
 export default withTheme(function PostUpdate({ navigation }) {
   const [title, setTitle] = useState("");
@@ -88,7 +116,7 @@ export default withTheme(function PostUpdate({ navigation }) {
       const res = await api.createPost({
         title,
         summary,
-        content: "<p>" + content.replace(/\n/g, "<br/>") + "</p>",
+        content: richTextToHtml(content),
         is_guideline: isGuideline,
         updates: supersedingGuideline ? supersedingGuideline.id : undefined,
         tags: tags.map((t) => t.name),
