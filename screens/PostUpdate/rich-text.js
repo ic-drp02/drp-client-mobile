@@ -13,6 +13,8 @@ const DELIMITER_MAP = {
   "~": matchStrikethrough,
 };
 
+export const DELIMITERS = new Set(Object.keys(DELIMITER_MAP));
+
 const Node = (type, value, children) => ({
   type,
   value,
@@ -33,10 +35,7 @@ function matchPlain(source) {
   }
 
   for (let i = 1; i < source.length; i++) {
-    if (
-      Object.keys(DELIMITER_MAP).includes(source[i]) &&
-      /\s/.test(source[i - 1])
-    ) {
+    if (DELIMITERS.has(source[i]) && /\s/.test(source[i - 1])) {
       return {
         node: Plain(source.slice(0, i)),
         pos: i,

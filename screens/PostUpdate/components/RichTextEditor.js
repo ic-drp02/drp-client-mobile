@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TextInput as NativeTextInput, View } from "react-native";
 import { TextInput, Text, ToggleButton } from "react-native-paper";
 
-import { NodeType, parse as parseRichText } from "../rich-text";
+import { NodeType, parse as parseRichText, DELIMITERS } from "../rich-text";
 
 function Delimiter({ value }) {
   return <Text style={{ color: "lightgrey" }}>{value}</Text>;
@@ -83,20 +83,49 @@ function renderNode(node, key, parentStyle) {
   }
 }
 
-function wrapSelection(str, selection, value) {
+function shouldPrependSpace(str, selection) {
   return (
-    str.slice(0, selection.start) +
-    (selection.start > 0 && /\S/.test(str[selection.start]) ? " " : "") +
-    value +
-    str.slice(selection.start, selection.end) +
-    value +
-    (selection.end < str.length && /\S/.test(str[selection.end]) ? " " : "") +
-    str.slice(selection.end, str.length)
+    selection.start > 0 &&
+    /\S/.test(str[selection.start - 1]) &&
+    !DELIMITERS.has(str[selection.start - 1])
   );
 }
 
+function shouldAppendSpace(str, selection) {
+  return (
+    selection.end < str.length &&
+    /\S/.test(str[selection.end]) &&
+    !DELIMITERS.has(str[selection.end])
+  );
+}
+
+function wrapSelection(str, selection, delimiter) {
+  const left = str.slice(0, selection.start);
+  const selected = str.slice(selection.start, selection.end);
+  const right = str.slice(selection.end, str.length);
+
+  let wrapped = delimiter + selected + delimiter;
+
+  if (shouldPrependSpace(str, selection)) {
+    wrapped = " " + wrapped;
+  }
+
+  if (shouldAppendSpace(str, selection)) {
+    wrapped = wrapped + " ";
+  }
+
+  return left + wrapped + right;
+}
+
 export default function RichTextEditor({ label, value, onChange }) {
-  const [selection, setSelection] = useState(null);
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
+
+  function format(delimiter) {
+    if (selection.end > selection.start) {
+      onChange(wrapSelection(value, selection, delimiter));
+    }
+  }
+
   return (
     <View style={{ margin: 8 }}>
       <TextInput
@@ -117,38 +146,10 @@ export default function RichTextEditor({ label, value, onChange }) {
         }}
       />
       <View style={{ flexDirection: "row" }}>
-        <ToggleButton
-          icon="format-bold"
-          onPress={() => {
-            if (selection.end > selection.start) {
-              onChange(wrapSelection(value, selection, "*"));
-            }
-          }}
-        />
-        <ToggleButton
-          icon="format-italic"
-          onPress={() => {
-            if (selection.end > selection.start) {
-              onChange(wrapSelection(value, selection, "_"));
-            }
-          }}
-        />
-        <ToggleButton
-          icon="format-underline"
-          onPress={() => {
-            if (selection.end > selection.start) {
-              onChange(wrapSelection(value, selection, "+"));
-            }
-          }}
-        />
-        <ToggleButton
-          icon="format-strikethrough"
-          onPress={() => {
-            if (selection.end > selection.start) {
-              onChange(wrapSelection(value, selection, "~"));
-            }
-          }}
-        />
+        <ToggleButton icon="format-bold" onPress={() => format("*")} />
+        <ToggleButton icon="format-italic" onPress={() => format("_")} />
+        <ToggleButton icon="format-underline" onPress={() => format("+")} />
+        <ToggleButton icon="format-strikethrough" onPress={() => format("~")} />
       </View>
     </View>
   );
