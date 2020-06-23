@@ -192,8 +192,11 @@ export default withTheme(function PostUpdate({ navigation }) {
           <Appbar.Content title="New post" />
         </Appbar.Header>
       </TouchableWithoutFeedback>
-      <View style={styles.container}>
-        <ScrollView keyboardShouldPersistTaps="handled">
+      <View>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.container}
+        >
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
             accessible={false}
@@ -285,7 +288,6 @@ export default withTheme(function PostUpdate({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 8,
   },
   justifyCenter: {
