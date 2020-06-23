@@ -7,6 +7,7 @@ import * as richtext from "../rich-text";
 function renderToken(token, key) {
   switch (token.type) {
     case "text":
+    case "ws":
       return <Text key={key}>{token.value}</Text>;
 
     case "em":
