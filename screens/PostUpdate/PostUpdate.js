@@ -35,6 +35,7 @@ function richTextToHtml(text) {
     .map((token) => {
       switch (token.type) {
         case "text":
+        case "ws":
           return token.value;
 
         case "em":
