@@ -4,7 +4,7 @@ import { WebView } from "react-native-webview";
 
 import { Headline, Divider, Chip, Text } from "react-native-paper";
 
-import Attachments from "./Attachments.js";
+import AttachmentCards from "./AttachmentCards.js";
 import Label, { LABEL_TYPES } from "./Label";
 
 import { toDateAndTimeString } from "../util/date";
@@ -20,21 +20,19 @@ export default function UpdateData(props) {
           title={post.title}
           summary={post.summary}
           content={createHtmlDocument(post.title, post.content)}
+          files={post.files}
           date={post.created_at}
           old={old}
         />
-        <View style={{ marginTop: 10 }}>
-          <TagsView tags={post.tags} />
-        </View>
         <View style={{ marginBottom: 10 }}>
-          <Attachments files={post.files} />
+          <TagsView tags={post.tags} />
         </View>
       </View>
     </>
   );
 }
 
-function MainContent({ title, summary, content, date, old }) {
+function MainContent({ title, summary, content, date, old, files }) {
   const ref = useRef(null);
   return (
     <View style={styles.fullHeight}>
@@ -51,6 +49,10 @@ function MainContent({ title, summary, content, date, old }) {
         </Chip>
       </View>
       <Divider />
+      <View>
+        <AttachmentCards files={files} />
+      </View>
+
       <WebView
         ref={ref}
         originWhitelist={["*"]}
@@ -114,6 +116,7 @@ function createHtmlDocument(title, content) {
 const styles = StyleSheet.create({
   tagsView: {
     flexDirection: "row",
+    flexWrap: "wrap",
   },
   tag: {
     margin: 4,
