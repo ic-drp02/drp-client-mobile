@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TextInput as NativeTextInput, View } from "react-native";
-import { TextInput, Text, ToggleButton } from "react-native-paper";
+import { TextInput, Text, ToggleButton, useTheme } from "react-native-paper";
 
 import { NodeType, parse as parseRichText, DELIMITERS } from "../rich-text";
 
@@ -118,11 +118,15 @@ function wrapSelection(str, selection, delimiter) {
 }
 
 export default function RichTextEditor({ label, value, onChange }) {
+  const theme = useTheme();
+  const [showWarning, setShowWarning] = useState(false);
   const [selection, setSelection] = useState({ start: 0, end: 0 });
 
   function format(delimiter) {
     if (selection.end > selection.start) {
       onChange(wrapSelection(value, selection, delimiter));
+    } else {
+      setShowWarning(true);
     }
   }
 
@@ -134,8 +138,14 @@ export default function RichTextEditor({ label, value, onChange }) {
         multiline={true}
         numberOfLines={7}
         value={value}
-        onChangeText={onChange}
-        onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
+        onChangeText={(v) => {
+          setShowWarning(false);
+          onChange(v);
+        }}
+        onSelectionChange={(e) => {
+          setShowWarning(false);
+          setSelection(e.nativeEvent.selection);
+        }}
         render={({ value, ...props }) => {
           const ast = parseRichText(value);
           return (
@@ -145,7 +155,11 @@ export default function RichTextEditor({ label, value, onChange }) {
           );
         }}
       />
-      <View style={{ flexDirection: "row" }}>
+      {showWarning && (
+        <Text style={{ marginTop: 8, color: "orange" }}>
+          You must select some text first.
+        </Text>
+      )}
         <ToggleButton icon="format-bold" onPress={() => format("*")} />
         <ToggleButton icon="format-italic" onPress={() => format("_")} />
         <ToggleButton icon="format-underline" onPress={() => format("+")} />
