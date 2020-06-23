@@ -138,10 +138,7 @@ export default function RichTextEditor({ label, value, onChange }) {
         multiline={true}
         numberOfLines={7}
         value={value}
-        onChangeText={(v) => {
-          setShowWarning(false);
-          onChange(v);
-        }}
+        onChangeText={onChange}
         onSelectionChange={(e) => {
           setShowWarning(false);
           setSelection(e.nativeEvent.selection);
