@@ -160,6 +160,15 @@ export default function RichTextEditor({ label, value, onChange }) {
           You must select some text first.
         </Text>
       )}
+      <View
+        style={{
+          flexDirection: "row",
+          borderColor: theme.colors.placeholder,
+          borderWidth: 1,
+          borderRadius: 4,
+          marginTop: 8,
+        }}
+      >
         <ToggleButton icon="format-bold" onPress={() => format("*")} />
         <ToggleButton icon="format-italic" onPress={() => format("_")} />
         <ToggleButton icon="format-underline" onPress={() => format("+")} />
