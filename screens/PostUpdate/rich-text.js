@@ -16,25 +16,13 @@ function parseWhitespace(str, start) {
   return token("text", str, start, end);
 }
 
-function parseFromUnderscore(str, start) {
+function parseFrom(str, start, char, tokenType) {
   let end = start + 1;
-  while (end < str.length && /\S/.test(str[end]) && str[end] !== "_") {
+  while (end < str.length && /\S/.test(str[end]) && str[end] !== char) {
     end++;
   }
-  if (str[end] === "_") {
-    return token("em", str, start, end);
-  } else {
-    return token("text", str, start, end);
-  }
-}
-
-function parseFromStar(str, start) {
-  let end = start + 1;
-  while (end < str.length && /\S/.test(str[end]) && str[end] !== "*") {
-    end++;
-  }
-  if (str[end] === "*") {
-    return token("strong", str, start, end);
+  if (str[end] === char) {
+    return token(tokenType, str, start, end);
   } else {
     return token("text", str, start, end);
   }
@@ -59,11 +47,19 @@ export function parse(str) {
       i = token.range.end + 1;
     } else {
       if (str[i] === "_") {
-        const token = parseFromUnderscore(str, i);
+        const token = parseFrom(str, i, "_", "em");
         tokens.push(token);
         i = token.range.end + 1;
       } else if (str[i] === "*") {
-        const token = parseFromStar(str, i);
+        const token = parseFrom(str, i, "*", "strong");
+        tokens.push(token);
+        i = token.range.end + 1;
+      } else if (str[i] === "~") {
+        const token = parseFrom(str, i, "~", "s");
+        tokens.push(token);
+        i = token.range.end + 1;
+      } else if (str[i] === "+") {
+        const token = parseFrom(str, i, "+", "u");
         tokens.push(token);
         i = token.range.end + 1;
       } else {

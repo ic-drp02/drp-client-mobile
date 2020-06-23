@@ -48,6 +48,12 @@ function richTextToHtml(text) {
             token.value.slice(1, token.value.length - 1) +
             "</strong>"
           );
+
+        case "u":
+          return "<u>" + token.value.slice(1, token.value.length - 1) + "</u>";
+
+        case "s":
+          return "<s>" + token.value.slice(1, token.value.length - 1) + "</s>";
       }
     })
     .join("");
