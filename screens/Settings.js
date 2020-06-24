@@ -132,8 +132,9 @@ export default function Settings({ navigation }) {
                 title="Disable storing favourites?"
                 text={
                   "Are you sure you want to disable storing favourite posts on " +
-                  "your device? This will delete saved posts that are stored within " +
-                  "the ICON application and free the associated disk space."
+                  "your device? This will delete saved posts and files that " +
+                  "are stored within the ICON application and free the associated " +
+                  "disk space."
                 }
                 dangerActionText="Disable"
                 visible={confirmOfflineFavourite}

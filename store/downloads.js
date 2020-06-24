@@ -1,8 +1,10 @@
-import { auditDownloads, downloadInternal } from "../util/files.js";
+import { auditDownloads, downloadInternal } from "../util/files";
+import { SETTINGS_OPTIONS } from "../util/settingsOptions";
 
 const REFRESH_FILES_BEGIN = "REFRESH_FILES_BEGIN";
 const REQUEST_AUDIT = "REQUEST_AUDIT";
 const AUDIT_DONE = "AUDIT_DONE";
+const REFRESH_FILES_ABORT = "REFRESH_FILES_ABORT";
 const FILE_DOWNLOAD_PROGRESS = "FILE_DOWNLOAD_PROGRESS";
 const FILE_DOWNLOAD_DONE = "FILE_DOWNLOAD_DONE";
 const REFRESH_FILES_DONE = "REFRESH_FILES_DONE";
@@ -24,6 +26,10 @@ function requestAudit() {
 
 function auditDone(toDownload) {
   return { type: AUDIT_DONE, toDownload };
+}
+
+function refreshFilesAbort() {
+  return { type: REFRESH_FILES_ABORT };
 }
 
 function fileDownloadProgress(progress) {
@@ -66,6 +72,12 @@ export function refreshDownloads() {
     dispatch(auditDone(toDownload));
 
     while (toDownload.length > 0) {
+      if (!getState().settings.settings[SETTINGS_OPTIONS.STORE_FILES]) {
+        console.warn("Settings changed, aborting");
+        dispatch(refreshFilesAbort());
+        break;
+      }
+
       // Perform the next download
       await downloadInternal(toDownload.pop(), (progress) => {
         dispatch(fileDownloadProgress(progress));
@@ -107,6 +119,13 @@ export default function reducer(state = initialState, action) {
         ...state,
         auditRequested: false,
         toDownload: action.toDownload,
+      };
+
+    case REFRESH_FILES_ABORT:
+      return {
+        ...state,
+        toDownload: [],
+        currentDownloadProgress: 0,
       };
 
     case FILE_DOWNLOAD_PROGRESS:
