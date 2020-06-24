@@ -21,10 +21,41 @@ import FilesView from "./components/FilesView";
 import GuideLinePickerDialog from "./components/GuidelinePickerDialog";
 import BigText from "../../components/BigText";
 
-import api from "../../util/api";
 import { NormalTextInput, LargeTextInput } from "./components/TextInputs";
 import SwitchView from "./components/SwitchView";
 import SupersededGuideline from "./components/SupersededGuideline";
+import RichTextEditor from "./components/RichTextEditor";
+
+import api from "../../util/api";
+import { NodeType, parse as parseRichText } from "./rich-text";
+
+function richTextNodeToHtml(node) {
+  switch (node.type) {
+    case NodeType.Plain:
+      return node.value;
+
+    case NodeType.Bold:
+      return (
+        "<strong>" +
+        node.children.map(richTextNodeToHtml).join("") +
+        "</strong>"
+      );
+
+    case NodeType.Italic:
+      return "<em>" + node.children.map(richTextNodeToHtml).join("") + "</em>";
+
+    case NodeType.Underline:
+      return "<u>" + node.children.map(richTextNodeToHtml).join("") + "</u>";
+
+    case NodeType.Strikethrough:
+      return "<s>" + node.children.map(richTextNodeToHtml).join("") + "</s>";
+  }
+}
+
+function richTextToHtml(text) {
+  const html = parseRichText(text).map(richTextNodeToHtml).join("");
+  return "<p>" + html.replace(/\n/g, "<br/>") + "</p>";
+}
 
 export default withTheme(function PostUpdate({ navigation }) {
   const [title, setTitle] = useState("");
@@ -87,7 +118,7 @@ export default withTheme(function PostUpdate({ navigation }) {
       const res = await api.createPost({
         title,
         summary,
-        content: "<p>" + content.replace(/\n/g, "<br/>") + "</p>",
+        content: richTextToHtml(content),
         is_guideline: isGuideline,
         updates: supersedingGuideline ? supersedingGuideline.id : undefined,
         tags: tags.map((t) => t.name),
@@ -161,8 +192,11 @@ export default withTheme(function PostUpdate({ navigation }) {
           <Appbar.Content title="New post" />
         </Appbar.Header>
       </TouchableWithoutFeedback>
-      <View style={styles.container}>
-        <ScrollView keyboardShouldPersistTaps="handled">
+      <View>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.container}
+        >
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
             accessible={false}
@@ -180,7 +214,7 @@ export default withTheme(function PostUpdate({ navigation }) {
                 onChange={setSummary}
               />
 
-              <LargeTextInput
+              <RichTextEditor
                 label="Content"
                 value={content}
                 onChange={setContent}
@@ -254,7 +288,6 @@ export default withTheme(function PostUpdate({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 8,
   },
   justifyCenter: {
