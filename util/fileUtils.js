@@ -30,7 +30,10 @@ export function canonicalFileName(name, id) {
   }
   let s = name.split(".");
   let extension = s.pop();
-  return s.join(".") + " ID" + id + "." + extension;
+  let filename = s.join(".") + " ID" + id + "." + extension;
+
+  // Replace all spaces in filename by underscores so that iOS doesn't complain
+  return filename.replace(/ /g, "_");
 }
 
 /**

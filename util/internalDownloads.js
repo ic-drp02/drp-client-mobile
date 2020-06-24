@@ -134,7 +134,7 @@ export async function downloadInternal(file, onProgress) {
   console.warn(`Downloading ${file.name}`);
   if (!(await fileExists(INTERNAL_DOWNLOAD_FOLDER))) {
     console.warn(
-      "Internal download directory was not created before download!"
+      "Error: Internal download directory was not created before download!"
     );
     return;
   }
