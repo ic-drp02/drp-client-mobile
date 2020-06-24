@@ -66,15 +66,15 @@ jobs:
           EXPO_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           turtle setup:android
-          echo $ANDROID_KEYSTORE > ./drp-client-mobile.jks.base64
-          base64 --decode ./drp-client-mobile.jks.base64 > drp-client-mobile.jks
-          turtle build:android --keystore-path ./drp-client-mobile.jks --keystore-alias ${{ secrets.ANDROID_KEYSTORE_ALIAS }} --type apk --output ./icon-guidelines-$GITHUB_SHA.apk
+          echo $ANDROID_KEYSTORE > ./icon-guidelines.jks.base64
+          base64 --decode ./icon-guidelines.jks.base64 > drp-client-mobile.jks
+          turtle build:android --keystore-path ./icon-guidelines.jks --keystore-alias ${{ secrets.ANDROID_KEYSTORE_ALIAS }} --type apk --output ./icon-guidelines-$GITHUB_SHA.apk
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: drp-client-mobile-${{ github.sha }}.apk
-          path: ./drp-client-mobile-${{ github.sha }}.apk
+          name: icon-guidelines-${{ github.sha }}.apk
+          path: ./icon-guidelines-${{ github.sha }}.apk
 
   build_standalone_ios:
     runs-on: macos-latest
