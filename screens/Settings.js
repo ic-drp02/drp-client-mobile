@@ -15,6 +15,7 @@ import DangerConfirmationDialog from "../components/DangerConfirmationDialog.js"
 
 import { updateSettings } from "../store";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions.js";
+import DOWNLOAD_STATUS from "../util/downloadStatus";
 import {
   getHumanReadableFreeDiskStorage,
   getHumanReadableAppOccupiedStorage,
@@ -26,6 +27,7 @@ export default function Settings({ navigation }) {
   const dispatch = useDispatch();
   const settings = useSelector((s) => s.settings.settings);
   const settingsLoading = useSelector((s) => s.settings.loading);
+  const downloadStatus = useSelector((s) => s.downloads.status);
   const toDownload = useSelector((s) => s.downloads.toDownload).length;
   const currentDownloadProgress = useSelector(
     (s) => s.downloads.currentDownloadProgress
@@ -93,6 +95,39 @@ export default function Settings({ navigation }) {
     );
   }
 
+  let downloadStatusMessage;
+  let showProgress = false;
+  switch (downloadStatus) {
+    case DOWNLOAD_STATUS.IN_PROGRESS:
+      if (toDownload > 0) {
+        showProgress = true;
+      }
+      downloadStatusMessage =
+        toDownload === 0
+          ? "Finishing downloads..."
+          : `Downloading ${toDownload} file${
+              toDownload > 1 ? "s" : ""
+            }... You can continue to use your device normally.`;
+      break;
+
+    case DOWNLOAD_STATUS.NO_CONNECTION:
+      downloadStatusMessage =
+        `No internet connection. The download  of ${toDownload} files ` +
+        "will resume after the connection is established.";
+      break;
+
+    case DOWNLOAD_STATUS.EXPENSIVE_CONNECTION:
+      downloadStatusMessage =
+        "Your device reported that it is using an expensive " +
+        `internet connection. The download of ${toDownload} files ` +
+        "will resume after a cheaper connection is established.";
+      break;
+
+    case DOWNLOAD_STATUS.DONE:
+      downloadStatusMessage = "Nothing to download";
+      break;
+  }
+
   return (
     <View style={fullHeight}>
       <Appbar.Header>
@@ -107,6 +142,7 @@ export default function Settings({ navigation }) {
             {appOccupiedStorage}. The free space on your device is{" "}
             {freeDiskStorage}.
           </Text>
+
           <Subheading style={styles.subheading}>General</Subheading>
           <LabeledCheckbox
             label="Store favourites offline"
@@ -173,24 +209,16 @@ export default function Settings({ navigation }) {
               />
             </Portal>
           </View>
-
           <LabeledCheckbox
             label="Download files on expensive connections"
             checked={downloadExpensiveChecked}
             disabled={settingsLoading || !storeFilesChecked}
             onPress={() => setDownloadExpensive(!downloadExpensiveChecked)}
           />
+
           <Subheading style={styles.subheading}>Status</Subheading>
-
-          <Text style={{ marginBottom: 10 }}>
-            {toDownload === 0
-              ? "Nothing to download"
-              : `Downloading ${toDownload} file${
-                  toDownload > 1 ? "s" : ""
-                }... You can continue to use your device normally.`}
-          </Text>
-
-          {toDownload > 0 && <ProgressBar progress={currentDownloadProgress} />}
+          <Text style={{ marginBottom: 10 }}>{downloadStatusMessage}</Text>
+          {showProgress && <ProgressBar progress={currentDownloadProgress} />}
         </ScrollView>
       </View>
     </View>

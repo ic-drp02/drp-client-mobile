@@ -1,5 +1,8 @@
+import NetInfo from "@react-native-community/netinfo";
+
 import { auditDownloads, downloadInternal } from "../util/files";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions";
+import DOWNLOAD_STATUS from "../util/downloadStatus";
 
 const REFRESH_FILES_BEGIN = "REFRESH_FILES_BEGIN";
 const REQUEST_AUDIT = "REQUEST_AUDIT";
@@ -10,10 +13,10 @@ const FILE_DOWNLOAD_DONE = "FILE_DOWNLOAD_DONE";
 const REFRESH_FILES_DONE = "REFRESH_FILES_DONE";
 
 const initialState = {
-  busy: false,
   auditRequested: false,
   toDownload: [],
   currentDownloadProgress: 0,
+  status: DOWNLOAD_STATUS.DONE,
 };
 
 function refreshFilesBegin() {
@@ -28,8 +31,8 @@ function auditDone(toDownload) {
   return { type: AUDIT_DONE, toDownload };
 }
 
-function refreshFilesAbort() {
-  return { type: REFRESH_FILES_ABORT };
+export function refreshFilesAbort(status) {
+  return { type: REFRESH_FILES_ABORT, status };
 }
 
 function fileDownloadProgress(progress) {
@@ -76,8 +79,30 @@ export function refreshDownloads() {
       if (!getState().settings.settings[SETTINGS_OPTIONS.STORE_FILES]) {
         // If storing files is disabled, abort further downloads
         console.warn("Settings changed, aborting");
-        dispatch(refreshFilesAbort());
-        break;
+        dispatch(refreshFilesAbort(DOWNLOAD_STATUS.DONE));
+        return;
+      }
+
+      let connectionState = await NetInfo.fetch();
+      if (
+        !connectionState.isConnected ||
+        !connectionState.isInternetReachable
+      ) {
+        // No internet connection
+        dispatch(refreshFilesAbort(DOWNLOAD_STATUS.NO_CONNECTION));
+        return;
+      }
+
+      if (
+        !getState().settings.settings[
+          SETTINGS_OPTIONS.DOWNLOAD_FILES_EXPENSIVE
+        ] &&
+        connectionState.details &&
+        connectionState.details.isConnectionExpensive
+      ) {
+        // Disallowed expensive internet connection
+        dispatch(refreshFilesAbort(DOWNLOAD_STATUS.EXPENSIVE_CONNECTION));
+        return;
       }
 
       // Perform the next download
@@ -107,7 +132,7 @@ export default function reducer(state = initialState, action) {
     case REFRESH_FILES_BEGIN:
       return {
         ...state,
-        busy: true,
+        status: DOWNLOAD_STATUS.IN_PROGRESS,
       };
 
     case REQUEST_AUDIT:
@@ -124,10 +149,13 @@ export default function reducer(state = initialState, action) {
       };
 
     case REFRESH_FILES_ABORT:
+      const toDownload =
+        action.status == DOWNLOAD_STATUS.DONE ? [] : state.toDownload;
       return {
         ...state,
-        toDownload: [],
+        toDownload: toDownload,
         currentDownloadProgress: 0,
+        status: action.status,
       };
 
     case FILE_DOWNLOAD_PROGRESS:
@@ -146,7 +174,7 @@ export default function reducer(state = initialState, action) {
     case REFRESH_FILES_DONE:
       return {
         ...state,
-        busy: false,
+        status: DOWNLOAD_STATUS.DONE,
       };
 
     default:

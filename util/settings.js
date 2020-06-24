@@ -6,7 +6,8 @@ import {
   deleteInternalDownloadFolder,
 } from "./files.js";
 import { SETTINGS_OPTIONS, DEFAULT_VALUES } from "./settingsOptions.js";
-import { refreshDownloads } from "../store/downloads.js";
+import DOWNLOAD_STATUS from "../util/downloadStatus";
+import { refreshDownloads, refreshFilesAbort } from "../store/downloads.js";
 
 const SETTINGS = "SETTINGS";
 
@@ -46,6 +47,8 @@ async function onStoreFilesChange(newValue, getState, dispatch) {
   } else {
     // Delete downloads folder on disabling
     await deleteInternalDownloadFolder();
+
+    dispatch(refreshFilesAbort(DOWNLOAD_STATUS.DONE));
   }
 }
 
