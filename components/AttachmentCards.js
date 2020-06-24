@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 
 import { Card, Text, IconButton, useTheme } from "react-native-paper";
 
-import { openFile } from "../util/files.js";
+import { downloadAndOpenFile } from "../util/files.js";
 import api from "../util/api";
 
 export default function AttachmentCards({ files }) {
@@ -33,7 +33,7 @@ export default function AttachmentCards({ files }) {
           key={index}
           mode="outlined"
           onPress={() => {
-            openFile(
+            downloadAndOpenFile(
               api.baseUrl + "/api/rawfiles/view/" + file.id,
               file.id,
               file.name

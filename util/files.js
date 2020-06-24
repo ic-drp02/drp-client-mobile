@@ -113,7 +113,7 @@ export async function downloadAndOpenFile(url, id, name) {
     await FileSystem.downloadAsync(url, cacheUri);
   }
 
-  openLocalFile(uri);
+  openLocalFile(cacheUri);
 }
 
 /**
