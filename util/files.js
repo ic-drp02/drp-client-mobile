@@ -22,7 +22,7 @@ function showInfoSnackBar(text) {
   store.dispatch(
     showSnackbar(text, 5000, {
       label: "hide",
-      onPress: () => dispatch(hideSnackbar()),
+      onPress: () => store.dispatch(hideSnackbar()),
     })
   );
 }

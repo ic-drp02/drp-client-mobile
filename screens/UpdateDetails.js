@@ -14,7 +14,7 @@ import {
   isFavourite,
 } from "../util/favourites";
 
-import { deletePost } from "../store";
+import { deletePost, refreshPosts } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
   const dispatch = useDispatch();
@@ -68,11 +68,13 @@ export default function UpdateDetails({ route, navigation }) {
 
   async function addFavourite() {
     await addFavouriteId(post.id, post.revision_id);
+    dispatch(refreshPosts());
     setFavourite(true);
   }
 
   async function removeFavourite() {
     await removeFavouriteId(post.id);
+    dispatch(refreshPosts());
     setFavourite(false);
   }
 

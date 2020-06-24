@@ -44,7 +44,14 @@ export function refreshPosts() {
 
     if (!isInternetReachable) {
       const favourites = await getOfflineFavourites();
+      // TODO: Update the pinned IDs even if in offline mode
+
       dispatch(refreshPostsOffline(favourites));
+
+      // Refresh the downloaded files if required by settings
+      if (settings[SETTINGS_OPTIONS.STORE_FILES]) {
+        dispatch(refreshDownloads());
+      }
       return;
     }
 

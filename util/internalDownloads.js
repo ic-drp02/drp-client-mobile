@@ -14,8 +14,7 @@ const SAVED_DOWNLOAD = "SAVED_DOWNLOAD";
  * Creates a folder used for offline files storage
  */
 export async function createInternalDownloadFolder() {
-  const info = await FileSystem.getInfoAsync(INTERNAL_DOWNLOAD_FOLDER);
-  if (!info.exists) {
+  if (!(await fileExists(INTERNAL_DOWNLOAD_FOLDER))) {
     await FileSystem.makeDirectoryAsync(INTERNAL_DOWNLOAD_FOLDER);
   }
 }
@@ -35,9 +34,9 @@ export async function deleteInternalDownloadFolder() {
  * @returns {Promise} - Promise resolving to the array of files that need to be downloaded
  */
 export async function auditDownloads(files) {
-  if (!fileExists(INTERNAL_DOWNLOAD_FOLDER)) {
+  if (!(await fileExists(INTERNAL_DOWNLOAD_FOLDER))) {
     console.warn("Attempting to audit nonexistent internal downloads folder!");
-    return [];
+    await createInternalDownloadFolder();
   }
 
   const previousDownloadUri = await getInterruptedDownload();

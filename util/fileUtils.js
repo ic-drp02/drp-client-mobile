@@ -39,7 +39,19 @@ export function canonicalFileName(name, id) {
  * @returns {Promise} - Promise resolving to boolean value indicating whether the file exists
  */
 export async function fileExists(uri) {
-  const { exists } = await FileSystem.getInfoAsync(uri);
+  let exists = null;
+  try {
+    const info = await FileSystem.getInfoAsync(uri);
+    if (info) {
+      exists = info.exists;
+    } else {
+      console.warn(`Error checking existence of ${uri}, info is:`);
+      console.warn(info);
+    }
+  } catch (error) {
+    console.warn(`Error checking existence of ${uri}:`);
+    console.warn(error);
+  }
   return exists;
 }
 
