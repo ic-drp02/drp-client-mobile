@@ -32,7 +32,7 @@ export async function deleteInternalDownloadFolder() {
  * Deletes invalid files
  * Returns a list of files to download
  * @param {[Object]} files - The array of files that should be saved on the disk
- * @returns {[Object]} - The array of files that need to be downloaded
+ * @returns {Promise} - Promise resolving to the array of files that need to be downloaded
  */
 export async function auditDownloads(files) {
   if (!fileExists(INTERNAL_DOWNLOAD_FOLDER)) {
@@ -87,7 +87,7 @@ export async function auditDownloads(files) {
 
 /**
  * Retrieves the saved download that was unexpectedly interrupted.
- * @returns {Object|null} - The saved download on success, null on error or if no download is saved.
+ * @returns {Promise} - Promise resolving to saved download on success, null on error or if no download is saved.
  */
 async function getInterruptedDownload() {
   let json;
@@ -102,7 +102,7 @@ async function getInterruptedDownload() {
 
 /**
  * Saves the target URI of a started download.
- * @param {string} saveUri - Target URI of the download.
+ * @param {Promise} saveUri - Promise resolving to the target URI of the download.
  */
 async function saveStartedDownload(saveUri) {
   const json = JSON.stringify(saveUri);

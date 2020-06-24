@@ -33,7 +33,7 @@ function showInfoSnackBar(text) {
  * @param {number} id - ID of the downloaded file obtained from the API or otherwise
  * @param {string} name - Name of the downloaded file
  * @param {string} folderName - Name of the target folder inside the root media library
- * @returns {boolean} - True on success, false on failure
+ * @returns {Promise} - Promise resolving to true on success, false on failure
  */
 export async function downloadToMediaFolder(url, id, name, folderName) {
   let saveName = canonicalFileName(name, id);
@@ -67,7 +67,7 @@ export async function downloadToMediaFolder(url, id, name, folderName) {
  * Opens a file that might be only stored on a server
  * @param {string} url - URL the file is located at
  * @param {number} id - ID of the accessed file as supplied by the API
- * @param {string} name - Name of the opened file
+ * @param {Promise} name - Promise representing the name of the opened file
  */
 export async function downloadAndOpenFile(url, id, name) {
   if (Platform.OS == "ios") {

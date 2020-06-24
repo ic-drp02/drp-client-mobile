@@ -36,7 +36,7 @@ export function canonicalFileName(name, id) {
 /**
  * Checks for the existence of a file
  * @param {string} uri - The URI of the file
- * @returns {boolean} - The boolean value indicating whether the file exists
+ * @returns {Promise} - Promise resolving to boolean value indicating whether the file exists
  */
 export async function fileExists(uri) {
   const { exists } = await FileSystem.getInfoAsync(uri);
@@ -46,7 +46,7 @@ export async function fileExists(uri) {
 /**
  * Computes the cummulative size of the directory at the given uri
  * @param {string} uri - The URI of the examined directory
- * @returns {number} - The size of the directory and its contents in bytes
+ * @returns {Promise} - Promise representing the size of the directory and its contents in bytes
  */
 export async function getCummulativeDirectorySize(uri) {
   let size = 0;
@@ -106,7 +106,7 @@ function toHumanReadableInformationUnits(bytes) {
 
 /**
  * Reports space occupied by the document directory in a human-readable format
- * @returns {string} - The space occupied by the document directory
+ * @returns {Promise} - Promise representing space occupied by the document directory
  */
 export async function getHumanReadableAppOccupiedStorage() {
   const documentDirectory = FileSystem.documentDirectory;
@@ -120,7 +120,7 @@ export async function getHumanReadableAppOccupiedStorage() {
 
 /**
  * Reports free space on the disk in a human-readable format
- * @returns {string} - The free space on the disk
+ * @returns {Promise} - Promise representing the free space on the disk
  */
 export async function getHumanReadableFreeDiskStorage() {
   const capacity = await FileSystem.getFreeDiskStorageAsync();

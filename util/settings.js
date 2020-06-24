@@ -62,7 +62,7 @@ function onDownloadFilesExpensiveChange(newValue, getState, dispatch) {
 
 /**
  * Initializes and returns all settings. Should be called before using the setting system.
- * @returns {Object|null} - The object encapsulating settings on success, null on failure
+ * @returns {Promise} - Promise encapsulating settings on success, null on failure
  */
 export async function initSettingsStorage() {
   const settings = await getSettingsStorage();
@@ -102,7 +102,7 @@ export async function initSettingsStorage() {
 
 /**
  * Retrieves the current settings.
- * @returns {Object|null} - The settings object on success, null on failure
+ * @returns {Promise} - Promise that resolves to the settings object on success, null on failure
  */
 export async function getSettingsStorage() {
   let json;
@@ -118,7 +118,7 @@ export async function getSettingsStorage() {
 /**
  * Updates the settings of multiple settings options.
  * @param {Object} newSettings - The object mapping options to new settings.
- * @returns {(Object|null)} - The saved settings on success, null on failure
+ * @returns {Promise} - Promise that resolves to the saved settings on success, null on failure
  */
 export async function updateSettingsStorage(newSettings) {
   const settings = await getSettingsStorage();
@@ -140,7 +140,7 @@ export async function updateSettingsStorage(newSettings) {
 /**
  * Saves new settings.
  * @param {Object} settings - The object with all settings
- * @returns {(Object|null)} - The saved settings on success, null on failure
+ * @returns {Promise} - Promise that resolves to saved settings on success, null on failure
  */
 async function saveSettingsStorage(settings) {
   const json = JSON.stringify(settings);
