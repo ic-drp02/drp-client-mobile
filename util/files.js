@@ -71,6 +71,11 @@ export async function downloadToMediaFolder(url, id, name, folderName) {
  * @param {Promise} name - Promise representing the name of the opened file
  */
 export async function downloadAndOpenFile(url, id, name) {
+  if (store.getState().connection.isInternetReachable && Platform.OS == "ios") {
+    await WebBrowser.openBrowserAsync(url);
+    return;
+  }
+
   const filename = canonicalFileName(name, id);
 
   // Check if file isn't stored offline
