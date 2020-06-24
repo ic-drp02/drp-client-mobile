@@ -118,7 +118,7 @@ export default function Settings({ navigation }) {
 
     case DOWNLOAD_STATUS.EXPENSIVE_CONNECTION:
       downloadStatusMessage =
-        "Your device reported that it is using an expensive " +
+        "Your device reported that it is using mobile or other expensive " +
         `internet connection. The download of ${toDownload} ${files} ` +
         "will resume after a cheaper connection is established.";
       break;
