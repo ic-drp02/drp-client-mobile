@@ -67,12 +67,14 @@ export function refreshDownloads() {
     dispatch(refreshFilesBegin());
 
     console.warn("Performing initial audit");
+    // Perform the initial audit to determine the files to download
     let files = getFilesFromFavourites(getState().posts.favourites);
     let toDownload = await auditDownloads(files);
     dispatch(auditDone(toDownload));
 
     while (toDownload.length > 0) {
       if (!getState().settings.settings[SETTINGS_OPTIONS.STORE_FILES]) {
+        // If storing files is disabled, abort further downloads
         console.warn("Settings changed, aborting");
         dispatch(refreshFilesAbort());
         break;

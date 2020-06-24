@@ -1,5 +1,5 @@
+import { AsyncStorage, Platform } from "react-native";
 import Constants from "expo-constants";
-import { Platform } from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import * as Permissions from "expo-permissions";
 import * as FileSystem from "expo-file-system";
@@ -7,7 +7,9 @@ import * as IntentLauncher from "expo-intent-launcher";
 import * as WebBrowser from "expo-web-browser";
 
 import api from "../util/api.js";
+import { deleteAsync } from "expo-file-system";
 
+const SAVED_DOWNLOAD = "SAVED_DOWNLOAD";
 const DOWNLOAD_FOLDER =
   (Constants.manifest.env && Constants.manifest.env.DOWNLOAD_FOLDER) ||
   "Downloaded guidelines";
@@ -252,6 +254,18 @@ export async function auditDownloads(files) {
     return [];
   }
 
+  const previousDownloadUri = await getInterruptedDownload();
+  if (previousDownloadUri) {
+    // Erase corrupted file from a previous download
+    try {
+      await FileSystem.deleteAsync(previousDownloadUri, { idempotent: true });
+    } catch (error) {
+      console.warn("Failed to clear file from interrupted download:");
+      console.warn(error);
+    }
+    await eraseSavedDownload();
+  }
+
   // Get a array of files stored in the internal downloads directory
   let localFiles;
   try {
@@ -286,6 +300,45 @@ export async function auditDownloads(files) {
 }
 
 /**
+ * Retrieves the saved download that was unexpectedly interrupted.
+ * @returns {Object|null} - The saved download on success, null on error or if no download is saved.
+ */
+export async function getInterruptedDownload() {
+  let json;
+  try {
+    json = await AsyncStorage.getItem(SAVED_DOWNLOAD);
+  } catch (error) {
+    console.warn(`Error while fetching saved download ${error}`);
+    return null;
+  }
+  return json ? JSON.parse(json) : null;
+}
+
+/**
+ * Saves the target URI of a started download.
+ * @param {string} saveUri - Target URI of the download.
+ */
+export async function saveStartedDownload(saveUri) {
+  const json = JSON.stringify(saveUri);
+  try {
+    await AsyncStorage.setItem(SAVED_DOWNLOAD, json);
+  } catch (error) {
+    console.warn(`Error saving download ${error}`);
+  }
+}
+
+/**
+ * Erases the saved download.
+ */
+export async function eraseSavedDownload() {
+  try {
+    AsyncStorage.removeItem(SAVED_DOWNLOAD);
+  } catch (error) {
+    console.warn(`Error erasing saved download ${error}`);
+  }
+}
+
+/**
  * Downloads a file to the internal dowloads folder
  * @param {Object} file - Object describing file to be downloaded
  * @param {number} file.id - The ID of the file
@@ -309,10 +362,23 @@ export async function downloadInternal(file, onProgress) {
       );
     }
   );
+  /* Save target URI of the started download so that after failure,
+     the corrupted file can be deleted even after application restart. */
+  await saveStartedDownload(saveUri);
   try {
     await download.downloadAsync();
   } catch (error) {
     console.warn(`Error downloading file from ${url} to internal downloads:`);
     console.warn(error);
+
+    // Clean up after unfinished download
+    try {
+      await deleteAsync(saveUri, { idempotent: true });
+    } catch (error) {
+      console.warn("Error cleaning up after unfinished download:");
+      console.warn(error);
+    }
   }
+  // Download finished without the app being interrupted, erase the URI
+  await eraseSavedDownload();
 }

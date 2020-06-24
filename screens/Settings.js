@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import * as FileSystem from "expo-file-system";
 import {
   Appbar,
   Text,
-  TextInput,
   Title,
-  Checkbox,
   Subheading,
-  Button,
-  Snackbar,
   Portal,
   ProgressBar,
 } from "react-native-paper";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import LabeledCheckbox from "../components/LabeledCheckbox.js";
 import DangerConfirmationDialog from "../components/DangerConfirmationDialog.js";
 
-import store, { updateSettings } from "../store";
+import { updateSettings } from "../store";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions.js";
 import {
   getHumanReadableFreeDiskStorage,
@@ -191,7 +185,9 @@ export default function Settings({ navigation }) {
           <Text style={{ marginBottom: 10 }}>
             {toDownload === 0
               ? "Nothing to download"
-              : `Downloading ${toDownload} files...`}
+              : `Downloading ${toDownload} file${
+                  toDownload > 1 ? "s" : ""
+                }... You can continue to use your device normally.`}
           </Text>
 
           {toDownload > 0 && <ProgressBar progress={currentDownloadProgress} />}
