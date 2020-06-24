@@ -132,6 +132,12 @@ async function eraseSavedDownload() {
  */
 export async function downloadInternal(file, onProgress) {
   console.warn(`Downloading ${file.name}`);
+  if (!(await fileExists(INTERNAL_DOWNLOAD_FOLDER))) {
+    console.warn(
+      "Internal download directory was not created before download!"
+    );
+    return;
+  }
   const saveUri =
     INTERNAL_DOWNLOAD_FOLDER + canonicalFileName(file.name, file.id);
   // TODO: Consider moving file url construction to the API library
