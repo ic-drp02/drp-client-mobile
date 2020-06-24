@@ -113,7 +113,6 @@ export function updateSettings(settings) {
     dispatch(updateSettingsCommit(newSettings));
 
     // Process settings callbacks
-    console.warn("Processing callbacks");
     await processCallbacks(settings, getState, dispatch);
 
     dispatch(updateSettingsDone());

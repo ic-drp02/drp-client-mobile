@@ -5,6 +5,7 @@ import * as Permissions from "expo-permissions";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import * as WebBrowser from "expo-web-browser";
+import * as Sharing from "expo-sharing";
 
 import {
   canonicalFileName,
@@ -70,12 +71,6 @@ export async function downloadToMediaFolder(url, id, name, folderName) {
  * @param {Promise} name - Promise representing the name of the opened file
  */
 export async function downloadAndOpenFile(url, id, name) {
-  if (Platform.OS == "ios") {
-    // TODO
-    await WebBrowser.openBrowserAsync(url);
-    return;
-  }
-
   const filename = canonicalFileName(name, id);
 
   // Check if file isn't stored offline
@@ -122,7 +117,23 @@ export async function openLocalFile(uri) {
       flags: 1,
     });
   } else {
-    // TODO
-    console.warn("Opening local files not (yet) implemented for iOS");
+    let sharingPossible;
+    try {
+      sharingPossible = await Sharing.isAvailableAsync();
+      if (!sharingPossible) {
+        console.warn("Sharing is not possible on this device.");
+        return;
+      }
+    } catch (error) {
+      console.warn("Error determining whether sharing is possible:");
+      console.warn(error);
+      return;
+    }
+    try {
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      console.warn("Error sharing:");
+      console.warn(error);
+    }
   }
 }
