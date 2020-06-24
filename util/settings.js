@@ -25,6 +25,7 @@ const SETTINGS = "SETTINGS";
 const ON_SETTINGS_CHANGE = Object.freeze({
   STORE_FAVOURITES_OFFLINE: onStoreFavouritesOfflineChange,
   STORE_FILES: onStoreFilesChange,
+  DOWNLOAD_FILES_EXPENSIVE: onDownloadFilesExpensiveChange,
 });
 
 async function onStoreFavouritesOfflineChange(newValue, getState) {
@@ -49,6 +50,13 @@ async function onStoreFilesChange(newValue, getState, dispatch) {
     await deleteInternalDownloadFolder();
 
     dispatch(refreshFilesAbort(DOWNLOAD_STATUS.DONE));
+  }
+}
+
+function onDownloadFilesExpensiveChange(newValue, getState, dispatch) {
+  if (newValue) {
+    // Refresh files
+    dispatch(refreshDownloads());
   }
 }
 

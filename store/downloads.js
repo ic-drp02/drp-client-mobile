@@ -1,5 +1,3 @@
-import NetInfo from "@react-native-community/netinfo";
-
 import { auditDownloads, downloadInternal } from "../util/files";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions";
 import DOWNLOAD_STATUS from "../util/downloadStatus";
@@ -78,16 +76,11 @@ export function refreshDownloads() {
     while (toDownload.length > 0) {
       if (!getState().settings.settings[SETTINGS_OPTIONS.STORE_FILES]) {
         // If storing files is disabled, abort further downloads
-        console.warn("Settings changed, aborting");
         dispatch(refreshFilesAbort(DOWNLOAD_STATUS.DONE));
         return;
       }
 
-      let connectionState = await NetInfo.fetch();
-      if (
-        !connectionState.isConnected ||
-        !connectionState.isInternetReachable
-      ) {
+      if (!getState().connection.isInternetReachable) {
         // No internet connection
         dispatch(refreshFilesAbort(DOWNLOAD_STATUS.NO_CONNECTION));
         return;
@@ -97,8 +90,7 @@ export function refreshDownloads() {
         !getState().settings.settings[
           SETTINGS_OPTIONS.DOWNLOAD_FILES_EXPENSIVE
         ] &&
-        connectionState.details &&
-        connectionState.details.isConnectionExpensive
+        getState().connection.isExpensive
       ) {
         // Disallowed expensive internet connection
         dispatch(refreshFilesAbort(DOWNLOAD_STATUS.EXPENSIVE_CONNECTION));
@@ -145,7 +137,7 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         auditRequested: false,
-        toDownload: action.toDownload,
+        toDownload: action.toDownload.slice(),
       };
 
     case REFRESH_FILES_ABORT:

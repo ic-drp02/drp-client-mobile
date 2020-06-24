@@ -97,6 +97,7 @@ export default function Settings({ navigation }) {
 
   let downloadStatusMessage;
   let showProgress = false;
+  const files = toDownload > 1 ? "files" : "file";
   switch (downloadStatus) {
     case DOWNLOAD_STATUS.IN_PROGRESS:
       if (toDownload > 0) {
@@ -105,21 +106,20 @@ export default function Settings({ navigation }) {
       downloadStatusMessage =
         toDownload === 0
           ? "Finishing downloads..."
-          : `Downloading ${toDownload} file${
-              toDownload > 1 ? "s" : ""
-            }... You can continue to use your device normally.`;
+          : `Downloading ${toDownload} ${files}... You can continue to ` +
+            "use your device normally.";
       break;
 
     case DOWNLOAD_STATUS.NO_CONNECTION:
       downloadStatusMessage =
-        `No internet connection. The download  of ${toDownload} files ` +
+        `No internet connection. The download  of ${toDownload} ${files} ` +
         "will resume after the connection is established.";
       break;
 
     case DOWNLOAD_STATUS.EXPENSIVE_CONNECTION:
       downloadStatusMessage =
         "Your device reported that it is using an expensive " +
-        `internet connection. The download of ${toDownload} files ` +
+        `internet connection. The download of ${toDownload} ${files} ` +
         "will resume after a cheaper connection is established.";
       break;
 
