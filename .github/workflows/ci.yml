@@ -67,7 +67,7 @@ jobs:
         run: |
           turtle setup:android
           echo $ANDROID_KEYSTORE > ./icon-guidelines.jks.base64
-          base64 --decode ./icon-guidelines.jks.base64 > drp-client-mobile.jks
+          base64 --decode ./icon-guidelines.jks.base64 > icon-guidelines.jks
           turtle build:android --keystore-path ./icon-guidelines.jks --keystore-alias ${{ secrets.ANDROID_KEYSTORE_ALIAS }} --type apk --output ./icon-guidelines-$GITHUB_SHA.apk
 
       - name: Upload artifacts
