@@ -58,7 +58,7 @@ function getFilesFromFavourites(favourites) {
 export function refreshDownloads() {
   return async function (dispatch, getState) {
     console.warn("Starting refresh");
-    if (getState().downloads.busy) {
+    if (getState().downloads.status == DOWNLOAD_STATUS.IN_PROGRESS) {
       // Download is in progress, raise audit request and exit
       console.warn("Requesting audit");
       dispatch(requestAudit());
@@ -101,6 +101,8 @@ export function refreshDownloads() {
       await downloadInternal(toDownload.pop(), (progress) => {
         dispatch(fileDownloadProgress(progress));
       });
+
+      console.warn("Download done");
 
       dispatch(fileDownloadDone());
 

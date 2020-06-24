@@ -22,11 +22,11 @@ const root = combineReducers({
 const store = createStore(root, applyMiddleware(thunkMiddleware));
 export default store;
 
-// Initialize connection monitoring
-store.dispatch(initConnectionInfo());
-
 // Initialize settings store from AsyncStorage
 store.dispatch(initSettings());
+
+// Initialize connection info
+store.dispatch(initConnectionInfo());
 
 export * from "./auth";
 export * from "./connection";

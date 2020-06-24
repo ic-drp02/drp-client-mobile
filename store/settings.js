@@ -17,6 +17,7 @@ const UPDATE_SETTINGS_DONE = "UPDATE_SETTINGS_DONE";
 const initialState = {
   settings: null,
   loading: true,
+  initialized: false,
 };
 
 function initSettingsBegin() {
@@ -139,6 +140,7 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
+        initialized: true,
       };
 
     default:

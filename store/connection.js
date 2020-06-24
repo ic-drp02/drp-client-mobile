@@ -1,5 +1,7 @@
 import NetInfo from "@react-native-community/netinfo";
 
+import { refreshPosts } from "./posts";
+
 const UPDATE_CONNECTION_INFO = "UPDATE_CONNECTION_INFO";
 
 const initialState = {
@@ -7,14 +9,23 @@ const initialState = {
   isExpensive: false,
 };
 
+function onConnectionChange(dispatch, getState, connectionState) {
+  if (getState().settings.initialized) {
+    // Actions that require initialized settings go here
+
+    dispatch(refreshPosts());
+  }
+}
+
 function updateConnectionInfo(state) {
   return { type: UPDATE_CONNECTION_INFO, state };
 }
 
 export function initConnectionInfo() {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     NetInfo.addEventListener((state) => {
       dispatch(updateConnectionInfo(state));
+      onConnectionChange(dispatch, getState, state);
     });
   };
 }
