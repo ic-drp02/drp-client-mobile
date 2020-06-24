@@ -12,7 +12,7 @@ import {
   INTERNAL_DOWNLOAD_FOLDER,
 } from "./fileUtils";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions";
-import store from "../store";
+import store, { showSnackbar, hideSnackbar } from "../store";
 
 const DOWNLOAD_FOLDER =
   (Constants.manifest.env && Constants.manifest.env.DOWNLOAD_FOLDER) ||
@@ -81,7 +81,7 @@ export async function downloadAndOpenFile(url, id, name) {
   // Check if file isn't stored offline
   if (store.getState().settings.settings[SETTINGS_OPTIONS.STORE_FILES]) {
     const offlineUri = INTERNAL_DOWNLOAD_FOLDER + filename;
-    if (fileExists(offlineUri)) {
+    if (await fileExists(offlineUri)) {
       openLocalFile(offlineUri);
       return;
     }

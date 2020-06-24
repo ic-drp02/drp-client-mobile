@@ -210,7 +210,7 @@ export default function Settings({ navigation }) {
             </Portal>
           </View>
           <LabeledCheckbox
-            label="Download files on expensive connections"
+            label="Allow downloading on mobile data"
             checked={downloadExpensiveChecked}
             disabled={settingsLoading || !storeFilesChecked}
             onPress={() => setDownloadExpensive(!downloadExpensiveChecked)}

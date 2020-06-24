@@ -5,7 +5,7 @@ export const SETTINGS_OPTIONS = Object.freeze({
 });
 
 export const DEFAULT_VALUES = Object.freeze({
-  STORE_FAVOURITES_OFFLINE: false,
-  STORE_FILES: false,
+  STORE_FAVOURITES_OFFLINE: true,
+  STORE_FILES: true,
   DOWNLOAD_FILES_EXPENSIVE: false,
 });
