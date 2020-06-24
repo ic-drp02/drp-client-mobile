@@ -3,7 +3,7 @@ import { Text } from "react-native";
 
 import { Button, Dialog, TextInput } from "react-native-paper";
 
-import { getExtension } from "../../../util/files.js";
+import { getExtension } from "../../../util/fileUtils.js";
 
 export default function FileRenameDialog({
   visible,

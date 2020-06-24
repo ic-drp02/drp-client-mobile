@@ -4,6 +4,7 @@ import {
   getFavouriteIds,
   saveFavouriteIds,
   buildPostIdToRevIdMap,
+  getOfflineFavourites,
   saveOfflineFavourites,
 } from "../util/favourites.js";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions.js";
@@ -13,6 +14,7 @@ import { refreshDownloads } from "./downloads";
 
 const REFRESH_POSTS_BEGIN = "REFRESH_POSTS_BEGIN";
 const REFRESH_POSTS_SUCCESS = "REFRESH_POSTS_SUCCESS";
+const REFRESH_POSTS_OFFLINE = "REFRESH_POSTS_OFFLINE";
 const DELETE_POST_BEGIN = "DELETE_POST_BEGIN";
 const DELETE_POST_FAILURE = "DELETE_POST_FAILURE";
 
@@ -29,11 +31,22 @@ function refreshPostsSuccess(latest, favourites) {
   return { type: REFRESH_POSTS_SUCCESS, latest, favourites };
 }
 
+function refreshPostsOffline(favourites) {
+  return { type: REFRESH_POSTS_OFFLINE, favourites };
+}
+
 export function refreshPosts() {
   return async function (dispatch, getState) {
     dispatch(refreshPostsBegin());
 
     const settings = getState().settings.settings;
+    const isInternetReachable = getState().connection.isInternetReachable;
+
+    if (!isInternetReachable) {
+      const favourites = await getOfflineFavourites();
+      dispatch(refreshPostsOffline(favourites));
+      return;
+    }
 
     // Fetch 3 newest post to show in the latest updates
     // TODO: This call is horrific, change API to use object instead
@@ -122,6 +135,12 @@ export default function reducer(state = initialState, action) {
   switch (action.type) {
     case REFRESH_POSTS_BEGIN:
       return state;
+
+    case REFRESH_POSTS_OFFLINE:
+      return {
+        ...state,
+        favourites: action.favourites,
+      };
 
     case REFRESH_POSTS_SUCCESS:
       return {

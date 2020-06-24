@@ -3,11 +3,8 @@ import { StyleSheet } from "react-native";
 import { List, Avatar, IconButton } from "react-native-paper";
 
 import api from "../util/api";
-import {
-  getExtensionNoDot,
-  downloadToMediaFolder,
-  downloadAndOpenFile,
-} from "../util/files.js";
+import { downloadToMediaFolder, downloadAndOpenFile } from "../util/files";
+import { getExtensionNoDot } from "../util/fileUtils";
 
 export default function Attachment({ file, description }) {
   const extension = getExtensionNoDot(file.name).toUpperCase();

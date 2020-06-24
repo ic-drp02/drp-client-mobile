@@ -19,7 +19,7 @@ import DOWNLOAD_STATUS from "../util/downloadStatus";
 import {
   getHumanReadableFreeDiskStorage,
   getHumanReadableAppOccupiedStorage,
-} from "../util/files.js";
+} from "../util/fileUtils.js";
 
 export default function Settings({ navigation }) {
   const fullHeight = { flex: 1 };

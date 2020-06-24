@@ -1,4 +1,4 @@
-import { auditDownloads, downloadInternal } from "../util/files";
+import { auditDownloads, downloadInternal } from "../util/internalDownloads";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions";
 import DOWNLOAD_STATUS from "../util/downloadStatus";
 

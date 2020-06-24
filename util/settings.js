@@ -4,7 +4,7 @@ import { eraseOfflineFavourites, saveOfflineFavourites } from "./favourites.js";
 import {
   createInternalDownloadFolder,
   deleteInternalDownloadFolder,
-} from "./files.js";
+} from "./internalDownloads.js";
 import { SETTINGS_OPTIONS, DEFAULT_VALUES } from "./settingsOptions.js";
 import DOWNLOAD_STATUS from "../util/downloadStatus";
 import { refreshDownloads, refreshFilesAbort } from "../store/downloads.js";
