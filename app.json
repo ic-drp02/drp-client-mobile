@@ -25,6 +25,7 @@
     },
     "androidStatusBar": {
       "barStyle": "light-content"
-    }
+    },
+    "userInterfaceStyle": "automatic"
   }
 }

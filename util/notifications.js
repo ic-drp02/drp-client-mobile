@@ -63,6 +63,9 @@ export function registerNotificationHandlers(onSelect) {
       if (!n.data.resolves) {
         await Notifications.dismissNotificationAsync(n.notificationId);
       }
+    }
+
+    if (AppState.currentState !== "inactive") {
       store.dispatch(refreshPosts());
     }
 
