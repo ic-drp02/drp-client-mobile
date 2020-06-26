@@ -149,15 +149,30 @@ export default function UpdateDetails({ route, navigation }) {
           )}
         </View>
         {post && user.role === "admin" && (
-          <View>
+          <View style={styles.buttons}>
             <Button
               mode="contained"
               color="red"
+              icon="delete"
               style={styles.button}
               onPress={() => setConfirmDelete(true)}
             >
               Delete{hasMoreRevisions ? " revision" : ""}
             </Button>
+
+            {post.is_guideline && post.is_current && (
+              <Button
+                mode="contained"
+                icon="file-upload"
+                style={styles.button}
+                onPress={() =>
+                  navigation.navigate("PostUpdate", { prevPost: post })
+                }
+              >
+                Supersede
+              </Button>
+            )}
+
             <Portal>
               <DeleteConfirmationDialog
                 title={`Delete ${post.is_guideline ? "guideline" : "post"}`}
@@ -181,5 +196,12 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
     flex: 1,
+  },
+  buttons: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+  },
+  button: {
+    flex: 0.48,
   },
 });

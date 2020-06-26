@@ -14,6 +14,7 @@ import {
   withTheme,
   ProgressBar,
   Portal,
+  Divider,
 } from "react-native-paper";
 
 import TagsView from "./components/TagsView";
@@ -57,7 +58,8 @@ function richTextToHtml(text) {
   return "<p>" + html.replace(/\n/g, "<br/>") + "</p>";
 }
 
-export default withTheme(function PostUpdate({ navigation }) {
+export default withTheme(function PostUpdate({ route, navigation }) {
+  const prevPost = route.params?.prevPost;
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
@@ -93,8 +95,24 @@ export default withTheme(function PostUpdate({ navigation }) {
       if (!summary) {
         setSummary(supersedingGuideline.summary);
       }
+      if (tags != []) {
+        setTags(supersedingGuideline.tags);
+      }
     }
   }
+
+  useEffect(() => {
+    if (prevPost) {
+      setIsGuideline(true);
+      setSupersedingGuideline(prevPost);
+      setTitle(prevPost.title);
+      setSummary(prevPost.summary);
+      // TODO: Set content too ?
+      if (prevPost.tags) {
+        setTags(prevPost.tags);
+      }
+    }
+  }, [prevPost]);
 
   function handleSupersedeChange(value) {
     if (value) {
@@ -168,7 +186,7 @@ export default withTheme(function PostUpdate({ navigation }) {
 
   if (submitting) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.flex}>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="Submitting post" />
@@ -185,14 +203,14 @@ export default withTheme(function PostUpdate({ navigation }) {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.flex}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="New post" />
         </Appbar.Header>
       </TouchableWithoutFeedback>
-      <View>
+      <View style={styles.flex}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.container}
@@ -201,7 +219,7 @@ export default withTheme(function PostUpdate({ navigation }) {
             onPress={Keyboard.dismiss}
             accessible={false}
           >
-            <View style={styles.content}>
+            <View style={styles.flex}>
               <NormalTextInput
                 label="Title"
                 value={title}
@@ -231,6 +249,8 @@ export default withTheme(function PostUpdate({ navigation }) {
                 onUpdateFiles={setFiles}
                 style={styles.view}
               />
+
+              <Divider style={styles.divider} />
 
               {/* Guideline switch */}
               <SwitchView
@@ -311,5 +331,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     textAlign: "center",
     alignItems: "center",
+  },
+  flex: {
+    flex: 1,
+  },
+  divider: {
+    marginHorizontal: 12,
+    marginVertical: 6,
   },
 });

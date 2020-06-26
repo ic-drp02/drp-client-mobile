@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
 
 import GuidelineCard from "../../../components/GuidelineCard";
 
@@ -22,9 +23,9 @@ export default function SupersededGuideline({
 
 const styles = StyleSheet.create({
   guidelineText: {
-    alignSelf: "center",
     textAlign: "left",
     fontSize: 15,
     marginLeft: 4,
+    marginBottom: 6,
   },
 });
