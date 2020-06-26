@@ -4,6 +4,7 @@ import { ScrollView } from "react-native";
 export default function InfiniteScrollView({
   onEndReached,
   onEndReachedThreshold,
+  refreshControl,
   children,
 }) {
   const isCloseToBottom = useCallback(
@@ -27,6 +28,7 @@ export default function InfiniteScrollView({
       scrollEventThrottle={500}
       contentContainerStyle={{ padding: 16 }}
       keyboardShouldPersistTaps="handled"
+      refreshControl={refreshControl}
     >
       {children}
     </ScrollView>
