@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { View, Linking, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
+import { useNavigation } from "@react-navigation/native";
 
 import { Headline, Divider, Chip, Text } from "react-native-paper";
 
@@ -71,11 +72,18 @@ function MainContent({ title, summary, content, date, old, files }) {
 }
 
 function TagsView({ tags }) {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.tagsView}>
       {tags && tags.length > 0 ? (
         tags.map((tag) => (
-          <Chip key={tag.id} mode="outlined" style={styles.tag}>
+          <Chip
+            key={tag.id}
+            mode="outlined"
+            style={styles.tag}
+            onPress={() => navigation.push("GuidelinesCategory", { tag: tag })}
+          >
             {tag.name}
           </Chip>
         ))

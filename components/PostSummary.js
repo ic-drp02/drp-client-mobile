@@ -39,7 +39,7 @@ export default function PostSummary({ post, showAttachments }) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("UpdateDetails", { postId: post.id });
+        navigation.push("UpdateDetails", { postId: post.id });
       }}
     >
       <View style={[styles.row, styles.margin]}>
