@@ -15,13 +15,12 @@ export default function Updates({ navigation }) {
   const fullHeight = { flex: 1 };
 
   async function loadMore() {
+    if (refreshing || posts.length < page * POSTS_PER_PAGE) {
+      // Already loading or nothing to load
+      return;
+    }
     setRefreshing(true);
-    const res = await api.getPosts(
-      undefined,
-      undefined,
-      POSTS_PER_PAGE,
-      page + 1
-    );
+    const res = await api.getPosts(undefined, undefined, POSTS_PER_PAGE, page);
     setPosts([...posts, ...res.data]);
     setPage(page + 1);
     setRefreshing(false);
@@ -30,7 +29,7 @@ export default function Updates({ navigation }) {
   async function refresh() {
     setRefreshing(true);
     const res = await api.getPosts(undefined, undefined, POSTS_PER_PAGE, 0);
-    setPage(0);
+    setPage(1);
     setPosts(res.data);
     setRefreshing(false);
   }
@@ -52,6 +51,7 @@ export default function Updates({ navigation }) {
           keyExtractor={(post) => post.id.toString()}
           contentContainerStyle={{ padding: 16 }}
           onEndReached={loadMore}
+          onEndReachedThreshold={0.2}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }
