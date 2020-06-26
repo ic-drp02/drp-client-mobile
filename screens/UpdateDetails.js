@@ -154,7 +154,11 @@ export default function UpdateDetails({ route, navigation }) {
               mode="contained"
               color="red"
               icon="delete"
-              style={styles.button}
+              style={
+                post.is_guideline && post.is_current
+                  ? styles.button
+                  : styles.singleButton
+              }
               onPress={() => setConfirmDelete(true)}
             >
               Delete{hasMoreRevisions ? " revision" : ""}
@@ -203,5 +207,8 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 0.48,
+  },
+  singleButton: {
+    width: "100%",
   },
 });
