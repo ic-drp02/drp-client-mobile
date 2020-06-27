@@ -42,9 +42,15 @@ export function refreshPosts() {
     const settings = getState().settings.settings;
     const isInternetReachable = getState().connection.isInternetReachable;
 
+    let favouriteIds = await getFavouriteIds();
+
     if (!isInternetReachable) {
-      const favourites = await getOfflineFavourites();
-      // TODO: Update the pinned IDs even if in offline mode
+      let favourites = await getOfflineFavourites();
+
+      // Remove posts that were removed from favourites
+      favourites = favourites.filter((f) =>
+        getPids(favouriteIds).includes(f.id)
+      );
 
       dispatch(refreshPostsOffline(favourites));
 
@@ -64,7 +70,6 @@ export function refreshPosts() {
     const latest = latestRes.data;
 
     // Fetch most recent versions of all of the favourite posts
-    let favouriteIds = await getFavouriteIds();
     const favouritesRes = await api.getMultiplePosts(getPids(favouriteIds));
     if (!favouritesRes.success) {
       console.warn(

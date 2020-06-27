@@ -7,6 +7,7 @@ import {
   Text,
   ScrollView,
 } from "react-native";
+import { useSelector } from "react-redux";
 
 import {
   Appbar,
@@ -28,6 +29,7 @@ import SupersededGuideline from "./components/SupersededGuideline";
 import RichTextEditor from "./components/RichTextEditor";
 
 import api from "../../util/api";
+import { showInfoSnackbar } from "../../util/snackbar";
 import { NodeType, parse as parseRichText } from "./rich-text";
 
 function richTextNodeToHtml(node) {
@@ -58,8 +60,12 @@ function richTextToHtml(text) {
   return "<p>" + html.replace(/\n/g, "<br/>") + "</p>";
 }
 
-export default withTheme(function PostUpdate({ route, navigation }) {
+export default withTheme(function PostUpdate({ navigation }) {
   const prevPost = route.params?.prevPost;
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
+
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
@@ -82,6 +88,14 @@ export default withTheme(function PostUpdate({ route, navigation }) {
     setSupersedingGuideline(post);
     setGuidelinePicker(false);
   };
+
+  useEffect(() => {
+    if (!isInternetReachable) {
+      showInfoSnackbar(
+        "You are currently offline and you may not be able to submit your post."
+      );
+    }
+  }, [isInternetReachable]);
 
   useEffect(() => {
     preFillPost();
@@ -159,8 +173,16 @@ export default withTheme(function PostUpdate({ route, navigation }) {
   }
 
   const submitPost = useCallback(() => {
+    if (!isInternetReachable) {
+      showInfoSnackbar("A post cannot be submitted while offline!");
+      return;
+    }
     if (isGuideline && tags.length === 0) {
-      alert("A guideline must be assigned at least one tag");
+      showInfoSnackbar("A guideline must be assigned at least one tag!");
+      return;
+    }
+    if (!title) {
+      showInfoSnackbar("Please fill in a title!");
       return;
     }
     submitData(
@@ -182,6 +204,7 @@ export default withTheme(function PostUpdate({ route, navigation }) {
     files,
     progress,
     submitting,
+    isInternetReachable,
   ]);
 
   if (submitting) {

@@ -1,19 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, RefreshControl } from "react-native";
 import { Appbar, List } from "react-native-paper";
+import { useSelector } from "react-redux";
 
+import { showInfoSnackbar } from "../util/snackbar";
 import api from "../util/api";
 
 export default function Question({ navigation }) {
   const fullHeight = { flex: 1 };
 
-  const [refreshing, setRefreshing] = useState(true);
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
+
+  const [refreshing, setRefreshing] = useState(false);
   const [tags, setTags] = useState([]);
 
   async function refresh() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Cannot load guideline categories while offline!");
+      navigation.goBack();
+      return;
+    }
+
     setRefreshing(true);
 
-    const tagResults = await api.getTags();
+    let tagResults;
+    try {
+      tagResults = await api.getTags();
+    } catch (error) {
+      console.warn("Could not load tags:");
+      console.warn(error);
+    }
 
     if (!tagResults.success) {
       console.warn("Fetching tags failed with status " + tagResults.status);

@@ -6,17 +6,27 @@ import { useSelector } from "react-redux";
 import QuestionCard from "../components/QuestionCard";
 
 import api from "../util/api";
+import { showInfoSnackbar } from "../util/snackbar";
 
 export default function Question({ route, navigation }) {
   const fullHeight = { flex: 1 };
   const { subject } = route.params;
   const user = useSelector((s) => s.auth.user);
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
 
   const [refreshing, setRefreshing] = useState(true);
   const [questions, setQuestions] = useState(null);
   const [resolving, setResolving] = useState(false);
 
   async function refresh() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("The questions cannot be loaded while offline!");
+      navigation.goBack();
+      return;
+    }
+
     setRefreshing(true);
     const res = await api.getQuestions();
     setQuestions(res.data.filter((q) => q.subject.id === subject.id));
@@ -24,6 +34,12 @@ export default function Question({ route, navigation }) {
   }
 
   async function resolveAll() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Questions cannot be resolved while offline!");
+      navigation.goBack();
+      return;
+    }
+
     setResolving(true);
     await Promise.all(
       questions.filter((q) => !q.resolved).map((q) => api.resolveQuestion(q.id))

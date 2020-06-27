@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { View, RefreshControl, FlatList } from "react-native";
 import { Appbar } from "react-native-paper";
+import { useSelector } from "react-redux";
 
 import PostSummary from "../components/PostSummary";
+
+import { showInfoSnackbar } from "../util/snackbar";
 import api from "../util/api";
 
 const POSTS_PER_PAGE = 10;
 
 export default function Updates({ navigation }) {
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
+
   const [page, setPage] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [posts, setPosts] = useState();
@@ -15,6 +22,12 @@ export default function Updates({ navigation }) {
   const fullHeight = { flex: 1 };
 
   async function loadMore() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Cannot load updates while offline!");
+      navigation.goBack();
+      return;
+    }
+
     if (refreshing || posts.length < page * POSTS_PER_PAGE) {
       // Already loading or nothing to load
       return;
@@ -27,6 +40,12 @@ export default function Updates({ navigation }) {
   }
 
   async function refresh() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Cannot load updates while offline!");
+      navigation.goBack();
+      return;
+    }
+
     setRefreshing(true);
     const res = await api.getPosts(undefined, undefined, POSTS_PER_PAGE, 0);
     setPage(1);

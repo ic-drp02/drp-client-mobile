@@ -13,20 +13,12 @@ import {
   INTERNAL_DOWNLOAD_FOLDER,
 } from "./fileUtils";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions";
+import { showInfoSnackbar } from "../util/snackbar";
 import store, { showSnackbar, hideSnackbar } from "../store";
 
 const DOWNLOAD_FOLDER =
   (Constants.manifest.env && Constants.manifest.env.DOWNLOAD_FOLDER) ||
   "Downloaded guidelines";
-
-function showInfoSnackBar(text) {
-  store.dispatch(
-    showSnackbar(text, 5000, {
-      label: "hide",
-      onPress: () => store.dispatch(hideSnackbar()),
-    })
-  );
-}
 
 /**
  * Downloads a file from the supplied URL to a media folder
@@ -92,10 +84,10 @@ export async function downloadAndOpenFile(url, id, name) {
 
   if (!(await fileExists(cacheUri))) {
     if (!store.getState().connection.isInternetReachable) {
-      showInfoSnackBar("This document cannot be accessed offline!");
+      showInfoSnackbar("This document cannot be accessed offline!");
       return;
     }
-    showInfoSnackBar("Downloading...");
+    showInfoSnackbar("Downloading...");
 
     // Download the file to cache if it does not exist already
     await FileSystem.downloadAsync(url, cacheUri);
