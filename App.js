@@ -19,7 +19,7 @@ import AppSnackbar from "./components/AppSnackbar";
 import AppNavigation from "./screens/AppNavigation";
 import Login from "./screens/Login";
 
-import store, { login } from "./store";
+import store, { login, offlineLogin } from "./store";
 import * as notifications from "./util/notifications.js";
 
 const theme = {
@@ -62,30 +62,44 @@ export default function App() {
 function AuthController({ children, navRef }) {
   const dispatch = useDispatch();
   const auth = useSelector((s) => s.auth);
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const email = await SecureStore.getItemAsync("CREDENTIALS_EMAIL");
-      const password = await SecureStore.getItemAsync("CREDENTIALS_PASSWORD");
+      if (isInternetReachable === true) {
+        const email = await SecureStore.getItemAsync("CREDENTIALS_EMAIL");
+        const password = await SecureStore.getItemAsync("CREDENTIALS_PASSWORD");
 
-      if (email && password) {
-        await dispatch(login(email, password));
+        if (email && password) {
+          await dispatch(login(email, password));
+        }
+      } else if (isInternetReachable === false) {
+        dispatch(offlineLogin());
+      } else {
+        // Connection details not yet available
+        return;
       }
 
       setLoaded(true);
     })();
-  }, []);
+  }, [isInternetReachable]);
 
   useEffect(() => {
-    if (!!auth.user) {
+    if (
+      isInternetReachable === true &&
+      !!auth.user &&
+      auth.user.offline === false
+    ) {
       console.log("Registering push notifications");
       notifications.registerForPushNotifications();
       notifications.registerNotificationHandlers((postId) => {
         navRef.current.navigate("UpdateDetails", { postId });
       });
     }
-  }, [auth]);
+  }, [auth, isInternetReachable]);
 
   if (!loaded) {
     return <AppLoading />;

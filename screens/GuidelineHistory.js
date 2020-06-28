@@ -4,21 +4,34 @@ import { Appbar, Button, ActivityIndicator, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
 import GuidelineCard from "../components/GuidelineCard.js";
-import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
+import DangerConfirmationDialog from "../components/DangerConfirmationDialog";
 import { LABEL_TYPES } from "../components/Label";
 
+import { showInfoSnackbar } from "../util/snackbar";
 import api from "../util/api";
 
 import { deletePost } from "../store";
 
 export default function UpdateDetails({ route, navigation }) {
   const { postId } = route.params;
+
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
+
   const dispatch = useDispatch();
   const [revisions, setRevisions] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [unsubscribe, setUnsubscribe] = useState(null);
   const user = useSelector((s) => s.auth.user);
 
   async function loadRevisions() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Cannot load revision history while offline!");
+      navigation.goBack();
+      return;
+    }
+
     try {
       const reverse = true;
       const res = await api.getRevisions(postId, reverse);
@@ -35,15 +48,11 @@ export default function UpdateDetails({ route, navigation }) {
   }
 
   useEffect(() => {
-    loadRevisions();
-  }, []);
-
-  useEffect(() => {
     navigation.addListener("focus", () => {
       setRevisions(null);
       loadRevisions();
     });
-  }, [revisions]);
+  }, [isInternetReachable]);
 
   const del = useCallback(() => {
     dispatch(deletePost(postId, true)).then(() => navigation.pop(2));
@@ -85,7 +94,7 @@ export default function UpdateDetails({ route, navigation }) {
             </View>
           )}
         </ScrollView>
-        {user.role === "admin" && (
+        {user.role === "admin" && isInternetReachable && (
           <View>
             <Button
               mode="contained"
@@ -97,13 +106,14 @@ export default function UpdateDetails({ route, navigation }) {
               Delete all
             </Button>
             <Portal>
-              <DeleteConfirmationDialog
+              <DangerConfirmationDialog
                 title={"Delete revisions"}
                 text={
                   "Are you sure you want to delete all revisions of this guideline?"
                 }
+                dangerActionText="Delete"
                 visible={confirmDelete}
-                onDelete={() => {
+                onDangerConfirm={() => {
                   setConfirmDelete(false);
                   del();
                 }}

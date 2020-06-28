@@ -1,15 +1,21 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { Appbar, Searchbar, ProgressBar, Text } from "react-native-paper";
+import { useSelector } from "react-redux";
 
 import PostsList from "../components/PostsList.js";
 import InfiniteScrollView from "../components/InfiniteScrollView.js";
 
+import { showInfoSnackbar } from "../util/snackbar";
 import api from "../util/api";
 
 export default function Search({ navigation, route }) {
   const DEFAULT_SEARCH_LIMIT = 10;
   const fullHeight = { flex: 1 };
+
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
 
   const ref = useRef(null);
   const guidelinesOnly = route.params ? route.params.guidelinesOnly : false;
@@ -36,6 +42,12 @@ export default function Search({ navigation, route }) {
 
   const update = useCallback(
     ({ text, loadMore }) => {
+      if (!isInternetReachable) {
+        navigation.goBack();
+        showInfoSnackbar("Search is unavailable while offline!");
+        return;
+      }
+
       if (text === "" || (text === undefined && searchText == "")) {
         // Return [] when searching for an empty strings
         setFoundPosts([]);

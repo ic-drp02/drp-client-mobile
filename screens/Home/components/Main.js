@@ -6,6 +6,8 @@ import { Button } from "react-native-paper";
 
 import PostsListWithButton from "../../../components/PostsListWithButton";
 
+import { showInfoSnackbar } from "../../../util/snackbar";
+
 import { refreshPosts } from "../../../store";
 
 export default function Main() {
@@ -14,8 +16,21 @@ export default function Main() {
 
   const auth = useSelector((s) => s.auth);
   const posts = useSelector((s) => s.posts.latest);
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
 
   const [refreshing, setRefreshing] = useState(true);
+
+  function refresh() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Cannot refresh posts while offline!");
+      setRefreshing(false);
+      return;
+    }
+    setRefreshing(true);
+    dispatch(refreshPosts());
+  }
 
   useEffect(() => {
     if (posts) {
@@ -27,13 +42,7 @@ export default function Main() {
     <ScrollView
       contentContainerStyle={styles.contentContainer}
       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            dispatch(refreshPosts());
-          }}
-        />
+        <RefreshControl refreshing={refreshing} onRefresh={refresh} />
       }
     >
       <View style={styles.buttons}>

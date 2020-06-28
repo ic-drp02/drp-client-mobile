@@ -3,7 +3,8 @@ import { StyleSheet } from "react-native";
 import { List, Avatar, IconButton } from "react-native-paper";
 
 import api from "../util/api";
-import { getExtensionNoDot, downloadFile, openFile } from "../util/files.js";
+import { downloadToMediaFolder, downloadAndOpenFile } from "../util/files";
+import { getExtensionNoDot } from "../util/fileUtils";
 
 export default function Attachment({ file, description }) {
   const extension = getExtensionNoDot(file.name).toUpperCase();
@@ -24,7 +25,7 @@ export default function Attachment({ file, description }) {
         {...props}
         icon="arrow-down"
         onPress={() => {
-          downloadFile(
+          downloadToMediaFolder(
             api.baseUrl + "/api/rawfiles/download/" + file.id,
             file.id,
             file.name
@@ -35,7 +36,11 @@ export default function Attachment({ file, description }) {
   }
 
   function open() {
-    openFile(api.baseUrl + "/api/rawfiles/view/" + file.id, file.id, file.name);
+    downloadAndOpenFile(
+      api.baseUrl + "/api/rawfiles/view/" + file.id,
+      file.id,
+      file.name
+    );
   }
 
   return (

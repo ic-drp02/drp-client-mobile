@@ -4,12 +4,17 @@ import {
   getFavouriteIds,
   saveFavouriteIds,
   buildPostIdToRevIdMap,
-} from "../util/favourites";
+  getOfflineFavourites,
+  saveOfflineFavourites,
+} from "../util/favourites.js";
+import { SETTINGS_OPTIONS } from "../util/settingsOptions.js";
 
 import { showSnackbar, hideSnackbar } from "./snackbar";
+import { refreshDownloads } from "./downloads";
 
 const REFRESH_POSTS_BEGIN = "REFRESH_POSTS_BEGIN";
 const REFRESH_POSTS_SUCCESS = "REFRESH_POSTS_SUCCESS";
+const REFRESH_POSTS_OFFLINE = "REFRESH_POSTS_OFFLINE";
 const DELETE_POST_BEGIN = "DELETE_POST_BEGIN";
 const DELETE_POST_FAILURE = "DELETE_POST_FAILURE";
 
@@ -26,9 +31,35 @@ function refreshPostsSuccess(latest, favourites) {
   return { type: REFRESH_POSTS_SUCCESS, latest, favourites };
 }
 
+function refreshPostsOffline(favourites) {
+  return { type: REFRESH_POSTS_OFFLINE, favourites };
+}
+
 export function refreshPosts() {
-  return async function (dispatch) {
+  return async function (dispatch, getState) {
     dispatch(refreshPostsBegin());
+
+    const settings = getState().settings.settings;
+    const isInternetReachable = getState().connection.isInternetReachable;
+
+    let favouriteIds = await getFavouriteIds();
+
+    if (!isInternetReachable) {
+      let favourites = await getOfflineFavourites();
+
+      // Remove posts that were removed from favourites
+      favourites = favourites.filter((f) =>
+        getPids(favouriteIds).includes(f.id)
+      );
+
+      dispatch(refreshPostsOffline(favourites));
+
+      // Refresh the downloaded files if required by settings
+      if (settings[SETTINGS_OPTIONS.STORE_FILES]) {
+        dispatch(refreshDownloads());
+      }
+      return;
+    }
 
     // Fetch 3 newest post to show in the latest updates
     // TODO: This call is horrific, change API to use object instead
@@ -39,7 +70,6 @@ export function refreshPosts() {
     const latest = latestRes.data;
 
     // Fetch most recent versions of all of the favourite posts
-    let favouriteIds = await getFavouriteIds();
     const favouritesRes = await api.getMultiplePosts(getPids(favouriteIds));
     if (!favouritesRes.success) {
       console.warn(
@@ -65,7 +95,17 @@ export function refreshPosts() {
       };
     });
 
+    // Save the favourites if required by settings
+    if (settings[SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE]) {
+      await saveOfflineFavourites(favourites);
+    }
+
     dispatch(refreshPostsSuccess(latest, favourites));
+
+    // Refresh the downloaded files if required by settings
+    if (settings[SETTINGS_OPTIONS.STORE_FILES]) {
+      dispatch(refreshDownloads());
+    }
   };
 }
 
@@ -107,6 +147,12 @@ export default function reducer(state = initialState, action) {
   switch (action.type) {
     case REFRESH_POSTS_BEGIN:
       return state;
+
+    case REFRESH_POSTS_OFFLINE:
+      return {
+        ...state,
+        favourites: action.favourites,
+      };
 
     case REFRESH_POSTS_SUCCESS:
       return {

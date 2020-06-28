@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, RefreshControl, FlatList, Text } from "react-native";
 import { Appbar } from "react-native-paper";
+import { useSelector } from "react-redux";
 
 import PostSummary from "../components/PostSummary";
 
@@ -11,6 +12,10 @@ const POSTS_PER_PAGE = 10;
 
 export default function GuidelinesCategory({ navigation, route }) {
   const tag = route.params.tag;
+
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
 
   const [guidelines, setGuidelines] = useState([]);
   const [page, setPage] = useState(0);
@@ -23,8 +28,20 @@ export default function GuidelinesCategory({ navigation, route }) {
   }, []);
 
   async function refresh() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Cannot load guidelines while offline!");
+      navigation.goBack();
+      return;
+    }
+
     setRefreshing(true);
-    const res = await api.getGuidelines(tag.name, undefined, POSTS_PER_PAGE, 0);
+    let res;
+    try {
+      res = await api.getGuidelines(tag.name, undefined, POSTS_PER_PAGE, 0);
+    } catch (error) {
+      console.warn("Could not load guidelines:");
+      console.warn(error);
+    }
     if (!res.success) {
       showInfoSnackbar(
         `Could not load guidelines with error code ${res.status}!`

@@ -1,11 +1,12 @@
 import React from "react";
 import { Button, Dialog, Paragraph } from "react-native-paper";
 
-export default function DeleteConfirmationDialog({
+export default function DangerConfirmationDialog({
   title,
   text,
+  dangerActionText,
   visible,
-  onDelete,
+  onDangerConfirm,
   onCancel,
 }) {
   return (
@@ -15,8 +16,8 @@ export default function DeleteConfirmationDialog({
         <Paragraph>{text}</Paragraph>
       </Dialog.Content>
       <Dialog.Actions>
-        <Button color="red" onPress={() => onDelete()}>
-          Delete
+        <Button color="red" onPress={() => onDangerConfirm()}>
+          {dangerActionText}
         </Button>
         <Button onPress={() => onCancel()}>Cancel</Button>
       </Dialog.Actions>

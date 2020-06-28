@@ -12,12 +12,13 @@ import {
   Button,
 } from "react-native-paper";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
+import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
 import QuestionCard from "../components/QuestionCard";
 
 import api from "../util/api";
-import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { showInfoSnackbar } from "../util/snackbar";
 
 export default function Question({ navigation }) {
   const fullHeight = { flex: 1 };
@@ -60,11 +61,20 @@ export default function Question({ navigation }) {
 }
 
 function AllQuestions() {
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
+
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(true);
   const [subjects, setSubjects] = useState(null);
 
   async function refresh() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Cannot load questions while offline!");
+      return;
+    }
+
     setRefreshing(true);
 
     const [sRes, qRes] = await Promise.all([
@@ -123,12 +133,21 @@ function AllQuestions() {
 function UserQuestions() {
   const navigation = useNavigation();
   const user = useSelector((s) => s.auth.user);
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
 
   const [refreshing, setRefreshing] = useState(true);
   const [questions, setQuestions] = useState(null);
   const [deleteQuestion, setDeleteQuestion] = useState(null);
 
   async function refresh() {
+    if (!isInternetReachable) {
+      showInfoSnackbar("Your questions cannot be loaded while offline!");
+      navigation.goBack();
+      return;
+    }
+
     setRefreshing(true);
     const res = await api.getQuestions();
     const questions = res.data.filter((q) => user.id === q.user);

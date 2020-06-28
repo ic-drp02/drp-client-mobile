@@ -14,6 +14,7 @@ import Dropdown from "../components/Dropdown";
 import IosKeyboardAvoidingView from "../components/IosKeyboardAvoidingView.js";
 
 import { Grade } from "drp-api-js";
+import { showInfoSnackbar } from "../util/snackbar";
 import api from "../util/api";
 import {
   showSnackbar,
@@ -32,6 +33,9 @@ export default function Question({ navigation }) {
   const sites = useSelector((s) => s.questions.sites);
   const subjects = useSelector((s) => s.questions.subjects);
   const user = useSelector((s) => s.auth.user);
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
 
   const [site, setSite] = useState(undefined);
   const [grade, setGrade] = useState(undefined);
@@ -42,11 +46,29 @@ export default function Question({ navigation }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!isInternetReachable) {
+      showInfoSnackbar(
+        "You are currently offline and you may not be able to submit your question."
+      );
+    }
+  }, [isInternetReachable]);
+
+  useEffect(() => {
     dispatch(fetchSites());
     dispatch(fetchSubjects());
   }, []);
 
   const submitQuestion = useCallback(() => {
+    if (!isInternetReachable) {
+      showInfoSnackbar("A question cannot be submitted while offline!");
+      return;
+    }
+
+    if (!site || !grade || !subject || !specialty || !query) {
+      showInfoSnackbar("Please fill all the fields.");
+      return;
+    }
+
     setSubmitting(true);
     api
       .createQuestions({
@@ -75,7 +97,7 @@ export default function Question({ navigation }) {
           );
         }
       });
-  }, [site, specialty, subject, query, sites, subjects]);
+  }, [site, specialty, subject, query, sites, subjects, isInternetReachable]);
 
   const siteItems = !!sites
     ? sites.map((site) => ({
