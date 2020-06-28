@@ -157,7 +157,7 @@ export default function reducer(state = initialState, action) {
       return { ...state, loading: false };
 
     case LOGIN_ERROR:
-      return { ...state, error: action.error, loading: false };
+      return { ...state, user: null, error: action.error, loading: false };
 
     case REGISTER_BEGIN:
       return { ...state, registering: true, registered: false, error: null };
