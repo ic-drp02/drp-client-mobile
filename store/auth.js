@@ -91,7 +91,7 @@ export function register(email, password) {
         type: REGISTER_ERROR,
         error: {
           type: "Unknown",
-          message: "An eerror occurred while communicating with the server.",
+          message: "An error occurred while communicating with the server.",
         },
       });
     }

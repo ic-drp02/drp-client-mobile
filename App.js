@@ -88,7 +88,11 @@ function AuthController({ children, navRef }) {
   }, [isInternetReachable]);
 
   useEffect(() => {
-    if (isInternetReachable === true && !!auth.user && !auth.user.offline) {
+    if (
+      isInternetReachable === true &&
+      !!auth.user &&
+      auth.user.offline === false
+    ) {
       console.log("Registering push notifications");
       notifications.registerForPushNotifications();
       notifications.registerNotificationHandlers((postId) => {
