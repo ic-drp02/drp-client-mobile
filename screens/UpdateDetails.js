@@ -38,7 +38,6 @@ export default function UpdateDetails({ route, navigation }) {
 
   async function loadPost() {
     if (!isInternetReachable) {
-      console.warn(`Not reachable UpdateDetails`);
       // Load from store if available there
       let matchingOffline = offlinePosts.filter(
         (f) =>

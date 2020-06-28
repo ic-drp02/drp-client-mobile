@@ -1,12 +1,14 @@
 import NetInfo from "@react-native-community/netinfo";
+import * as SecureStore from "expo-secure-store";
 
 import { refreshPosts } from "./posts";
+import { softLogout } from "./auth";
 
 const UPDATE_CONNECTION_INFO = "UPDATE_CONNECTION_INFO";
 
 const initialState = {
-  isInternetReachable: false,
-  isExpensive: false,
+  isInternetReachable: null,
+  isExpensive: null,
 };
 
 function onConnectionChange(dispatch, getState, connectionState) {
@@ -14,6 +16,24 @@ function onConnectionChange(dispatch, getState, connectionState) {
     // Actions that require initialized settings go here
 
     dispatch(refreshPosts());
+  }
+
+  if (
+    connectionState.isConnected &&
+    connectionState.isInternetReachable &&
+    getState().auth.offline
+  ) {
+    // Re-login if the device was offline
+    dispatch(softLogout);
+
+    (async () => {
+      const email = await SecureStore.getItemAsync("CREDENTIALS_EMAIL");
+      const password = await SecureStore.getItemAsync("CREDENTIALS_PASSWORD");
+
+      if (email && password) {
+        await dispatch(login(email, password));
+      }
+    })();
   }
 }
 
