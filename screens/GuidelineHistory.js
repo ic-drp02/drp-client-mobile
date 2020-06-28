@@ -26,10 +26,7 @@ export default function UpdateDetails({ route, navigation }) {
   const user = useSelector((s) => s.auth.user);
 
   async function loadRevisions() {
-    console.warn("Reloading");
-    console.warn(isInternetReachable);
     if (!isInternetReachable) {
-      console.warn("Not reachable GuidelineHistory");
       showInfoSnackbar("Cannot load revision history while offline!");
       navigation.goBack();
       return;

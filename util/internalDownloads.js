@@ -131,13 +131,14 @@ async function eraseSavedDownload() {
  * @param {function} onProgress - Callback for download progress tracking
  */
 export async function downloadInternal(file, onProgress) {
-  console.warn(`Downloading ${file.name}`);
   if (!(await fileExists(INTERNAL_DOWNLOAD_FOLDER))) {
     console.warn(
       "Error: Internal download directory was not created before download!"
     );
     return;
   }
+
+  // Download the file
   const saveUri =
     INTERNAL_DOWNLOAD_FOLDER + canonicalFileName(file.name, file.id);
   // TODO: Consider moving file url construction to the API library
@@ -153,6 +154,7 @@ export async function downloadInternal(file, onProgress) {
       );
     }
   );
+
   /* Save target URI of the started download so that after failure,
      the corrupted file can be deleted even after application restart. */
   await saveStartedDownload(saveUri);

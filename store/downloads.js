@@ -57,17 +57,14 @@ function getFilesFromFavourites(favourites) {
  */
 export function refreshDownloads() {
   return async function (dispatch, getState) {
-    console.warn("Starting refresh");
     if (getState().downloads.status == DOWNLOAD_STATUS.IN_PROGRESS) {
       // Download is in progress, raise audit request and exit
-      console.warn("Requesting audit");
       dispatch(requestAudit());
       return;
     }
 
     dispatch(refreshFilesBegin());
 
-    console.warn("Performing initial audit");
     // Perform the initial audit to determine the files to download
     let files = getFilesFromFavourites(getState().posts.favourites);
     let toDownload = await auditDownloads(files);
@@ -102,13 +99,10 @@ export function refreshDownloads() {
         dispatch(fileDownloadProgress(progress));
       });
 
-      console.warn("Download done");
-
       dispatch(fileDownloadDone());
 
       if (getState().downloads.auditRequested) {
         // Audit downloads if an audit has been requested
-        console.warn("Performing audit");
         files = getFilesFromFavourites(getState().posts.favourites);
         toDownload = await auditDownloads(files);
 
@@ -116,7 +110,6 @@ export function refreshDownloads() {
       }
     }
 
-    console.warn("Refresh done");
     dispatch(refreshFilesDone());
   };
 }
