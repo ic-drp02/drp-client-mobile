@@ -1,6 +1,8 @@
+import * as FileSystem from "expo-file-system";
+
 import { auditDownloads, downloadInternal } from "../util/internalDownloads";
 import { SETTINGS_OPTIONS } from "../util/settingsOptions";
-import DOWNLOAD_STATUS from "../util/downloadStatus";
+import DOWNLOAD_STATUS, { FREE_SPACE_THRESHOLD } from "../util/downloadStatus";
 
 const REFRESH_FILES_BEGIN = "REFRESH_FILES_BEGIN";
 const REQUEST_AUDIT = "REQUEST_AUDIT";
@@ -74,6 +76,13 @@ export function refreshDownloads() {
       if (!getState().settings.settings[SETTINGS_OPTIONS.STORE_FILES]) {
         // If storing files is disabled, abort further downloads
         dispatch(refreshFilesAbort(DOWNLOAD_STATUS.DONE));
+        return;
+      }
+
+      const freeSpace = await FileSystem.getFreeDiskStorageAsync();
+      if (freeSpace < FREE_SPACE_THRESHOLD) {
+        // Low storage space
+        dispatch(refreshFilesAbort(DOWNLOAD_STATUS.NO_FREE_SPACE));
         return;
       }
 

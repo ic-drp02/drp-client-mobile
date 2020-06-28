@@ -123,6 +123,13 @@ export default function Settings({ navigation }) {
         "will resume after a cheaper connection is established.";
       break;
 
+    case DOWNLOAD_STATUS.NO_FREE_SPACE:
+      downloadStatusMessage =
+        "It seems that your device is running out of storage space." +
+        `The download of ${toDownload} ${files} will resume after more ` +
+        "disk space is available.";
+      break;
+
     case DOWNLOAD_STATUS.DONE:
       downloadStatusMessage = "Nothing to download";
       break;
