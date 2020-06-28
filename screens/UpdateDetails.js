@@ -44,7 +44,7 @@ export default function UpdateDetails({ route, navigation }) {
           f.id == postId &&
           (revisionId === undefined || f.revision_id == revisionId)
       );
-      if (matchingOffline.length == 1) {
+      if (matchingOffline.length >= 1) {
         setPost(matchingOffline[0]);
         return;
       }
