@@ -82,6 +82,13 @@ export default function Home({ navigation }) {
           onPress={() => navigation.navigate("Search")}
         />
       </Appbar.Header>
+      <TabView
+        renderTabBar={renderTabBar}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        initialLayout={{ width: Dimensions.get("window").width }}
+        onIndexChange={setIndex}
+      />
       <Banner
         visible={!isInternetReachable && !dismissed}
         actions={[
@@ -98,13 +105,6 @@ export default function Home({ navigation }) {
             ? "Offline favourites storage is enabled in the settings, so you will be able to access your favourite posts."
             : "The offline favourites storage is disabled in the settings, so only cached posts will be available.")}
       </Banner>
-      <TabView
-        renderTabBar={renderTabBar}
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        initialLayout={{ width: Dimensions.get("window").width }}
-        onIndexChange={setIndex}
-      />
     </>
   );
 }

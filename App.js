@@ -88,14 +88,16 @@ function AuthController({ children, navRef }) {
   }, [isInternetReachable]);
 
   useEffect(() => {
-    if (!!auth.user) {
-      console.log("Registering push notifications");
-      notifications.registerForPushNotifications();
-      notifications.registerNotificationHandlers((postId) => {
-        navRef.current.navigate("UpdateDetails", { postId });
-      });
+    if (isInternetReachable === true) {
+      if (!!auth.user) {
+        console.log("Registering push notifications");
+        notifications.registerForPushNotifications();
+        notifications.registerNotificationHandlers((postId) => {
+          navRef.current.navigate("UpdateDetails", { postId });
+        });
+      }
     }
-  }, [auth]);
+  }, [auth, isInternetReachable]);
 
   if (!loaded) {
     return <AppLoading />;
