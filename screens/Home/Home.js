@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Dimensions } from "react-native";
-import { Appbar, Text, useTheme } from "react-native-paper";
+import { Appbar, Text, useTheme, Banner } from "react-native-paper";
 import { TabView, TabBar } from "react-native-tab-view";
 import { useSelector, useDispatch } from "react-redux";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 import Main from "./components/Main";
 import Favourites from "./components/Favourites";
+import { SETTINGS_OPTIONS } from "../../util/settingsOptions";
 
 import { refreshPosts } from "../../store";
 
@@ -31,10 +33,15 @@ function countUpdates(favourites) {
 export default function Home({ navigation }) {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const [index, setIndex] = useState(0);
-
+  const isInternetReachable = useSelector(
+    (s) => s.connection.isInternetReachable
+  );
+  const settings = useSelector((s) => s.settings.settings);
   const favourites = useSelector((s) => s.posts.favourites);
   const updatedFavourites = countUpdates(favourites);
+
+  const [index, setIndex] = useState(0);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(
     // Refresh posts when home screen is focused
@@ -75,6 +82,22 @@ export default function Home({ navigation }) {
           onPress={() => navigation.navigate("Search")}
         />
       </Appbar.Header>
+      <Banner
+        visible={!isInternetReachable && !dismissed}
+        actions={[
+          {
+            label: "Dismiss",
+            onPress: () => setDismissed(true),
+          },
+        ]}
+        icon={({ size }) => <Icon name="signal-wifi-off" size={size} />}
+      >
+        You are offline, some features of the app may not be available.{" "}
+        {settings &&
+          (settings[SETTINGS_OPTIONS.STORE_FAVOURITES_OFFLINE]
+            ? "Offline favourites storage is enabled in the settings, so you will be able to access your favourite posts."
+            : "The offline favourites storage is disabled in the settings, so only cached posts will be available.")}
+      </Banner>
       <TabView
         renderTabBar={renderTabBar}
         navigationState={{ index, routes }}
