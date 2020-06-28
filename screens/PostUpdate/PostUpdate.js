@@ -60,7 +60,7 @@ function richTextToHtml(text) {
   return "<p>" + html.replace(/\n/g, "<br/>") + "</p>";
 }
 
-export default withTheme(function PostUpdate({ navigation }) {
+export default withTheme(function PostUpdate({ route, navigation }) {
   const prevPost = route.params?.prevPost;
   const isInternetReachable = useSelector(
     (s) => s.connection.isInternetReachable
